@@ -1,0 +1,63 @@
+IAP Tools Todo List
+===========================
+
+2) Support customized object writers and readers - for speed an customization.
+
+
+
+Features
+---------------------------
+ - Support arrays of all primitive types.
+
+ - Support BigDecimal (?) ... as UTF-8 ?
+
+ - IonReader + IonWriter fully functional, and inter-operational with object readers.
+
+ - Support embedding class name and serial version UID in ION objects.
+
+ - Blocking client
+
+ - Nonblocking client
+
+
+
+
+
+
+Optimizations
+
+ - Test using another array list implementation (e.g. OpenArrayList) in Table field reader (and everywhere else).
+
+ - Use a Bytes class for BYTES and a Utf8 for UTF-8
+
+ - Use another UTF-8 encoding of String objects than String.getBytes("UTF-8")
+
+
+
+Done
+---------------------------
+ - A way to know when IonReader has no more fields - both in the complete file, but also inside an object.
+
+ - Test using other Map implementations instead of standard Java HashMap - inside IapTypedObjectReader - when looking up
+   fields based on key field values. - No success so far - only half speed of JDK Map.
+
+- Replace the common length read code (maybe benchmark difference?)
+
+   int length = 0;
+   for(int i=0; i<lengthLength; i++){
+       length <<= 8;
+       length |= 255 & source[sourceOffset++];
+   }
+
+   with
+
+   int length = 255 & source[sourceOffset++];
+   for(int i=1; i < lengthLength; i++){
+       length <<= 8;
+       length |= 255 & source[sourceOffset++];
+   }
+
+   The second version saves 1 time <<= 8 .
+
+
+ - IapFieldWriter's - examine why performance dropped - seemingly after using inheritance with IapFieldWriterBase.
