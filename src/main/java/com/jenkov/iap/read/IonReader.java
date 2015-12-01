@@ -47,8 +47,9 @@ public class IonReader {
 
 
 
-    public void next() {
+    public IonReader next() {
         this.index = this.nextIndex;
+        return this;
     }
 
     public boolean hasNext() {
@@ -56,7 +57,7 @@ public class IonReader {
     }
 
 
-    public void parse() {
+    public IonReader parse() {
         int leadByte = 255 & this.source[index++];
         this.fieldType = leadByte >> 4;
         this.fieldLengthLength = leadByte & 15;
@@ -86,9 +87,10 @@ public class IonReader {
                 this.nextIndex += 1 + this.fieldLengthLength + this.fieldLength;
             }
         }
+        return this;
     }
 
-    public void parseInto() {
+    public IonReader parseInto() {
         //parseInto() only works for complex types like objects, tables and arrays
 
         long stackValue = this.index - 1 - this.fieldLengthLength;
@@ -100,6 +102,8 @@ public class IonReader {
         this.scopeEndIndex = this.nextIndex;
         this.nextIndex = this.index;  //restart nextIndex counting from inside object.
         parse(); //yes?
+
+        return this;
     }
 
     public void parseOutOf() {
@@ -303,6 +307,17 @@ public class IonReader {
         return new String(this.source, this.index, this.fieldLength);
     }
 
+    public boolean matches(byte[] expected) {
+        if(expected.length != this.fieldLength){
+            return false;
+        }
+        for(int i=0; i<expected.length; i++){
+            if(this.source[this.index + i] != expected[i]){
+                return false;
+            }
+        }
+        return true;
+    }
 
 
 }
