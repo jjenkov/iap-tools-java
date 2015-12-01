@@ -2,6 +2,7 @@ package com.jenkov.iap.read;
 
 import com.jenkov.iap.TestPojo;
 import com.jenkov.iap.TestPojoArray;
+import com.jenkov.iap.write.IonObjectWriter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -11,16 +12,16 @@ import static org.junit.Assert.assertEquals;
  */
 public class IapTypedObjectReaderTest {
 
-    /*
+
     @Test
     public void test() {
-        IapTypedObjectWriter writer  = new IapTypedObjectWriter(TestPojo.class);
-        IapTypedObjectReader reader  = new IapTypedObjectReader(TestPojo.class);
+        IonObjectWriter writer  = new IonObjectWriter(TestPojo.class);
+        IonObjectReader reader  = new IonObjectReader(TestPojo.class);
 
         byte[] source = new byte[10 * 1024];
 
         TestPojo sourcePojo = new TestPojo();
-        sourcePojo.short1 = 123;
+        sourcePojo.field1 = 123;
 
         TestPojo destPojo = null;
 
@@ -31,7 +32,7 @@ public class IapTypedObjectReaderTest {
 
         destPojo = (TestPojo) reader.read(source, 0);
 
-        assertEquals(123, destPojo.short1);
+        assertEquals(123, destPojo.field1);
 
 
     }
@@ -39,8 +40,8 @@ public class IapTypedObjectReaderTest {
 
     @Test
     public void testTableField() {
-        IapTypedObjectWriter writer  = new IapTypedObjectWriter(TestPojoArray.class);
-        IapTypedObjectReader reader  = new IapTypedObjectReader(TestPojoArray.class);
+        IonObjectWriter writer  = new IonObjectWriter(TestPojoArray.class);
+        IonObjectReader reader  = new IonObjectReader(TestPojoArray.class);
 
         byte[] source = new byte[10 * 1024];
 
@@ -51,7 +52,7 @@ public class IapTypedObjectReaderTest {
         sourcePojoArray.testObjects[1] = new TestPojoArray.TestObject();
         sourcePojoArray.testObjects[2] = new TestPojoArray.TestObject();
 
-        TestPojoArray destPojo        = new TestPojoArray();
+        TestPojoArray destPojo         = new TestPojoArray();
 
         int length = writer.writeObject(sourcePojoArray, 2, source, 0);
 
@@ -59,5 +60,5 @@ public class IapTypedObjectReaderTest {
 
 
     }
-    */
+
 }

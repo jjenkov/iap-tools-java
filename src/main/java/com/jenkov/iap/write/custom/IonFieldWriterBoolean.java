@@ -34,9 +34,9 @@ public class IonFieldWriterBoolean implements IIonFieldWriter {
         boolean value = this.getter.get(sourceObject);
 
         if(value){
-            destination[destinationOffset] = (byte) (255 & ((1 << 4) | IonFieldTypes.BOOLEAN));
+            destination[destinationOffset] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 1));
         } else {
-            destination[destinationOffset] = (byte) (255 & ((2 << 4) | IonFieldTypes.BOOLEAN));
+            destination[destinationOffset] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 2));
         }
 
         return 1;    //total length of a boolean field is always 1

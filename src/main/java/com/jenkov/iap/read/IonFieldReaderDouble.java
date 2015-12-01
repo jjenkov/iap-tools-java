@@ -18,7 +18,7 @@ public class IonFieldReaderDouble implements IIonFieldReader {
         int leadByte     = 255 & source[sourceOffset++];
         //int fieldType    = leadByte >> 3;  //todo use for field match verification?
 
-        int length = leadByte >> 4;  // 7 = binary 00000111 - filters out 5 top bits
+        int length = leadByte & 15;  // 15 = binary 00001111 - filters out 4 top bits
 
         if(length == 0){
             return 1; //double field with null value is only 1 byte long

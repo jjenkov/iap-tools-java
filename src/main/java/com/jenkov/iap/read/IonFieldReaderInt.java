@@ -18,7 +18,7 @@ public class IonFieldReaderInt implements IIonFieldReader {
         int leadByte     = 255 & source[sourceOffset++];
         //int fieldType    = leadByte >> 3;    // todo use for field type validation?
 
-        int length       = leadByte >> 4;
+        int length       = leadByte & 15;
 
         if(length == 0){
             return 1; //int field with null value is always 1 byte long

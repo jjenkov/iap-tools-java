@@ -37,7 +37,7 @@ public class IonFieldWriterDouble implements IIonFieldWriter {
 
         //magic number "8" is the length in bytes of a 32 bit floating point number in ION.
 
-        dest[destOffset++] = (byte) (255 & ((8 << 4) | IonFieldTypes.FLOAT));
+        dest[destOffset++] = (byte) (255 & ((IonFieldTypes.FLOAT << 4) | 8));
 
         for(int i=(8-1)*8; i >= 0; i-=8){
             dest[destOffset++] = (byte) (255 & (valueLongBits >> i));

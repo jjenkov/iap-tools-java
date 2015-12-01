@@ -19,7 +19,7 @@ public class IonFieldReaderString implements IIonFieldReader {
     public int read(byte[] source, int sourceOffset, Object destination) {
         int leadByte     = 255 & source[sourceOffset++];
         //int fieldType    = leadByte >> 3;   //todo use field type for validation?
-        int lengthLength = leadByte >> 4;
+        int lengthLength = leadByte & 15;
 
         if(lengthLength == 0){
             return 1; //string field (UTF-8) with null value is always 1 byte long

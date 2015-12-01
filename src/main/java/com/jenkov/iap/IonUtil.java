@@ -110,14 +110,14 @@ public class IonUtil {
             int fieldNameLength = fieldName.length;
             if(fieldNameLength <= 15){
                 keyField = new byte[1 + fieldName.length];
-                keyField[0] = (byte) (255 & ((fieldName.length << 4) | IonFieldTypes.KEY_COMPACT));
+                keyField[0] = (byte) (255 & ((IonFieldTypes.KEY_COMPACT << 4) | fieldName.length));
                 System.arraycopy(fieldName, 0, keyField, 1, fieldName.length);
             } else {
                 int length = fieldName.length;
                 int lengthLength = IonUtil.lengthOfInt64Value(length);
                 keyField = new byte[1 + lengthLength + fieldName.length];
 
-                keyField[0] = (byte) (255 & ((lengthLength << 4) | IonFieldTypes.KEY));
+                keyField[0] = (byte) (255 & ((IonFieldTypes.KEY << 4) | lengthLength));
                 int destOffset = 1;
                 for(int i=(lengthLength-1)*8; i >= 0; i-=8){
                     keyField[destOffset++] = (byte) (255 & (length >> i));

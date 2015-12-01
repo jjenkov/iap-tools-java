@@ -16,7 +16,7 @@ public class IonFieldReaderBoolean implements IIonFieldReader {
     @Override
     public int read(byte[] source, int sourceOffset, Object destination) {
         int value = (255 & source[sourceOffset]);
-        value >>=4;
+        value &=15;
 
         switch(value){
             case 1 : {

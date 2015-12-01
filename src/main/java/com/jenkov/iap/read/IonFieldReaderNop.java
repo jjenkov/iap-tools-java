@@ -8,8 +8,8 @@ public class IonFieldReaderNop implements IIonFieldReader {
     @Override
     public int read(byte[] source, int sourceOffset, Object destination) {
         int leadByte     = 255 & source[sourceOffset++];
-        int fieldType    = leadByte >> 3;
-        int lengthLength = leadByte & 7;  // 7 = binary 00000111 - filters out 5 top bits
+        int fieldType    = leadByte >> 4;
+        int lengthLength = leadByte & 15;  // 7 = binary 00000111 - filters out 5 top bits
 
         if(lengthLength == 0){
             return 1; //field with null value is always 1 byte long

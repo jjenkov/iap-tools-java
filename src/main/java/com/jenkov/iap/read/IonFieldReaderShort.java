@@ -17,7 +17,7 @@ public class IonFieldReaderShort implements IIonFieldReader {
     public int read(byte[] source, int sourceOffset, Object destination) {
         int leadByte     = 255 & source[sourceOffset++];
         //int fieldType    = leadByte >> 3;  //todo use field type for validation ?
-        int length = leadByte >> 4;
+        int length = leadByte & 15;
 
         if(length == 0){
             return 1; //short field with null value is always 1 byte long.

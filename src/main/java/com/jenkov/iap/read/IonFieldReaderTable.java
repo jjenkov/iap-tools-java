@@ -63,7 +63,7 @@ public class IonFieldReaderTable implements IIonFieldReader {
         int tableStartIndex = sourceOffset;
 
         int tableLeadByte = 255 & source[sourceOffset++];
-        int tableLengthLength  = tableLeadByte & 7;
+        int tableLengthLength  = tableLeadByte & 15;
 
         if(tableLengthLength == 0){
             return 1; //table field with null as values is always 1 byte long (has 0 keys and 0 values).
@@ -85,18 +85,18 @@ public class IonFieldReaderTable implements IIonFieldReader {
         boolean endOfKeyFieldsFound = false;
         while(!endOfKeyFieldsFound){
             int fieldLeadByte = 255 & source[sourceOffset++];
-            int fieldType     = fieldLeadByte & 15;
+            int fieldType     = fieldLeadByte >> 4;
 
             switch(fieldType){
                 case IonFieldTypes.KEY_COMPACT :  {
-                    int keyLength = fieldLeadByte >> 4;
+                    int keyLength = fieldLeadByte & 15;
                     tempKeyFieldKey.setOffsets(sourceOffset, keyLength);
                     this.fieldReaderArray[fieldReadersInArray++] = this.fieldReaderMap.get(tempKeyFieldKey);
                     sourceOffset += keyLength;
                     break;
                 }
                 case IonFieldTypes.KEY : {
-                    int keyLengthLength = fieldLeadByte >> 4;
+                    int keyLengthLength = fieldLeadByte & 15;
                     int keyLength = 0;
                     for(int i=0; i < tableLengthLength; i++){
                         keyLength <<= 8;

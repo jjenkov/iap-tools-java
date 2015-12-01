@@ -17,10 +17,10 @@ public class IonObjectWriterCustomizableTest {
         byte[] dest = new byte[10 * 1024];
 
         IonObjectWriterCustomizable objectWriter = new IonObjectWriterCustomizable();
-        objectWriter.addBooleanFieldWriter("boolean1", (source) -> { return ((TestPojo) source).boolean1; });
-        objectWriter.addInt64FieldWriter  ("short1"  , (source) -> { return ((TestPojo) source).short1; });
-        objectWriter.addFloatFieldWriter  ("float1"  , (source) -> { return ((TestPojo) source).float1; });
-        objectWriter.addDoubleFieldWriter ("dbl1"    , (source) -> { return ((TestPojo) source).dbl1;   });
+        objectWriter.addBooleanFieldWriter("field0"  , (source) -> { return ((TestPojo) source).field0; });
+        objectWriter.addInt64FieldWriter  ("field1"  , (source) -> { return ((TestPojo) source).field1; });
+        objectWriter.addFloatFieldWriter  ("field2"  , (source) -> { return ((TestPojo) source).field2; });
+        objectWriter.addDoubleFieldWriter ("field3"  , (source) -> { return ((TestPojo) source).field3; });
 
         objectWriter.init();
 
@@ -28,58 +28,59 @@ public class IonObjectWriterCustomizableTest {
 
         int bytesWritten = objectWriter.writeObject(testPojo, 2, dest, 0);
 
-        assertEquals(48, bytesWritten);
+        assertEquals(49, bytesWritten);
 
         int index = 0;
-        assertEquals((2<<4) | IonFieldTypes.OBJECT, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.OBJECT<<4) | 2, 255 & dest[index++]);
         assertEquals(  0, 255 & dest[index++]);
-        assertEquals( 45, 255 & dest[index++]);
-        assertEquals((8<<4) | IonFieldTypes.KEY_COMPACT, 255 & dest[index++]);
-        assertEquals('b', 255 & dest[index++]);
-        assertEquals('o', 255 & dest[index++]);
-        assertEquals('o', 255 & dest[index++]);
-        assertEquals('l', 255 & dest[index++]);
-        assertEquals('e', 255 & dest[index++]);
-        assertEquals('a', 255 & dest[index++]);
-        assertEquals('n', 255 & dest[index++]);
-        assertEquals('1', 255 & dest[index++]);
-
-        assertEquals((1<<4) | IonFieldTypes.BOOLEAN, 255 & dest[index++]);
-
-        assertEquals((6<<4) | IonFieldTypes.KEY_COMPACT, 255 & dest[index++]);
-        assertEquals('s', 255 & dest[index++]);
-        assertEquals('h', 255 & dest[index++]);
-        assertEquals('o', 255 & dest[index++]);
-        assertEquals('r', 255 & dest[index++]);
-        assertEquals('t', 255 & dest[index++]);
-        assertEquals('1', 255 & dest[index++]);
-
-        assertEquals((1<<4) | IonFieldTypes.INT_POS, 255 & dest[index++]);
-        assertEquals(12, 255 & dest[index++]);
-
-        assertEquals((6<<4) | IonFieldTypes.KEY_COMPACT, 255 & dest[index++]);
+        assertEquals( 46, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_COMPACT<<4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
         assertEquals('l', 255 & dest[index++]);
-        assertEquals('o', 255 & dest[index++]);
-        assertEquals('a', 255 & dest[index++]);
-        assertEquals('t', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('0', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.BOOLEAN<<4) | 1, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_COMPACT<<4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
         assertEquals('1', 255 & dest[index++]);
 
-        int floatBits = Float.floatToIntBits(testPojo.float1);
-        assertEquals((4<<4) | IonFieldTypes.FLOAT, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.INT_POS<<4) | 2, 255 & dest[index++]);
+        assertEquals(1234 >> 8, 255 & dest[index++]);
+        assertEquals(1234 &255, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_COMPACT<<4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('2', 255 & dest[index++]);
+
+        int floatBits = Float.floatToIntBits(testPojo.field2);
+        assertEquals((IonFieldTypes.FLOAT<<4) | 4, 255 & dest[index++]);
         assertEquals(255 & (floatBits >> 24), 255 & dest[index++]);
         assertEquals(255 & (floatBits >> 16), 255 & dest[index++]);
         assertEquals(255 & (floatBits >> 8), 255 & dest[index++]);
         assertEquals(255 & (floatBits)     , 255 & dest[index++]);
 
-        assertEquals((4<<4) | IonFieldTypes.KEY_COMPACT, 255 & dest[index++]);
-        assertEquals('d', 255 & dest[index++]);
-        assertEquals('b', 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_COMPACT<<4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
         assertEquals('l', 255 & dest[index++]);
-        assertEquals('1', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('3', 255 & dest[index++]);
 
-        long doubleBits = Double.doubleToLongBits(testPojo.dbl1);
-        assertEquals((8<<4) | IonFieldTypes.FLOAT, 255 & dest[index++]);
+        long doubleBits = Double.doubleToLongBits(testPojo.field3);
+        assertEquals((IonFieldTypes.FLOAT<<4) | 8, 255 & dest[index++]);
         assertEquals(255 & (doubleBits >> 56), 255 & dest[index++]);
         assertEquals(255 & (doubleBits >> 48), 255 & dest[index++]);
         assertEquals(255 & (doubleBits >> 40), 255 & dest[index++]);

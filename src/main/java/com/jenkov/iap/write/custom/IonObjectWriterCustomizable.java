@@ -49,7 +49,7 @@ public class IonObjectWriterCustomizable {
 
     public int writeObject(Object src, int maxLengthLength, byte[] destination, int destinationOffset){
 
-        destination[destinationOffset++] = (byte) (255 & ((maxLengthLength << 4) | IonFieldTypes.OBJECT));
+        destination[destinationOffset++] = (byte) (255 & ((IonFieldTypes.OBJECT << 4) | maxLengthLength));
 
         int lengthOffset   = destinationOffset; //store length start offset for later use
         destinationOffset += maxLengthLength;

@@ -47,11 +47,11 @@ public class IonObjectReader {
         Object destination =  instantiateType();
 
         int leadByte = 255 & source[sourceOffset++];
-        int fieldType = leadByte >> 3;
+        int fieldType = leadByte >> 4;
 
         //todo if not object - throw exception
 
-        int lengthLength = leadByte & 7;  // 7 = binary 00000111 - filters out 5 top bits
+        int lengthLength = leadByte & 15;  // 15 = binary 00001111 - filters out 4 top bits
 
         if(lengthLength == 0){
             return null; //object field with value null is always 1 byte long.
@@ -68,8 +68,8 @@ public class IonObjectReader {
 
         while(sourceOffset < endIndex){
             leadByte     = 255 & source[sourceOffset++];
-            fieldType    = leadByte >> 3;
-            lengthLength = leadByte & 7;  // 7 = binary 00000111 - filters out 5 top bits
+            fieldType    = leadByte >> 4;
+            lengthLength = leadByte & 157;  // 15 = binary 00001111 - filters out 4 top bits
 
             //todo can this be optimized with a switch statement?
 
@@ -79,7 +79,7 @@ public class IonObjectReader {
                 //distinguish between length and lengthLength depending on compact key field or normal key field
                 length = 0;
                 if(fieldType == IonFieldTypes.KEY_COMPACT){
-                    length = leadByte & 7;
+                    length = leadByte & 15;
                 } else {
                     for(int i=0; i<lengthLength; i++){
                         length <<= 8;
@@ -101,7 +101,7 @@ public class IonObjectReader {
 
 
                 int nextLeadByte  = 255 & source[sourceOffset];
-                int nextFieldType = nextLeadByte >> 3;
+                int nextFieldType = nextLeadByte >> 4;
 
                 if(nextFieldType != IonFieldTypes.KEY && nextFieldType != IonFieldTypes.KEY_COMPACT){
                     sourceOffset += reader.read(source, sourceOffset, destination);
