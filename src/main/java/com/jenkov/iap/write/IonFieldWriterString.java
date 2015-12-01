@@ -39,7 +39,7 @@ public class IonFieldWriterString implements IIonFieldWriter {
 
             int length = valueBytes.length;
             int lengthLength = IonUtil.lengthOfInt64Value(length);
-            dest[destOffset++] = (byte) (255 & ((lengthLength << 4) | IonFieldTypes.UTF_8) );
+            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8 << 4) | lengthLength) );
 
             for(int i=(lengthLength-1)*8; i >= 0; i-=8){
                 dest[destOffset++] = (byte) (255 & (length >> i));

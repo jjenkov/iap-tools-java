@@ -8,12 +8,12 @@ import java.lang.reflect.Field;
 /**
  * Created by jjenkov on 04-11-2015.
  */
-public class IonFieldWriterDouble implements IIonFieldWriter {
+public class IonFieldWriterByte implements IIonFieldWriter {
+
     protected Field  field    = null;
     protected byte[] keyField = null;
 
-
-    public IonFieldWriterDouble(Field field) {
+    public IonFieldWriterByte(Field field) {
         this.field = field;
         this.keyField = IonUtil.preGenerateKeyField(field);
     }
@@ -26,24 +26,28 @@ public class IonFieldWriterDouble implements IIonFieldWriter {
         destinationOffset += this.keyField.length;
 
         return this.keyField.length + writeValueField(sourceObject, destination, destinationOffset, maxLengthLength);
-
     }
 
     @Override
     public int writeValueField(Object sourceObject, byte[] dest, int destOffset, int maxLengthLength) {
         try {
-            double value = (double) field.get(sourceObject);
-            long valueLongBits = Double.doubleToLongBits(value);
-
-            //magic number "8" is the length in bytes of a 32 bit floating point number in ION.
-
-            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.FLOAT << 4) | 8));
-
-            for(int i=(8-1)*8; i >= 0; i-=8){
-                dest[destOffset++] = (byte) (255 & (valueLongBits >> i));
+            long value = (byte) field.get(sourceObject);
+            int ionFieldType = IonFieldTypes.INT_POS;
+            if(value < 0){
+                ionFieldType = IonFieldTypes.INT_NEG;
+                value  = -value;
             }
 
-            return 9;
+            int length = IonUtil.lengthOfInt64Value(value);
+
+            dest[destOffset++] = (byte) (255 & ((ionFieldType << 4) | length));
+
+            for(int i=(length-1)*8; i >= 0; i-=8){
+                dest[destOffset++] = (byte) (255 & (value >> i));
+            }
+
+            return 1 + length;
+
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

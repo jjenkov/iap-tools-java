@@ -8,12 +8,12 @@ import java.lang.reflect.Field;
 /**
  * Created by jjenkov on 04-11-2015.
  */
-public class IonFieldWriterInt64 implements IIonFieldWriter {
+public class IonFieldWriterLong implements IIonFieldWriter {
 
     protected Field  field    = null;
     protected byte[] keyField = null;
 
-    public IonFieldWriterInt64(Field field) {
+    public IonFieldWriterLong(Field field) {
         this.field = field;
         this.keyField = IonUtil.preGenerateKeyField(field);
     }

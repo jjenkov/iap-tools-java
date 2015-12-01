@@ -36,12 +36,14 @@ public class IonUtil {
 
         if(boolean.class.equals(fieldType)){
             return new IonFieldWriterBoolean(field);
+        } else if(byte.class.equals(fieldType)){
+            return new IonFieldWriterByte(field);
         } else if(short.class.equals(fieldType)){
-            return new IonFieldWriterInt64(field);
+            return new IonFieldWriterShort(field);
         } else if(int.class.equals(fieldType)){
-            return new IonFieldWriterInt64(field);
+            return new IonFieldWriterInt(field);
         } else if(long.class.equals(fieldType)){
-            return new IonFieldWriterInt64(field);
+            return new IonFieldWriterLong(field);
         } else if(float.class.equals(fieldType)){
             return new IonFieldWriterFloat(field);
         } else if(double.class.equals(fieldType)){

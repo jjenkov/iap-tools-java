@@ -56,10 +56,10 @@ public class IonFieldWriterTable implements IIonFieldWriter {
         int offset = 0;
         for(int i=0; i<fieldNames.length; i++){
             if(fieldNames[i].length <= 15){
-                allKeyFieldBytes[offset++] = (byte) (255 & ((fieldNames[i].length << 4) | IonFieldTypes.KEY_COMPACT));
+                allKeyFieldBytes[offset++] = (byte) (255 & ((IonFieldTypes.KEY_COMPACT << 4) | fieldNames[i].length));
             } else {
                 int lengthLength = IonUtil.lengthOfInt64Value(fieldNames[i].length);
-                allKeyFieldBytes[offset++] = (byte) (255 & ((lengthLength << 4 | IonFieldTypes.KEY)));
+                allKeyFieldBytes[offset++] = (byte) (255 & ((IonFieldTypes.KEY << 4 | lengthLength)));
 
                 for(int j=(lengthLength-1)*8; i >= 0; i-=8){
                     allKeyFieldBytes[offset++] = (byte) (255 & (lengthLength >> i));
@@ -85,7 +85,7 @@ public class IonFieldWriterTable implements IIonFieldWriter {
     @Override
     public int writeValueField(Object sourceObject, byte[] destination, int destinationOffset, int maxLengthLength) {
         int startIndex = destinationOffset;
-        destination[destinationOffset] = (byte) (255 & ((maxLengthLength << 4) | IonFieldTypes.TABLE));
+        destination[destinationOffset] = (byte) (255 & (IonFieldTypes.TABLE << 4) | (maxLengthLength));
         destinationOffset += 1 + maxLengthLength ; // 1 for lead byte + make space for maxLengthLength length bytes.
 
 
