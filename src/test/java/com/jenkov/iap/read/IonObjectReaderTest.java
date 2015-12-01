@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by jjenkov on 05-11-2015.
  */
-public class IapTypedObjectReaderTest {
+public class IonObjectReaderTest {
 
 
     @Test

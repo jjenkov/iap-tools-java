@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by jjenkov on 04-11-2015.
  */
-public class IapTypedObjectWriterTest {
+public class IonObjectWriterTest {
 
     /*
     IapTypedObjectWriter writer = new IapTypedObjectWriter(TestPojo.class);
