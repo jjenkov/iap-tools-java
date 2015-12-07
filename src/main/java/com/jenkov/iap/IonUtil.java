@@ -112,7 +112,7 @@ public class IonUtil {
             int fieldNameLength = fieldName.length;
             if(fieldNameLength <= 15){
                 keyField = new byte[1 + fieldName.length];
-                keyField[0] = (byte) (255 & ((IonFieldTypes.KEY_COMPACT << 4) | fieldName.length));
+                keyField[0] = (byte) (255 & ((IonFieldTypes.KEY_SHORT << 4) | fieldName.length));
                 System.arraycopy(fieldName, 0, keyField, 1, fieldName.length);
             } else {
                 int length = fieldName.length;

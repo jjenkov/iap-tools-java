@@ -74,11 +74,11 @@ public class IonObjectReader {
             //todo can this be optimized with a switch statement?
 
             //expect a key field
-            if(fieldType == IonFieldTypes.KEY || fieldType == IonFieldTypes.KEY_COMPACT){
+            if(fieldType == IonFieldTypes.KEY || fieldType == IonFieldTypes.KEY_SHORT){
 
                 //distinguish between length and lengthLength depending on compact key field or normal key field
                 length = 0;
-                if(fieldType == IonFieldTypes.KEY_COMPACT){
+                if(fieldType == IonFieldTypes.KEY_SHORT){
                     length = leadByte & 15;
                 } else {
                     for(int i=0; i<lengthLength; i++){
@@ -103,7 +103,7 @@ public class IonObjectReader {
                 int nextLeadByte  = 255 & source[sourceOffset];
                 int nextFieldType = nextLeadByte >> 4;
 
-                if(nextFieldType != IonFieldTypes.KEY && nextFieldType != IonFieldTypes.KEY_COMPACT){
+                if(nextFieldType != IonFieldTypes.KEY && nextFieldType != IonFieldTypes.KEY_SHORT){
                     sourceOffset += reader.read(source, sourceOffset, destination);
                 } else {
                     //next field is also a key - meaning the previous key has a value of null (no value field following it).

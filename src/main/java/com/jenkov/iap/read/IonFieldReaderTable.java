@@ -88,7 +88,7 @@ public class IonFieldReaderTable implements IIonFieldReader {
             int fieldType     = fieldLeadByte >> 4;
 
             switch(fieldType){
-                case IonFieldTypes.KEY_COMPACT :  {
+                case IonFieldTypes.KEY_SHORT:  {
                     int keyLength = fieldLeadByte & 15;
                     tempKeyFieldKey.setOffsets(sourceOffset, keyLength);
                     this.fieldReaderArray[fieldReadersInArray++] = this.fieldReaderMap.get(tempKeyFieldKey);

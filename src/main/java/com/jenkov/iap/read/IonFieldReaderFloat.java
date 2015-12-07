@@ -23,11 +23,20 @@ public class IonFieldReaderFloat implements IIonFieldReader {
             return 1;  // float field with null value is always 1 byte long
         }
 
+        /*
         int theInt = 255 & source[sourceOffset++];
         for(int i=1; i < length; i++){
             theInt <<= 8;
             theInt |= 255 & source[sourceOffset++];
         }
+        */
+        int theInt = 255 & source[sourceOffset++];
+        theInt <<= 8;
+        theInt |= 255 & source[sourceOffset++];
+        theInt <<= 8;
+        theInt |= 255 & source[sourceOffset++];
+        theInt <<= 8;
+        theInt |= 255 & source[sourceOffset++];
 
         try {
             field.set(destination, Float.intBitsToFloat(theInt));

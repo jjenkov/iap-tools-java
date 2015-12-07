@@ -97,7 +97,7 @@ public class IonFieldWriterTests {
         assertEquals( 0, dest[index++]);
         assertEquals(61, dest[index++]);   // 5 compact keys (3 bytes), 1 boolean, 1 short, 1 int, 1 long and 1 float field
 
-        assertEquals((IapFieldTypes.KEY_COMPACT << 3) | 6, 255 & dest[index++]);
+        assertEquals((IapFieldTypes.KEY_SHORT << 3) | 6, 255 & dest[index++]);
         assertEquals('f', dest[index++]);
         assertEquals('i', dest[index++]);
         assertEquals('e', dest[index++]);

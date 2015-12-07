@@ -34,7 +34,7 @@ public class IonObjectWriterCustomizableTest {
         assertEquals((IonFieldTypes.OBJECT<<4) | 2, 255 & dest[index++]);
         assertEquals(  0, 255 & dest[index++]);
         assertEquals( 46, 255 & dest[index++]);
-        assertEquals((IonFieldTypes.KEY_COMPACT<<4) | 6, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_SHORT <<4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
         assertEquals('i', 255 & dest[index++]);
         assertEquals('e', 255 & dest[index++]);
@@ -44,7 +44,7 @@ public class IonObjectWriterCustomizableTest {
 
         assertEquals((IonFieldTypes.BOOLEAN<<4) | 1, 255 & dest[index++]);
 
-        assertEquals((IonFieldTypes.KEY_COMPACT<<4) | 6, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_SHORT <<4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
         assertEquals('i', 255 & dest[index++]);
         assertEquals('e', 255 & dest[index++]);
@@ -56,7 +56,7 @@ public class IonObjectWriterCustomizableTest {
         assertEquals(1234 >> 8, 255 & dest[index++]);
         assertEquals(1234 &255, 255 & dest[index++]);
 
-        assertEquals((IonFieldTypes.KEY_COMPACT<<4) | 6, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_SHORT <<4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
         assertEquals('i', 255 & dest[index++]);
         assertEquals('e', 255 & dest[index++]);
@@ -71,7 +71,7 @@ public class IonObjectWriterCustomizableTest {
         assertEquals(255 & (floatBits >> 8), 255 & dest[index++]);
         assertEquals(255 & (floatBits)     , 255 & dest[index++]);
 
-        assertEquals((IonFieldTypes.KEY_COMPACT<<4) | 6, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_SHORT <<4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
         assertEquals('i', 255 & dest[index++]);
         assertEquals('e', 255 & dest[index++]);

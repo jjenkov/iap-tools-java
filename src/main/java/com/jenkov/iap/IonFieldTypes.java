@@ -13,18 +13,18 @@ public class IonFieldTypes {
     public static final int FLOAT           =  4;
     public static final int UTF_8           =  5;
 
-    public static final int RESERVED_1      =  6;
-    public static final int RESERVED_2      =  7;
-    public static final int REFERENCE       =  8;   //a reference to a field stored in the IAP connection cache.
+    public static final int UTF_8_SHORT     =  6;
+    public static final int UTC_DATE_TIME   =  7;
+    public static final int COPY            =  8;   //a reference to a field stored in the IAP connection cache.
 
     public static final int OBJECT          =  9;
     public static final int TABLE           = 10;
     public static final int ARRAY           = 11;
-    public static final int COMPLEX_TYPE_ID = 12;   //the type of an object - reserved for special IAP object types - none so far.
+    public static final int COMPLEX_TYPE_ID_SHORT = 12;   //the type of an object - reserved for special IAP object types - none so far.
     public static final int KEY             = 13;   //a sequence of bytes identifying a key or a property name - often UTF-8 encoded field names.
-    public static final int KEY_COMPACT     = 14;   //a sequence of bytes identifying a key or a property name - often UTF-8 encoded field names - 15 bytes or less.
+    public static final int KEY_SHORT       = 14;   //a sequence of bytes identifying a key or a property name - often UTF-8 encoded field names - 15 bytes or less.
 
-    public static final int EXTENDED_TYPE   = 15;   //a sequence of bytes identifying a key or a property name - often UTF-8 encoded field names - 15 bytes or less.
+    public static final int EXTENDED = 15;   //a sequence of bytes identifying a key or a property name - often UTF-8 encoded field names - 15 bytes or less.
 
 
     /*

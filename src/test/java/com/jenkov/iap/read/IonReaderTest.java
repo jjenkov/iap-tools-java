@@ -239,7 +239,7 @@ public class IonReaderTest {
         reader.setSource(source, 0, source.length);
         reader.parse();
 
-        assertEquals(IonFieldTypes.KEY_COMPACT, reader.fieldType);
+        assertEquals(IonFieldTypes.KEY_SHORT, reader.fieldType);
         assertEquals(5, reader.fieldLength);
 
         int length = reader.readKeyCompact(dest);

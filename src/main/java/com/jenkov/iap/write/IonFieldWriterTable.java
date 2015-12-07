@@ -56,7 +56,7 @@ public class IonFieldWriterTable implements IIonFieldWriter {
         int offset = 0;
         for(int i=0; i<fieldNames.length; i++){
             if(fieldNames[i].length <= 15){
-                allKeyFieldBytes[offset++] = (byte) (255 & ((IonFieldTypes.KEY_COMPACT << 4) | fieldNames[i].length));
+                allKeyFieldBytes[offset++] = (byte) (255 & ((IonFieldTypes.KEY_SHORT << 4) | fieldNames[i].length));
             } else {
                 int lengthLength = IonUtil.lengthOfInt64Value(fieldNames[i].length);
                 allKeyFieldBytes[offset++] = (byte) (255 & ((IonFieldTypes.KEY << 4 | lengthLength)));

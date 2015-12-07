@@ -1,7 +1,6 @@
 package com.jenkov.iap.write;
 
 import com.jenkov.iap.IonFieldTypes;
-import com.jenkov.iap.write.IonWriter;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -343,7 +342,7 @@ public class IonWriterTest {
         int bytesWritten = IonWriter.writeKeyCompact(dest, offset, value);
 
         assertEquals(6, bytesWritten);
-        assertEquals((IonFieldTypes.KEY_COMPACT<<4) | 5, 255 & dest[offset++]);
+        assertEquals((IonFieldTypes.KEY_SHORT <<4) | 5, 255 & dest[offset++]);
         assertEquals('H', 255 & dest[offset++]);
         assertEquals('e', 255 & dest[offset++]);
         assertEquals('l', 255 & dest[offset++]);
@@ -354,7 +353,7 @@ public class IonWriterTest {
         bytesWritten = IonWriter.writeKeyCompact(dest, offset, (String) null);
 
         assertEquals(1, bytesWritten);
-        assertEquals(IonFieldTypes.KEY_COMPACT << 4, 255 & dest[offset++]);
+        assertEquals(IonFieldTypes.KEY_SHORT << 4, 255 & dest[offset++]);
 
         byte[] valueBytes = "Hello".getBytes("UTF-8");
 
@@ -362,7 +361,7 @@ public class IonWriterTest {
         bytesWritten = IonWriter.writeKeyCompact(dest, offset, valueBytes);
 
         assertEquals(6, bytesWritten);
-        assertEquals((IonFieldTypes.KEY_COMPACT<<4) | 5, 255 & dest[offset++]);
+        assertEquals((IonFieldTypes.KEY_SHORT <<4) | 5, 255 & dest[offset++]);
         assertEquals('H', 255 & dest[offset++]);
         assertEquals('e', 255 & dest[offset++]);
         assertEquals('l', 255 & dest[offset++]);
@@ -373,7 +372,7 @@ public class IonWriterTest {
         bytesWritten = IonWriter.writeKeyCompact(dest, offset, (byte[]) null);
 
         assertEquals(1, bytesWritten);
-        assertEquals(IonFieldTypes.KEY_COMPACT << 4, 255 & dest[offset++]);
+        assertEquals(IonFieldTypes.KEY_SHORT << 4, 255 & dest[offset++]);
     }
 
 

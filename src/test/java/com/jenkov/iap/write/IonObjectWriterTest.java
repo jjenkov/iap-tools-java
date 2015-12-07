@@ -2,6 +2,7 @@ package com.jenkov.iap.write;
 
 import com.jenkov.iap.IonFieldTypes;
 import com.jenkov.iap.TestPojo;
+import com.jenkov.iap.pojos.PojoArray10Float;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -11,10 +12,10 @@ import static org.junit.Assert.assertEquals;
  */
 public class IonObjectWriterTest {
 
-    IonObjectWriter writer = new IonObjectWriter(TestPojo.class);
 
     @Test
     public void test() {
+        IonObjectWriter writer = new IonObjectWriter(TestPojo.class);
         byte[] dest   = new byte[1024];
 
         TestPojo testPojo = new TestPojo();
@@ -27,7 +28,7 @@ public class IonObjectWriterTest {
         assertEquals(  0, 255 & dest[index++]);  //length of object - MSB
         assertEquals( 62, 255 & dest[index++]);  //length of object - LSB
 
-        assertEquals((IonFieldTypes.KEY_COMPACT << 4) | 6, 255 & dest[index++]);   //lead byte of key field
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);   //lead byte of key field
         assertEquals('f', 255 & dest[index++]);   //value of char 1 field
         assertEquals('i', 255 & dest[index++]);   //value of char 2 field
         assertEquals('e', 255 & dest[index++]);   //value of char 3 field
@@ -37,7 +38,7 @@ public class IonObjectWriterTest {
 
         assertEquals((IonFieldTypes.BOOLEAN << 4) | 1, 255 & dest[index++]);  //lead byte of boolean field
 
-        assertEquals((IonFieldTypes.KEY_COMPACT << 4) | 6, 255 & dest[index++]);   //lead byte of key field
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);   //lead byte of key field
         assertEquals('f', 255 & dest[index++]);   //value of char 1 field
         assertEquals('i', 255 & dest[index++]);   //value of char 2 field
         assertEquals('e', 255 & dest[index++]);   //value of char 3 field
@@ -49,7 +50,7 @@ public class IonObjectWriterTest {
         assertEquals( 1234 >> 8 , 255 & dest[index++]);  //value of char 1 field
         assertEquals( 1234 & 255, 255 & dest[index++]);  //value of char 1 field
 
-        assertEquals((IonFieldTypes.KEY_COMPACT << 4) | 6, 255 & dest[index++]);  //lead byte of compact key field
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);  //lead byte of compact key field
         assertEquals('f', 255 & dest[index++]);   //value of char 1 field
         assertEquals('i', 255 & dest[index++]);   //value of char 2 field
         assertEquals('e', 255 & dest[index++]);   //value of char 3 field
@@ -64,7 +65,7 @@ public class IonObjectWriterTest {
         assertEquals( 255 & (floatBits >>  8), 255 & dest[index++]);  //value of char 1 field
         assertEquals( 255 & (floatBits)      , 255 & dest[index++]);  //value of char 1 field
 
-        assertEquals((IonFieldTypes.KEY_COMPACT << 4) | 6, 255 & dest[index++]);  //value of char 2 field
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);  //value of char 2 field
         assertEquals('f', 255 & dest[index++]);   //value of char 1 field
         assertEquals('i', 255 & dest[index++]);   //value of char 2 field
         assertEquals('e', 255 & dest[index++]);   //value of char 3 field
@@ -83,7 +84,7 @@ public class IonObjectWriterTest {
         assertEquals( 255 & (longBits >>  8), 255 & dest[index++]);  //value of char 1 field
         assertEquals( 255 & (longBits)      , 255 & dest[index++]);  //value of char 1 field
 
-        assertEquals((IonFieldTypes.KEY_COMPACT << 4) | 6, 255 & dest[index++]);  //value of char 2 field
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);  //value of char 2 field
         assertEquals('f', 255 & dest[index++]);   //value of char 1 field
         assertEquals('i', 255 & dest[index++]);   //value of char 2 field
         assertEquals('e', 255 & dest[index++]);   //value of char 3 field
@@ -100,7 +101,19 @@ public class IonObjectWriterTest {
         assertEquals('e', 255 & dest[index++]);  //value of long field
         assertEquals('f', 255 & dest[index++]);  //value of long field
         assertEquals('g', 255 & dest[index++]);  //value of long field
+    }
 
+
+    @Test
+    public void testPojoArray10Float() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArray10Float.class);
+
+        byte[] dest   = new byte[100 * 1024];
+
+        PojoArray10Float pojoArray10 = new PojoArray10Float(10);
+
+        int length = writer.writeObject(pojoArray10, 2, dest, 0);
+        System.out.println("length = " + length);
 
     }
 
