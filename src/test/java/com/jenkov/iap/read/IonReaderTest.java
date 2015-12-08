@@ -188,6 +188,38 @@ public class IonReaderTest {
     }
 
     @Test
+    public void testReadComplexTypeIdShort() {
+        byte[] source = new byte[10 * 1024];
+        byte[] dest   = new byte[10 * 1024];
+
+        int index = 0;
+
+        byte[] bytes = new byte[]{1,2,4 };
+        index += IonWriter.writeComplexTypeIdShort(source, index, bytes);
+
+        reader.setSource(source, 0, 4);
+        reader.parse();
+
+        assertEquals(IonFieldTypes.COMPLEX_TYPE_ID_SHORT, reader.fieldType);
+        reader.readComplextTypeIdShort(dest);
+
+        assertEquals(1, dest[0]);
+        assertEquals(2, dest[1]);
+        assertEquals(4, dest[2]);
+
+        assertEquals(0, dest[3]);
+        assertEquals(0, dest[4]);
+        assertEquals(0, dest[5]);
+
+        reader.readComplextTypeIdShort(dest, 3, 3);
+
+        assertEquals(1, dest[3]);
+        assertEquals(2, dest[4]);
+        assertEquals(4, dest[5]);
+
+    }
+
+        @Test
     public void testReadKey() {
         byte[] source = new byte[10 * 1024];
         byte[] dest   = new byte[10 * 1024];
@@ -233,8 +265,8 @@ public class IonReaderTest {
         byte[] dest   = new byte[10 * 1024];
 
         int index = 0;
-        index += IonWriter.writeKeyCompact(source, index, "Hello");
-        index += IonWriter.writeKeyCompact(source, index, (String) null);
+        index += IonWriter.writeKeyShort(source, index, "Hello");
+        index += IonWriter.writeKeyShort(source, index, (String) null);
 
         reader.setSource(source, 0, source.length);
         reader.parse();

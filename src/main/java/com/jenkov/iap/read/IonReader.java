@@ -266,6 +266,23 @@ public class IonReader {
         return new String(this.source, this.index, this.fieldLength);
     }
 
+    public int readComplextTypeIdShort(byte[] dest){
+        if(this.fieldLengthLength == 0) return 0;
+
+        int length = Math.min(dest.length, this.fieldLength);
+        System.arraycopy(this.source, this.index, dest, 0, length);
+        return length;
+    }
+
+    public int readComplextTypeIdShort(byte[] dest, int offset, int length){
+        if(this.fieldLengthLength == 0) return 0;
+
+        length = Math.min(length, this.fieldLength);
+        System.arraycopy(this.source, this.index, dest, offset, length);
+        return length;
+    }
+
+
     public int readKey(byte[] dest){
         if(this.fieldLengthLength == 0) return 0;
 

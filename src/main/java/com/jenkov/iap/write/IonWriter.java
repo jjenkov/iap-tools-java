@@ -10,30 +10,6 @@ import java.io.UnsupportedEncodingException;
  */
 public class IonWriter {
 
-    /*
-    public static final int BOOLEAN       =  1;
-    public static final int INT_POS       =  2;
-    public static final int INT_NEG       =  3;
-    public static final int FLOAT         =  4;
-    public static final int UTF_8         =  5;
-
-    public static final int RESERVED_1    =  6;
-    public static final int RESERVED_2    =  7;
-
-    public static final int OBJECT        =  8;
-    public static final int TABLE         =  9;
-    public static final int ARRAY         = 10;
-
-    public static final int COMPLEX_TYPE_ID_SHORT = 11; //the type of an object - reserved for special IAP object types - none so far.
-
-    public static final int KEY           = 12;   //a sequence of bytes identifying a key or a property name - often UTF-8 encoded field names.
-    public static final int KEY_SHORT   = 13;   //a sequence of bytes identifying a key or a property name - often UTF-8 encoded field names - 15 bytes or less.
-
-    public static final int REFERENCE     = 14;   //a reference to a field stored in the IAP connection cache.
-
-    public static final int EXTENDED = 15;
-    */
-
 
     public static int writeBytes(byte[] dest, int destOffset, byte[] value){
 
@@ -248,6 +224,23 @@ public class IonWriter {
     }
 
 
+    public static int writeComplexTypeIdShort(byte[] dest, int destOffset, byte[] value){
+        if(value == null){
+            dest[destOffset++] = (byte) (255 & (IonFieldTypes.COMPLEX_TYPE_ID_SHORT << 4));
+            return 1;
+        }
+
+        int length         = value.length;
+        dest[destOffset++] = (byte) (255 & ((IonFieldTypes.COMPLEX_TYPE_ID_SHORT << 4) | length));
+
+        System.arraycopy(value, 0, dest, destOffset, length);
+
+        return 1 + length;
+    }
+
+
+
+
     public static int writeKey(byte[] dest, int destOffset, String value){
         if(value == null){
             dest[destOffset++] = (byte) (255 & (IonFieldTypes.KEY << 4));
@@ -298,7 +291,7 @@ public class IonWriter {
 
 
 
-    public static int writeKeyCompact(byte[] dest, int destOffset, String value){
+    public static int writeKeyShort(byte[] dest, int destOffset, String value){
         if(value == null){
             dest[destOffset++] = (byte) (255 & (IonFieldTypes.KEY_SHORT << 4));
             return 1;
@@ -323,7 +316,7 @@ public class IonWriter {
 
 
 
-    public static int writeKeyCompact(byte[] dest, int destOffset, byte[] value){
+    public static int writeKeyShort(byte[] dest, int destOffset, byte[] value){
         if(value == null){
             dest[destOffset++] = (byte) (255 & (IonFieldTypes.KEY_SHORT << 4));
             return 1;

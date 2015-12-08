@@ -354,6 +354,24 @@ public class IonWriterTest {
 
 
     @Test
+    public void testComplexTypeIdShort()  {
+        byte[] dest   = new byte[10 * 1024];
+
+        byte[] typeId = new byte[] {1,2,3};
+
+        int offset = 10;
+        int bytesWritten = IonWriter.writeComplexTypeIdShort(dest, offset, typeId);
+
+        assertEquals(4, bytesWritten);
+        assertEquals((IonFieldTypes.COMPLEX_TYPE_ID_SHORT << 4) | 3, 255 & dest[offset++]);
+        assertEquals( 1, 255 & dest[offset++]);
+        assertEquals( 2, 255 & dest[offset++]);
+        assertEquals( 3, 255 & dest[offset++]);
+
+    }
+
+
+        @Test
     public void testKey() throws UnsupportedEncodingException {
         byte[] dest = new byte[10 * 1024];
 
@@ -407,7 +425,7 @@ public class IonWriterTest {
         String value  = "Hello";
 
         int offset = 10;
-        int bytesWritten = IonWriter.writeKeyCompact(dest, offset, value);
+        int bytesWritten = IonWriter.writeKeyShort(dest, offset, value);
 
         assertEquals(6, bytesWritten);
         assertEquals((IonFieldTypes.KEY_SHORT <<4) | 5, 255 & dest[offset++]);
@@ -418,7 +436,7 @@ public class IonWriterTest {
         assertEquals('o', 255 & dest[offset++]);
 
         offset = 20;
-        bytesWritten = IonWriter.writeKeyCompact(dest, offset, (String) null);
+        bytesWritten = IonWriter.writeKeyShort(dest, offset, (String) null);
 
         assertEquals(1, bytesWritten);
         assertEquals(IonFieldTypes.KEY_SHORT << 4, 255 & dest[offset++]);
@@ -426,7 +444,7 @@ public class IonWriterTest {
         byte[] valueBytes = "Hello".getBytes("UTF-8");
 
         offset = 30;
-        bytesWritten = IonWriter.writeKeyCompact(dest, offset, valueBytes);
+        bytesWritten = IonWriter.writeKeyShort(dest, offset, valueBytes);
 
         assertEquals(6, bytesWritten);
         assertEquals((IonFieldTypes.KEY_SHORT <<4) | 5, 255 & dest[offset++]);
@@ -437,7 +455,7 @@ public class IonWriterTest {
         assertEquals('o', 255 & dest[offset++]);
 
         offset = 40;
-        bytesWritten = IonWriter.writeKeyCompact(dest, offset, (byte[]) null);
+        bytesWritten = IonWriter.writeKeyShort(dest, offset, (byte[]) null);
 
         assertEquals(1, bytesWritten);
         assertEquals(IonFieldTypes.KEY_SHORT << 4, 255 & dest[offset++]);

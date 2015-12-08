@@ -65,6 +65,7 @@ public class IonObjectReaderTest {
         int length = writer.writeObject(sourcePojoArray, 2, source, 0);
 
         destPojo = (TestPojoArray) reader.read(source, 0);
+
     }
 
 
