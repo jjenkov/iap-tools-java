@@ -161,7 +161,7 @@ public class IonReaderTest {
         reader.setSource(source, 0, source.length);
         reader.parse();
 
-        assertEquals(IonFieldTypes.UTF_8, reader.fieldType);
+        assertEquals(IonFieldTypes.UTF_8_SHORT, reader.fieldType);
         assertEquals(5, reader.fieldLength);
 
         int length = reader.readUtf8(dest);
@@ -320,7 +320,7 @@ public class IonReaderTest {
 
         reader.next();
         reader.parse();
-        assertEquals(IonFieldTypes.UTF_8, reader.fieldType);
+        assertEquals(IonFieldTypes.UTF_8_SHORT, reader.fieldType);
         assertTrue(reader.hasNext());
 
         reader.next();
@@ -352,7 +352,7 @@ public class IonReaderTest {
 
         reader.next();
         reader.parse();
-        assertEquals(IonFieldTypes.UTF_8, reader.fieldType);
+        assertEquals(IonFieldTypes.UTF_8_SHORT, reader.fieldType);
         assertTrue(reader.hasNext());
 
         reader.next();

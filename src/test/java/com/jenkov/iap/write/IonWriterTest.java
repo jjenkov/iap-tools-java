@@ -228,14 +228,83 @@ public class IonWriterTest {
     public void testUtf8() throws UnsupportedEncodingException {
         byte[] dest = new byte[10 * 1024];
 
+        String value  = "Hello World Long";
+
+        int offset = 10;
+        int bytesWritten = IonWriter.writeUtf8(dest, offset, value);
+
+        assertEquals(18, bytesWritten);
+        assertEquals((IonFieldTypes.UTF_8<<4) | 1, 255 & dest[offset++]);
+        assertEquals(16, 255 & dest[offset++]);
+        assertEquals('H', 255 & dest[offset++]);
+        assertEquals('e', 255 & dest[offset++]);
+        assertEquals('l', 255 & dest[offset++]);
+        assertEquals('l', 255 & dest[offset++]);
+        assertEquals('o', 255 & dest[offset++]);
+        assertEquals(' ', 255 & dest[offset++]);
+        assertEquals('W', 255 & dest[offset++]);
+        assertEquals('o', 255 & dest[offset++]);
+        assertEquals('r', 255 & dest[offset++]);
+        assertEquals('l', 255 & dest[offset++]);
+        assertEquals('d', 255 & dest[offset++]);
+        assertEquals(' ', 255 & dest[offset++]);
+        assertEquals('L', 255 & dest[offset++]);
+        assertEquals('o', 255 & dest[offset++]);
+        assertEquals('n', 255 & dest[offset++]);
+        assertEquals('g', 255 & dest[offset++]);
+
+
+        offset = 20;
+        bytesWritten = IonWriter.writeUtf8(dest, offset, (String) null);
+
+        assertEquals(1, bytesWritten);
+        assertEquals(IonFieldTypes.UTF_8 << 4, 255 & dest[offset++]);
+
+
+        offset = 30;
+        bytesWritten = IonWriter.writeUtf8(dest, offset, (byte[]) null);
+
+        assertEquals(1, bytesWritten);
+        assertEquals(IonFieldTypes.UTF_8 << 4, 255 & dest[offset++]);
+
+        byte[] value2 = "Hello World Long".getBytes("UTF-8");
+
+        offset = 40;
+        bytesWritten = IonWriter.writeUtf8(dest, offset, value2);
+
+        assertEquals(18, bytesWritten);
+        assertEquals((IonFieldTypes.UTF_8<<4) | 1, 255 & dest[offset++]);
+        assertEquals(16, 255 & dest[offset++]);
+        assertEquals('H', 255 & dest[offset++]);
+        assertEquals('e', 255 & dest[offset++]);
+        assertEquals('l', 255 & dest[offset++]);
+        assertEquals('l', 255 & dest[offset++]);
+        assertEquals('o', 255 & dest[offset++]);
+        assertEquals(' ', 255 & dest[offset++]);
+        assertEquals('W', 255 & dest[offset++]);
+        assertEquals('o', 255 & dest[offset++]);
+        assertEquals('r', 255 & dest[offset++]);
+        assertEquals('l', 255 & dest[offset++]);
+        assertEquals('d', 255 & dest[offset++]);
+        assertEquals(' ', 255 & dest[offset++]);
+        assertEquals('L', 255 & dest[offset++]);
+        assertEquals('o', 255 & dest[offset++]);
+        assertEquals('n', 255 & dest[offset++]);
+        assertEquals('g', 255 & dest[offset++]);
+
+    }
+
+
+    public void testUtf8Short() throws UnsupportedEncodingException {
+        byte[] dest = new byte[10 * 1024];
+
         String value  = "Hello World";
 
         int offset = 10;
         int bytesWritten = IonWriter.writeUtf8(dest, offset, value);
 
-        assertEquals(13, bytesWritten);
-        assertEquals((IonFieldTypes.UTF_8<<4) | 1, 255 & dest[offset++]);
-        assertEquals(11, 255 & dest[offset++]);
+        assertEquals(12, bytesWritten);
+        assertEquals((IonFieldTypes.UTF_8_SHORT<<4) | 1, 255 & dest[offset++]);
         assertEquals('H', 255 & dest[offset++]);
         assertEquals('e', 255 & dest[offset++]);
         assertEquals('l', 255 & dest[offset++]);
@@ -267,9 +336,8 @@ public class IonWriterTest {
         offset = 40;
         bytesWritten = IonWriter.writeUtf8(dest, offset, value2);
 
-        assertEquals(13, bytesWritten);
-        assertEquals((IonFieldTypes.UTF_8<<4) | 1, 255 & dest[offset++]);
-        assertEquals(11, 255 & dest[offset++]);
+        assertEquals(12, bytesWritten);
+        assertEquals((IonFieldTypes.UTF_8_SHORT<<4) | 1, 255 & dest[offset++]);
         assertEquals('H', 255 & dest[offset++]);
         assertEquals('e', 255 & dest[offset++]);
         assertEquals('l', 255 & dest[offset++]);

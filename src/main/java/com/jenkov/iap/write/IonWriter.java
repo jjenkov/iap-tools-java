@@ -199,17 +199,27 @@ public class IonWriter {
         }
 
         int length         = utf8Bytes.length;
-        int lengthLength   = IonUtil.lengthOfInt64Value(length);
-        dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8 << 4) | lengthLength));
 
-        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
-            dest[destOffset++] = (byte) (255 & (length >> i));
+        if(length <=15){
+            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8_SHORT << 4) | length));
+            System.arraycopy(utf8Bytes, 0, dest, destOffset, length);
+
+            return 1 + length;
+
+        } else {
+            int lengthLength   = IonUtil.lengthOfInt64Value(length);
+            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8 << 4) | lengthLength));
+
+            for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+                dest[destOffset++] = (byte) (255 & (length >> i));
+            }
+
+            System.arraycopy(utf8Bytes, 0, dest, destOffset, length);
+
+            return 1 + lengthLength + length;
         }
-
-        System.arraycopy(utf8Bytes, 0, dest, destOffset, length);
-
-        return 1 + lengthLength + length;
     }
+
 
     public static int writeUtf8(byte[] dest, int destOffset, byte[] value){
         if(value == null){
@@ -218,16 +228,23 @@ public class IonWriter {
         }
 
         int length         = value.length;
-        int lengthLength   = IonUtil.lengthOfInt64Value(length);
-        dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8 << 4) | lengthLength));
 
-        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
-            dest[destOffset++] = (byte) (255 & (length >> i));
+        if(length <= 15 ){
+            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8_SHORT << 4) | length));
+            System.arraycopy(value, 0, dest, destOffset, length);
+            return 1 + length;
+        } else {
+            int lengthLength   = IonUtil.lengthOfInt64Value(length);
+            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8 << 4) | lengthLength));
+
+            for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+                dest[destOffset++] = (byte) (255 & (length >> i));
+            }
+
+            System.arraycopy(value, 0, dest, destOffset, length);
+
+            return 1 + lengthLength + length;
         }
-
-        System.arraycopy(value, 0, dest, destOffset, length);
-
-        return 1 + lengthLength + length;
     }
 
 
