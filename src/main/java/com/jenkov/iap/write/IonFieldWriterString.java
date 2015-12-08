@@ -38,17 +38,24 @@ public class IonFieldWriterString implements IIonFieldWriter {
             byte[] valueBytes = value.getBytes("UTF-8");
 
             int length = valueBytes.length;
-            int lengthLength = IonUtil.lengthOfInt64Value(length);
-            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8 << 4) | lengthLength) );
 
-            for(int i=(lengthLength-1)*8; i >= 0; i-=8){
-                dest[destOffset++] = (byte) (255 & (length >> i));
+            if(length <= 15){
+                dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8_SHORT << 4) | length) );
+                System.arraycopy(valueBytes, 0, dest, destOffset, valueBytes.length);
+
+                return 1 + length;
+            } else {
+                int lengthLength = IonUtil.lengthOfInt64Value(length);
+                dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8 << 4) | lengthLength) );
+
+                for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+                    dest[destOffset++] = (byte) (255 & (length >> i));
+                }
+
+                System.arraycopy(valueBytes, 0, dest, destOffset, valueBytes.length);
+
+                return 1 + lengthLength + length; //total length of a UTF-8 field
             }
-
-            System.arraycopy(valueBytes, 0, dest, destOffset, valueBytes.length);
-
-            return 1 + lengthLength + length; //total length of a UTF-8 field
-
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {

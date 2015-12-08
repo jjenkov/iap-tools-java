@@ -10,5 +10,8 @@ public class TestPojo {
     public float   field2 = 123.12F;
     public double  field3 = 123456.1234D;
     public String  field4 = "abcdefg";
+    public String  field5 = "0123456789012345";
+
+
 
 }

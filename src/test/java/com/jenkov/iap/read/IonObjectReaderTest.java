@@ -21,7 +21,12 @@ public class IonObjectReaderTest {
         byte[] source = new byte[10 * 1024];
 
         TestPojo sourcePojo = new TestPojo();
+        sourcePojo.field0 = false;
         sourcePojo.field1 = 123;
+        sourcePojo.field2 = 456.456F;
+        sourcePojo.field3 = 456789.456789D;
+        sourcePojo.field4 = "abc";
+        sourcePojo.field5 = "987654321098765";
 
         TestPojo destPojo = null;
 
@@ -32,8 +37,11 @@ public class IonObjectReaderTest {
 
         destPojo = (TestPojo) reader.read(source, 0);
 
+        assertEquals(false, destPojo.field0);
         assertEquals(123, destPojo.field1);
-
+        assertEquals(456.456F, destPojo.field2, 0);
+        assertEquals("abc", destPojo.field4);
+        assertEquals("987654321098765", destPojo.field5);
 
     }
 
@@ -57,8 +65,7 @@ public class IonObjectReaderTest {
         int length = writer.writeObject(sourcePojoArray, 2, source, 0);
 
         destPojo = (TestPojoArray) reader.read(source, 0);
-
-
     }
+
 
 }
