@@ -4,6 +4,7 @@ import com.jenkov.iap.IonFieldTypes;
 import com.jenkov.iap.IonUtil;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
 
 /**
  * Created by jjenkov on 08-11-2015.
@@ -221,6 +222,47 @@ public class IonWriter {
 
             return 1 + lengthLength + length;
         }
+    }
+
+
+    public static int writeUtc(byte[] dest, int destOffset, Calendar dateTime, int length) {
+        if(dateTime == null){
+            dest[destOffset++] = (byte) (255 & (IonFieldTypes.UTC_DATE_TIME << 4));
+            return 1;
+        }
+        dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTC_DATE_TIME << 4) | length));
+
+        int year = dateTime.get(Calendar.YEAR);
+        dest[destOffset++] = (byte) (255 & (year >>   8));
+        dest[destOffset++] = (byte) (255 & (year &  255));
+
+        if(length == 2) { return 3;}  // 1 + length (2)
+
+        dest[destOffset++] = (byte) (255 & (dateTime.get(Calendar.MONTH) + 1));
+
+        if(length == 3) { return 4;}  // 1 + length (3)
+
+        dest[destOffset++] = (byte) (255 & (dateTime.get(Calendar.DAY_OF_MONTH)));
+
+        if(length == 4) { return 5;}  // 1 + length (4)
+
+        dest[destOffset++] = (byte) (255 & (dateTime.get(Calendar.HOUR_OF_DAY)));
+
+        if(length == 5) { return 6;}  // 1 + length (5)
+
+        dest[destOffset++] = (byte) (255 & (dateTime.get(Calendar.MINUTE)));
+
+        if(length == 6) { return 7;}  // 1 + length (6)
+
+        dest[destOffset++] = (byte) (255 & (dateTime.get(Calendar.SECOND)));
+
+        if(length == 7) { return 8;}  // 1 + length (7)
+
+        int millis =  dateTime.get(Calendar.MILLISECOND);
+        dest[destOffset++] = (byte) (255 & (millis >>  8));
+        dest[destOffset++] = (byte) (255 & (millis));
+
+        return 10;  // 1 + length (9)
     }
 
 

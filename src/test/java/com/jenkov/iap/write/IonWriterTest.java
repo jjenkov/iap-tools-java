@@ -4,6 +4,9 @@ import com.jenkov.iap.IonFieldTypes;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 
@@ -349,6 +352,90 @@ public class IonWriterTest {
         assertEquals('r', 255 & dest[offset++]);
         assertEquals('l', 255 & dest[offset++]);
         assertEquals('d', 255 & dest[offset++]);
+
+    }
+
+
+    @Test
+    public void testUtcTime() {
+        byte[] dest   = new byte[10 * 1024];
+
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        calendar.set(Calendar.YEAR , 2015);
+        calendar.set(Calendar.MONTH, 11);
+        calendar.set(Calendar.DAY_OF_MONTH, 31);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+
+        int index = 0;
+        int bytesWritten = IonWriter.writeUtc(dest, index, calendar, 2);
+        assertEquals(3, bytesWritten);
+        assertEquals((IonFieldTypes.UTC_DATE_TIME << 4) | 2, 255 & dest[index++]);
+        assertEquals(2015 >> 8, 255 & dest[index++]);
+        assertEquals(2015  & 255, 255 & dest[index++]);
+
+        bytesWritten = IonWriter.writeUtc(dest, index, calendar, 3);
+        assertEquals(4, bytesWritten);
+        assertEquals((IonFieldTypes.UTC_DATE_TIME << 4) | 3, 255 & dest[index++]);
+        assertEquals(2015 >> 8, 255 & dest[index++]);
+        assertEquals(2015 & 255, 255 & dest[index++]);
+        assertEquals( 12, 255 & dest[index++]);
+
+        bytesWritten = IonWriter.writeUtc(dest, index, calendar, 4);
+        assertEquals(5, bytesWritten);
+        assertEquals((IonFieldTypes.UTC_DATE_TIME << 4) | 4, 255 & dest[index++]);
+        assertEquals(2015 >> 8, 255 & dest[index++]);
+        assertEquals(2015 & 255, 255 & dest[index++]);
+        assertEquals( 12, 255 & dest[index++]);
+        assertEquals( 31, 255 & dest[index++]);
+
+
+        bytesWritten = IonWriter.writeUtc(dest, index, calendar, 5);
+        assertEquals(6, bytesWritten);
+        assertEquals((IonFieldTypes.UTC_DATE_TIME << 4) | 5, 255 & dest[index++]);
+        assertEquals(2015 >> 8, 255 & dest[index++]);
+        assertEquals(2015 & 255, 255 & dest[index++]);
+        assertEquals( 12, 255 & dest[index++]);
+        assertEquals( 31, 255 & dest[index++]);
+        assertEquals( 23, 255 & dest[index++]);
+
+
+        bytesWritten = IonWriter.writeUtc(dest, index, calendar, 6);
+        assertEquals(7, bytesWritten);
+        assertEquals((IonFieldTypes.UTC_DATE_TIME << 4) | 6, 255 & dest[index++]);
+        assertEquals(2015 >> 8, 255 & dest[index++]);
+        assertEquals(2015 & 255, 255 & dest[index++]);
+        assertEquals( 12, 255 & dest[index++]);
+        assertEquals( 31, 255 & dest[index++]);
+        assertEquals( 23, 255 & dest[index++]);
+        assertEquals( 59, 255 & dest[index++]);
+
+        bytesWritten = IonWriter.writeUtc(dest, index, calendar, 7);
+        assertEquals(8, bytesWritten);
+        assertEquals((IonFieldTypes.UTC_DATE_TIME << 4) | 7, 255 & dest[index++]);
+        assertEquals(2015 >> 8, 255 & dest[index++]);
+        assertEquals(2015 & 255, 255 & dest[index++]);
+        assertEquals( 12, 255 & dest[index++]);
+        assertEquals( 31, 255 & dest[index++]);
+        assertEquals( 23, 255 & dest[index++]);
+        assertEquals( 59, 255 & dest[index++]);
+        assertEquals( 59, 255 & dest[index++]);
+
+        bytesWritten = IonWriter.writeUtc(dest, index, calendar, 9);
+        assertEquals(10, bytesWritten);
+        assertEquals((IonFieldTypes.UTC_DATE_TIME << 4) | 9, 255 & dest[index++]);
+        assertEquals(2015 >> 8, 255 & dest[index++]);
+        assertEquals(2015 & 255, 255 & dest[index++]);
+        assertEquals( 12, 255 & dest[index++]);
+        assertEquals( 31, 255 & dest[index++]);
+        assertEquals( 23, 255 & dest[index++]);
+        assertEquals( 59, 255 & dest[index++]);
+        assertEquals( 59, 255 & dest[index++]);
+        assertEquals( 999 >> 8  , 255 & dest[index++]);
+        assertEquals( 999 & 255 , 255 & dest[index++]);
 
     }
 
