@@ -4,6 +4,10 @@ import com.jenkov.iap.IonFieldTypes;
 import com.jenkov.iap.write.IonWriter;
 import org.junit.Test;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -187,6 +191,44 @@ public class IonReaderTest {
         assertNull  (reader.readUtf8String());
     }
 
+
+    @Test
+    public void testReadUtcCalendar() {
+        byte[] source = new byte[10 * 1024];
+
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        calendar.set(Calendar.YEAR , 2014);
+        calendar.set(Calendar.MONTH, 11);
+        calendar.set(Calendar.DAY_OF_MONTH, 31);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+
+        int index = 0;
+        int bytesWritten = IonWriter.writeUtc(source, index, calendar, 9);
+
+        reader.setSource(source, 0, bytesWritten);
+
+        reader.parse();
+        Calendar calendar2 = reader.readUtcCalendar();
+
+        assertEquals(2014, calendar2.get(Calendar.YEAR)) ;
+        assertEquals(11  , calendar2.get(Calendar.MONTH)) ;
+        assertEquals(31  , calendar2.get(Calendar.DAY_OF_MONTH)) ;
+        assertEquals(23  , calendar2.get(Calendar.HOUR_OF_DAY)) ;
+        assertEquals(59  , calendar2.get(Calendar.MINUTE)) ;
+        assertEquals(59  , calendar2.get(Calendar.SECOND)) ;
+        assertEquals(999  , calendar2.get(Calendar.MILLISECOND)) ;
+
+        assertEquals(TimeZone.getTimeZone("UTC")  , calendar2.getTimeZone()) ;
+
+
+    }
+
+
+
     @Test
     public void testReadComplexTypeIdShort() {
         byte[] source = new byte[10 * 1024];
@@ -201,7 +243,7 @@ public class IonReaderTest {
         reader.parse();
 
         assertEquals(IonFieldTypes.COMPLEX_TYPE_ID_SHORT, reader.fieldType);
-        reader.readComplextTypeIdShort(dest);
+        reader.readComplexTypeIdShort(dest);
 
         assertEquals(1, dest[0]);
         assertEquals(2, dest[1]);
@@ -211,7 +253,7 @@ public class IonReaderTest {
         assertEquals(0, dest[4]);
         assertEquals(0, dest[5]);
 
-        reader.readComplextTypeIdShort(dest, 3, 3);
+        reader.readComplexTypeIdShort(dest, 3, 3);
 
         assertEquals(1, dest[3]);
         assertEquals(2, dest[4]);

@@ -2,10 +2,16 @@ package com.jenkov.iap.read;
 
 import com.jenkov.iap.IonFieldTypes;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
 /**
  * Created by jjenkov on 08-11-2015.
  */
 public class IonReader {
+
+    private static TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone("UTC");
 
     public byte[] source = null;
     public int sourceLength = 0;
@@ -266,7 +272,49 @@ public class IonReader {
         return new String(this.source, this.index, this.fieldLength);
     }
 
-    public int readComplextTypeIdShort(byte[] dest){
+    public Calendar readUtcCalendar() {
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTimeZone(UTC_TIME_ZONE);
+        calendar.set(Calendar.MONTH, 0);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        int localIndex = this.index;
+        int year = (255) & this.source[localIndex++];
+        year <<=8;
+        year |= (255) & this.source[localIndex++];
+        calendar.set(Calendar.YEAR, year);
+        if(this.fieldLength == 2){ return calendar; }
+
+        calendar.set(Calendar.MONTH, (255 & this.source[localIndex++]) -1);
+        if(this.fieldLength == 3){ return calendar; }
+
+        calendar.set(Calendar.DAY_OF_MONTH, (255 & this.source[localIndex++]));
+        if(this.fieldLength == 4){ return calendar; }
+
+        calendar.set(Calendar.HOUR_OF_DAY, (255 & this.source[localIndex++]));
+        if(this.fieldLength == 5){ return calendar; }
+
+        calendar.set(Calendar.MINUTE, (255 & this.source[localIndex++]));
+        if(this.fieldLength == 6){ return calendar; }
+
+        calendar.set(Calendar.SECOND, (255 & this.source[localIndex++]));
+        if(this.fieldLength == 7){ return calendar; }
+
+        int millis = 255 & this.source[localIndex++];
+        millis <<= 8;
+        millis |= 255 & this.source[localIndex++];
+        calendar.set(Calendar.MILLISECOND, millis);
+
+        if(this.fieldLength == 9){ return calendar; }
+
+        return calendar;
+    }
+
+    public int readComplexTypeIdShort(byte[] dest){
         if(this.fieldLengthLength == 0) return 0;
 
         int length = Math.min(dest.length, this.fieldLength);
@@ -274,7 +322,7 @@ public class IonReader {
         return length;
     }
 
-    public int readComplextTypeIdShort(byte[] dest, int offset, int length){
+    public int readComplexTypeIdShort(byte[] dest, int offset, int length){
         if(this.fieldLengthLength == 0) return 0;
 
         length = Math.min(length, this.fieldLength);
