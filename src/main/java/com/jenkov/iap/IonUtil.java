@@ -5,6 +5,8 @@ import com.jenkov.iap.write.*;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Created by jjenkov on 19-11-2015.
@@ -50,6 +52,10 @@ public class IonUtil {
             return new IonFieldWriterDouble(field);
         } else if(String.class.equals(fieldType)){
             return new IonFieldWriterString(field);
+        } else if(Calendar.class.equals(fieldType)){
+            return new IonFieldWriterCalendar(field);
+        } else if(GregorianCalendar.class.equals(fieldType)){
+            return new IonFieldWriterCalendar(field);
         } else if(fieldType.isArray()){
             return new IonFieldWriterTable(field);
         }

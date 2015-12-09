@@ -1,5 +1,8 @@
 package com.jenkov.iap;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 /**
  * Created by jjenkov on 03-11-2015.
  */
@@ -11,6 +14,8 @@ public class TestPojo {
     public double  field3 = 123456.1234D;
     public String  field4 = "abcdefg";
     public String  field5 = "0123456789012345";
+
+    public Calendar field6 = new GregorianCalendar();
 
 
 
