@@ -5,6 +5,9 @@ import com.jenkov.iap.TestPojoArray;
 import com.jenkov.iap.write.IonObjectWriter;
 import org.junit.Test;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -28,6 +31,17 @@ public class IonObjectReaderTest {
         sourcePojo.field4 = "abc";
         sourcePojo.field5 = "987654321098765";
 
+        Calendar calendar = sourcePojo.field6;
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        calendar.set(Calendar.YEAR , 2014);
+        calendar.set(Calendar.MONTH, 11);
+        calendar.set(Calendar.DAY_OF_MONTH, 31);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+
         TestPojo destPojo = null;
 
 
@@ -42,6 +56,7 @@ public class IonObjectReaderTest {
         assertEquals(456.456F, destPojo.field2, 0);
         assertEquals("abc", destPojo.field4);
         assertEquals("987654321098765", destPojo.field5);
+        assertEquals(calendar, destPojo.field6);
 
     }
 

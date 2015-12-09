@@ -83,6 +83,10 @@ public class IonUtil {
             return new IonFieldReaderDouble(field);
         } else if(String.class.equals(fieldType)){
             return new IonFieldReaderString(field);
+        } else if(Calendar.class.equals(fieldType)){
+            return new IonFieldReaderCalendar(field);
+        } else if(GregorianCalendar.class.equals(fieldType)){
+            return new IonFieldReaderCalendar(field);
         } else if(fieldType.isArray()){
             return new IonFieldReaderTable(field);
         }

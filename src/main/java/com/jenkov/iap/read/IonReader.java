@@ -273,6 +273,8 @@ public class IonReader {
     }
 
     public Calendar readUtcCalendar() {
+        //todo can be optimized ?
+
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTimeZone(UTC_TIME_ZONE);
         calendar.set(Calendar.MONTH, 0);
