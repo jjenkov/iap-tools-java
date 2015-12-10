@@ -87,11 +87,12 @@ public class IonUtil {
             return new IonFieldReaderCalendar(field);
         } else if(fieldType.isArray()){
             return new IonFieldReaderTable(field);
+        } else {
+            return new IonFieldReaderObject(field);
         }
 
         //todo support object field writer
 
-        return null;
     }
 
     public static void writeLength(long length, int lengthLength, byte[] destination, int destinationOffset){

@@ -110,16 +110,16 @@ public class IonObjectReaderTest {
 
         PojoWithPojo pojo2 = (PojoWithPojo) reader.read(source, 0);
 
-        assertEquals(10, pojo.field0.field0);
-        assertEquals(11, pojo.field0.field1);
-        assertEquals(12, pojo.field0.field2);
-        assertEquals(13, pojo.field0.field3);
-        assertEquals(14, pojo.field0.field4);
-        assertEquals(15, pojo.field0.field5);
-        assertEquals(16, pojo.field0.field6);
-        assertEquals(17, pojo.field0.field7);
-        assertEquals(18, pojo.field0.field8);
-        assertEquals(19, pojo.field0.field9);
+        assertEquals(10, pojo2.field0.field0);
+        assertEquals(11, pojo2.field0.field1);
+        assertEquals(12, pojo2.field0.field2);
+        assertEquals(13, pojo2.field0.field3);
+        assertEquals(14, pojo2.field0.field4);
+        assertEquals(15, pojo2.field0.field5);
+        assertEquals(16, pojo2.field0.field6);
+        assertEquals(17, pojo2.field0.field7);
+        assertEquals(18, pojo2.field0.field8);
+        assertEquals(19, pojo2.field0.field9);
 
     }
 
