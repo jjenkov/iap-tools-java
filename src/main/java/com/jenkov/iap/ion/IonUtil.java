@@ -59,12 +59,8 @@ public class IonUtil {
         } else if(fieldType.isArray()){
             return new IonFieldWriterTable(field);
         } else {
-            //return
+            return new IonFieldWriterObject(field);
         }
-
-        //todo support object field writer
-
-        return null;
     }
 
     public static IIonFieldReader createFieldReader(Field field){

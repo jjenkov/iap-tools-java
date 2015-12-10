@@ -3,6 +3,7 @@ package com.jenkov.iap.ion.write;
 import com.jenkov.iap.ion.IonFieldTypes;
 import com.jenkov.iap.TestPojo;
 import com.jenkov.iap.ion.pojos.PojoArray10Float;
+import com.jenkov.iap.ion.pojos.PojoWithPojo;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -171,6 +172,148 @@ public class IonObjectWriterTest {
 
         int length = writer.writeObject(pojoArray10, 2, dest, 0);
         System.out.println("length = " + length);
+
+    }
+
+
+    @Test
+    public void testPojoWithPojo() {
+        IonObjectWriter writer = new IonObjectWriter(PojoWithPojo.class);
+
+        byte[] dest   = new byte[100 * 1024];
+
+        PojoWithPojo pojo = new PojoWithPojo();
+
+        int bytesWritten = writer.writeObject(pojo, 2, dest, 0);
+
+        System.out.println("bytesWritten = " + bytesWritten);
+
+        int index = 0;
+        assertEquals((IonFieldTypes.OBJECT << 4) | 2, 255 & dest[index++]);
+        assertEquals(   0, 255 & dest[index++]);
+        assertEquals( 100, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('0', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.OBJECT    << 4) | 2, 255 & dest[index++]);
+        assertEquals(   0, 255 & dest[index++]);
+        assertEquals(  90, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('0', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS    << 4) | 1, 255 & dest[index++]);
+        assertEquals(   0, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('1', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS    << 4) | 1, 255 & dest[index++]);
+        assertEquals(   1, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('2', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS    << 4) | 1, 255 & dest[index++]);
+        assertEquals(   2, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('3', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS    << 4) | 1, 255 & dest[index++]);
+        assertEquals(   3, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('4', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS    << 4) | 1, 255 & dest[index++]);
+        assertEquals(   4, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('5', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS    << 4) | 1, 255 & dest[index++]);
+        assertEquals(   5, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('6', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS    << 4) | 1, 255 & dest[index++]);
+        assertEquals(   6, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('7', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS    << 4) | 1, 255 & dest[index++]);
+        assertEquals(   7, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('8', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS    << 4) | 1, 255 & dest[index++]);
+        assertEquals(   8, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('9', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS    << 4) | 1, 255 & dest[index++]);
+        assertEquals(   9, 255 & dest[index++]);
 
     }
 

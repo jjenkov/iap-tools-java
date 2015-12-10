@@ -11,27 +11,24 @@ import java.lang.reflect.Field;
 public class IonObjectWriter {
 
     public Class   typeClass = null;
-    public Field[] fields    = null;
     public IIonFieldWriter[] fieldWriters = null;
 
     public IonObjectWriter(Class typeClass) {
         this.typeClass = typeClass;
 
-        this.fields = this.typeClass.getDeclaredFields();
-        this.fieldWriters = new IIonFieldWriter[this.fields.length];
+        Field[] fields = this.typeClass.getDeclaredFields();
+        this.fieldWriters = new IIonFieldWriter[fields.length];
 
-        for(int i=0; i < this.fields.length; i++){
-            fieldWriters[i] = IonUtil.createFieldWriter(this.fields[i]);
+        for(int i=0; i < fields.length; i++){
+            fieldWriters[i] = IonUtil.createFieldWriter(fields[i]);
         }
     }
 
     public int writeObject(Object src, int maxLengthLength, byte[] destination, int destinationOffset){
-
         destination[destinationOffset++] = (byte) (255 & ((IonFieldTypes.OBJECT << 4) | maxLengthLength));
 
         int lengthOffset   = destinationOffset; //store length start offset for later use
         destinationOffset += maxLengthLength;
-
 
 
         for(int i=0; i<fieldWriters.length; i++){
