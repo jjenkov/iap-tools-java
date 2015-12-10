@@ -11,7 +11,9 @@ import java.util.Map;
 /**
  * Created by jjenkov on 05-11-2015.
  */
-public class IonObjectReader {
+public class IonFieldReaderObject implements IIonFieldReader {
+
+    private Field field = null;
 
     private Class typeClass = null;
 
@@ -20,14 +22,17 @@ public class IonObjectReader {
 
     private IonKeyFieldKey currentKeyFieldKey = new IonKeyFieldKey();
 
-    public IonObjectReader(Class typeClass) {
-        this.typeClass = typeClass;
+    public IonFieldReaderObject(Field field) {
+        this.field = field;
+
+        this.typeClass = field.getType();
 
         Field[] fields = this.typeClass.getDeclaredFields();
 
         for(int i=0; i < fields.length; i++){
             putFieldReader(fields[i], IonUtil.createFieldReader(fields[i]));
         }
+
     }
 
     private void putFieldReader(Field field, IIonFieldReader fieldReader) {
@@ -39,7 +44,8 @@ public class IonObjectReader {
     }
 
 
-    public Object read(byte[] source, int sourceOffset){
+    @Override
+    public int read(byte[] source, int sourceOffset, Object finalDestination) {
         this.currentKeyFieldKey.setSource(source);
 
         Object destination =  instantiateType();
@@ -52,7 +58,7 @@ public class IonObjectReader {
         int lengthLength = leadByte & 15;  // 15 = binary 00001111 - filters out 4 top bits
 
         if(lengthLength == 0){
-            return null; //object field with value null is always 1 byte long.
+            return 1; //object field with value null is always 1 byte long.
         }
 
         int length = 255 & source[sourceOffset++];
@@ -61,8 +67,6 @@ public class IonObjectReader {
             length |= 255 & source[sourceOffset++];
         }
         int endIndex = sourceOffset + length;
-
-
 
         while(sourceOffset < endIndex){
             leadByte     = 255 & source[sourceOffset++];
@@ -97,7 +101,6 @@ public class IonObjectReader {
 
                 //todo check for end of object - if found, call reader.setNull() - no value field following the key field.
 
-
                 int nextLeadByte  = 255 & source[sourceOffset];
                 int nextFieldType = nextLeadByte >> 4;
 
@@ -106,17 +109,35 @@ public class IonObjectReader {
                 } else {
                     //next field is also a key - meaning the previous key has a value of null (no value field following it).
                     reader.setNull(destination);
-               }
+                }
             }
 
         }
 
-        return destination;
+        try {
+            this.field.set(finalDestination, destination);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return 1 + lengthLength + length;
+
+    }
+
+
+
+    @Override
+    public void setNull(Object destination) {
+        try {
+            field.set(destination, null);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private Object instantiateType() {
         try {
-             return this.typeClass.newInstance();
+            return this.typeClass.newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -125,6 +146,5 @@ public class IonObjectReader {
 
         return null; //todo remove later when rethrowing exceptions.
     }
-
 
 }

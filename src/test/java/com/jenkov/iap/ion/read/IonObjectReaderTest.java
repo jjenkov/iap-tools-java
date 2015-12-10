@@ -2,6 +2,7 @@ package com.jenkov.iap.ion.read;
 
 import com.jenkov.iap.TestPojo;
 import com.jenkov.iap.TestPojoArray;
+import com.jenkov.iap.ion.pojos.PojoWithPojo;
 import com.jenkov.iap.ion.write.IonObjectWriter;
 import org.junit.Test;
 
@@ -82,6 +83,46 @@ public class IonObjectReaderTest {
         destPojo = (TestPojoArray) reader.read(source, 0);
 
     }
+
+
+    @Test
+    public void testObjectField() {
+        IonObjectWriter writer = new IonObjectWriter(PojoWithPojo.class);
+        IonObjectReader reader = new IonObjectReader(PojoWithPojo.class);
+
+        byte[] source   = new byte[100 * 1024];
+
+        PojoWithPojo pojo = new PojoWithPojo();
+        pojo.field0.field0 = 10;
+        pojo.field0.field1 = 11;
+        pojo.field0.field2 = 12;
+        pojo.field0.field3 = 13;
+        pojo.field0.field4 = 14;
+        pojo.field0.field5 = 15;
+        pojo.field0.field6 = 16;
+        pojo.field0.field7 = 17;
+        pojo.field0.field8 = 18;
+        pojo.field0.field9 = 19;
+
+        int bytesWritten = writer.writeObject(pojo, 2, source, 0);
+
+        System.out.println("bytesWritten = " + bytesWritten);
+
+        PojoWithPojo pojo2 = (PojoWithPojo) reader.read(source, 0);
+
+        assertEquals(10, pojo.field0.field0);
+        assertEquals(11, pojo.field0.field1);
+        assertEquals(12, pojo.field0.field2);
+        assertEquals(13, pojo.field0.field3);
+        assertEquals(14, pojo.field0.field4);
+        assertEquals(15, pojo.field0.field5);
+        assertEquals(16, pojo.field0.field6);
+        assertEquals(17, pojo.field0.field7);
+        assertEquals(18, pojo.field0.field8);
+        assertEquals(19, pojo.field0.field9);
+
+    }
+
 
 
 }
