@@ -38,32 +38,45 @@ public class IonUtil {
 
         if(boolean.class.equals(fieldType)){
             return new IonFieldWriterBoolean(field);
-        } else if(byte.class.equals(fieldType)){
+        }
+        if(byte.class.equals(fieldType)){
             return new IonFieldWriterByte(field);
-        } else if(short.class.equals(fieldType)){
+        }
+        if(short.class.equals(fieldType)){
             return new IonFieldWriterShort(field);
-        } else if(int.class.equals(fieldType)){
+        }
+        if(int.class.equals(fieldType)){
             return new IonFieldWriterInt(field);
-        } else if(long.class.equals(fieldType)){
+        }
+        if(long.class.equals(fieldType)){
             return new IonFieldWriterLong(field);
-        } else if(float.class.equals(fieldType)){
+        }
+        if(float.class.equals(fieldType)){
             return new IonFieldWriterFloat(field);
-        } else if(double.class.equals(fieldType)){
+        }
+        if(double.class.equals(fieldType)){
             return new IonFieldWriterDouble(field);
-        } else if(String.class.equals(fieldType)){
+        }
+        if(String.class.equals(fieldType)){
             return new IonFieldWriterString(field);
-        } else if(Calendar.class.equals(fieldType)){
+        }
+        if(Calendar.class.equals(fieldType)){
             return new IonFieldWriterCalendar(field);
-        } else if(GregorianCalendar.class.equals(fieldType)){
+        }
+        if(GregorianCalendar.class.equals(fieldType)){
             return new IonFieldWriterCalendar(field);
-        } else if(fieldType.isArray()){
+        }
+        if(fieldType.isArray()){
             if(byte.class.equals(fieldType.getComponentType())){
                 return new IonFieldWriterArrayByte(field);
             }
+            if(long.class.equals(fieldType.getComponentType())){
+                return new IonFieldWriterArrayLong(field);
+            }
             return new IonFieldWriterTable(field);
-        } else {
-            return new IonFieldWriterObject(field);
         }
+
+        return new IonFieldWriterObject(field);
     }
 
     public static IIonFieldReader createFieldReader(Field field){

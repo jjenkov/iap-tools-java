@@ -4,6 +4,7 @@ import com.jenkov.iap.ion.IonFieldTypes;
 import com.jenkov.iap.TestPojo;
 import com.jenkov.iap.ion.pojos.PojoArray10Float;
 import com.jenkov.iap.ion.pojos.PojoArrayByte;
+import com.jenkov.iap.ion.pojos.PojoArrayLong;
 import com.jenkov.iap.ion.pojos.PojoWithPojo;
 import org.junit.Test;
 
@@ -164,7 +165,47 @@ public class IonObjectWriterTest {
 
 
     @Test
-    public void testPojoArrayBytes() {
+    public void testPojoArrayLong() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArrayLong.class);
+
+        byte[] dest   = new byte[100 * 1024];
+
+        PojoArrayLong pojo = new PojoArrayLong();
+        pojo.longs = new long[]{ 1, 4, 9 };
+
+        int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
+        assertEquals(18, bytesWritten);
+        int index = 0;
+        assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
+        assertEquals( 16, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 5, 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('o', 255 & dest[index++]);
+        assertEquals('n', 255 & dest[index++]);
+        assertEquals('g', 255 & dest[index++]);
+        assertEquals('s', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.ARRAY << 4) | 1, 255 & dest[index++]);
+        assertEquals( 8, 255 & dest[index++]);
+
+        //array element count
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 3, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 1, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 4, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 9, 255 & dest[index++]);
+
+
+    }
+
+    @Test
+    public void testPojoArrayByte() {
         IonObjectWriter writer = new IonObjectWriter(PojoArrayByte.class);
 
         byte[] dest   = new byte[100 * 1024];
