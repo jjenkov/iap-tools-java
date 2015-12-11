@@ -89,6 +89,9 @@ public class IonUtil {
         } else if(GregorianCalendar.class.equals(fieldType)){
             return new IonFieldReaderCalendar(field);
         } else if(fieldType.isArray()){
+            if(byte.class.equals(fieldType.getComponentType())){
+                return new IonFieldReaderArrayByte(field);
+            }
             return new IonFieldReaderTable(field);
         } else {
             return new IonFieldReaderObject(field);

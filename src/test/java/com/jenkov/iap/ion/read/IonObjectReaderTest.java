@@ -2,6 +2,7 @@ package com.jenkov.iap.ion.read;
 
 import com.jenkov.iap.TestPojo;
 import com.jenkov.iap.TestPojoArray;
+import com.jenkov.iap.ion.pojos.PojoArrayByte;
 import com.jenkov.iap.ion.pojos.PojoWithPojo;
 import com.jenkov.iap.ion.write.IonObjectWriter;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by jjenkov on 05-11-2015.
@@ -42,9 +44,7 @@ public class IonObjectReaderTest {
         calendar.set(Calendar.SECOND, 59);
         calendar.set(Calendar.MILLISECOND, 0);
 
-
         TestPojo destPojo = null;
-
 
         int length = writer.writeObject(sourcePojo, 2, source, 0);   //write object first
 
@@ -60,6 +60,31 @@ public class IonObjectReaderTest {
         assertEquals(calendar, destPojo.field6);
 
     }
+
+
+
+    @Test
+    public void testByteArrayField() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArrayByte.class);
+        IonObjectReader reader = new IonObjectReader(PojoArrayByte.class);
+
+        byte[] dest   = new byte[100 * 1024];
+
+        PojoArrayByte pojo = new PojoArrayByte();
+        pojo.bytes = new byte[]{ 1, 4, 9 };
+
+        int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
+
+        PojoArrayByte pojo2 = (PojoArrayByte) reader.read(dest, 0);
+
+        assertNotNull(pojo2) ;
+        assertNotNull(pojo2.bytes) ;
+        assertEquals(3, pojo2.bytes.length);
+        assertEquals(1, pojo2.bytes[0]);
+        assertEquals(4, pojo2.bytes[1]);
+        assertEquals(9, pojo2.bytes[2]);
+    }
+
 
 
     @Test
