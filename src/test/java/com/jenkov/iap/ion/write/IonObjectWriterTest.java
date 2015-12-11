@@ -171,13 +171,13 @@ public class IonObjectWriterTest {
         byte[] dest   = new byte[100 * 1024];
 
         PojoArrayLong pojo = new PojoArrayLong();
-        pojo.longs = new long[]{ 1, 4, 9 };
+        pojo.longs = new long[]{ 1, 4, 9, -1 };
 
         int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
-        assertEquals(18, bytesWritten);
+        assertEquals(20, bytesWritten);
         int index = 0;
         assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
-        assertEquals( 16, 255 & dest[index++]);
+        assertEquals( 18, 255 & dest[index++]);
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 5, 255 & dest[index++]);
         assertEquals('l', 255 & dest[index++]);
         assertEquals('o', 255 & dest[index++]);
@@ -186,11 +186,11 @@ public class IonObjectWriterTest {
         assertEquals('s', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.ARRAY << 4) | 1, 255 & dest[index++]);
-        assertEquals( 8, 255 & dest[index++]);
+        assertEquals(10, 255 & dest[index++]);
 
         //array element count
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
-        assertEquals( 3, 255 & dest[index++]);
+        assertEquals( 4, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
         assertEquals( 1, 255 & dest[index++]);
@@ -200,6 +200,9 @@ public class IonObjectWriterTest {
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
         assertEquals( 9, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_NEG << 4) | 1, 255 & dest[index++]);
+        assertEquals( 1, 255 & dest[index++]);
 
 
     }

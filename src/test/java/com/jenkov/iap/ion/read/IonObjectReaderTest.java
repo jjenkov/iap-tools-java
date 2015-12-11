@@ -3,6 +3,7 @@ package com.jenkov.iap.ion.read;
 import com.jenkov.iap.TestPojo;
 import com.jenkov.iap.TestPojoArray;
 import com.jenkov.iap.ion.pojos.PojoArrayByte;
+import com.jenkov.iap.ion.pojos.PojoArrayLong;
 import com.jenkov.iap.ion.pojos.PojoWithPojo;
 import com.jenkov.iap.ion.write.IonObjectWriter;
 import org.junit.Test;
@@ -61,7 +62,29 @@ public class IonObjectReaderTest {
 
     }
 
+    @Test
+    public void testByteArrayLong() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArrayLong.class);
+        IonObjectReader reader = new IonObjectReader(PojoArrayLong.class);
 
+        byte[] dest = new byte[100 * 1024];
+
+        PojoArrayLong pojo = new PojoArrayLong();
+        pojo.longs = new long[]{1, 4, 9, -1};
+
+        int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
+
+        PojoArrayLong pojo2 = (PojoArrayLong) reader.read(dest, 0);
+
+        assertNotNull(pojo2) ;
+        assertNotNull(pojo2.longs) ;
+        assertEquals(4, pojo2.longs.length);
+        assertEquals(1, pojo2.longs[0]);
+        assertEquals(4, pojo2.longs[1]);
+        assertEquals(9, pojo2.longs[2]);
+        assertEquals(-1, pojo2.longs[3]);
+
+    }
 
     @Test
     public void testByteArrayField() {

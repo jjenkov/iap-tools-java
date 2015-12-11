@@ -85,25 +85,37 @@ public class IonUtil {
 
         if(boolean.class.equals(fieldType)){
             return new IonFieldReaderBoolean(field);
-        } else if(short.class.equals(fieldType)){
+        }
+        if(short.class.equals(fieldType)){
             return new IonFieldReaderShort(field);
-        } else if(int.class.equals(fieldType)){
+        }
+        if(int.class.equals(fieldType)){
             return new IonFieldReaderInt(field);
-        } else if(long.class.equals(fieldType)){
+        }
+        if(long.class.equals(fieldType)){
             return new IonFieldReaderLong(field);
-        } else if(float.class.equals(fieldType)){
+        }
+        if(float.class.equals(fieldType)){
             return new IonFieldReaderFloat(field);
-        } else if(double.class.equals(fieldType)){
+        }
+        if(double.class.equals(fieldType)){
             return new IonFieldReaderDouble(field);
-        } else if(String.class.equals(fieldType)){
+        }
+        if(String.class.equals(fieldType)){
             return new IonFieldReaderString(field);
-        } else if(Calendar.class.equals(fieldType)){
+        }
+        if(Calendar.class.equals(fieldType)){
             return new IonFieldReaderCalendar(field);
-        } else if(GregorianCalendar.class.equals(fieldType)){
+        }
+        if(GregorianCalendar.class.equals(fieldType)){
             return new IonFieldReaderCalendar(field);
-        } else if(fieldType.isArray()){
+        }
+        if(fieldType.isArray()){
             if(byte.class.equals(fieldType.getComponentType())){
                 return new IonFieldReaderArrayByte(field);
+            }
+            if(long.class.equals(fieldType.getComponentType())){
+                return new IonFieldReaderArrayLong(field);
             }
             return new IonFieldReaderTable(field);
         } else {
