@@ -57,6 +57,9 @@ public class IonUtil {
         } else if(GregorianCalendar.class.equals(fieldType)){
             return new IonFieldWriterCalendar(field);
         } else if(fieldType.isArray()){
+            if(byte.class.equals(fieldType.getComponentType())){
+                return new IonFieldWriterArrayByte(field);
+            }
             return new IonFieldWriterTable(field);
         } else {
             return new IonFieldWriterObject(field);
@@ -144,6 +147,8 @@ public class IonUtil {
 
         return keyField;
     }
+
+
 
 
 }

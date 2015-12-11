@@ -3,6 +3,7 @@ package com.jenkov.iap.ion.write;
 import com.jenkov.iap.ion.IonFieldTypes;
 import com.jenkov.iap.TestPojo;
 import com.jenkov.iap.ion.pojos.PojoArray10Float;
+import com.jenkov.iap.ion.pojos.PojoArrayByte;
 import com.jenkov.iap.ion.pojos.PojoWithPojo;
 import org.junit.Test;
 
@@ -157,6 +158,37 @@ public class IonObjectWriterTest {
         assertEquals( 23, 255 & dest[index++]);
         assertEquals( 59, 255 & dest[index++]);
         assertEquals( 59, 255 & dest[index++]);
+
+
+    }
+
+
+    @Test
+    public void testPojoArrayBytes() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArrayByte.class);
+
+        byte[] dest   = new byte[100 * 1024];
+
+        PojoArrayByte pojo = new PojoArrayByte();
+        pojo.bytes = new byte[]{ 1, 4, 9 };
+
+        int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
+
+        int index  = 0;
+        assertEquals(13, bytesWritten);
+        assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
+        assertEquals( 11, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 5, 255 & dest[index++]);
+        assertEquals('b', 255 & dest[index++]);
+        assertEquals('y', 255 & dest[index++]);
+        assertEquals('t', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('s', 255 & dest[index++]);
+        assertEquals((IonFieldTypes.BYTES << 4) | 1, 255 & dest[index++]);
+        assertEquals( 3, 255 & dest[index++]);
+        assertEquals( 1, 255 & dest[index++]);
+        assertEquals( 4, 255 & dest[index++]);
+        assertEquals( 9, 255 & dest[index++]);
 
 
     }
