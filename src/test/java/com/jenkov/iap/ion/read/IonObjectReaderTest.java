@@ -62,6 +62,31 @@ public class IonObjectReaderTest {
 
 
     @Test
+    public void testArrayFloat() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArrayFloat.class);
+        IonObjectReader reader = new IonObjectReader(PojoArrayFloat.class);
+
+        byte[] dest = new byte[100 * 1024];
+
+        PojoArrayFloat pojo = new PojoArrayFloat();
+        pojo.floats = new float[]{1.1f, 4.4f, 9.9f, -1.1f};
+
+        int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
+
+        PojoArrayFloat pojo2 = (PojoArrayFloat) reader.read(dest, 0);
+
+        assertNotNull(pojo2) ;
+        assertNotNull(pojo2.floats) ;
+        assertEquals(4, pojo2.floats.length);
+        assertEquals(1.1f, pojo2.floats[0], 0);
+        assertEquals(4.4f, pojo2.floats[1], 0);
+        assertEquals(9.9f, pojo2.floats[2], 0);
+        assertEquals(-1.1f, pojo2.floats[3], 0);
+
+    }
+
+
+    @Test
     public void testArrayShort() {
         IonObjectWriter writer = new IonObjectWriter(PojoArrayShort.class);
         IonObjectReader reader = new IonObjectReader(PojoArrayShort.class);

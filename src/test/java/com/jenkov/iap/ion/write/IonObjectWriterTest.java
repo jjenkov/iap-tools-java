@@ -162,6 +162,61 @@ public class IonObjectWriterTest {
 
 
     @Test
+    public void testPojoArrayFloat() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArrayFloat.class);
+
+        byte[] dest   = new byte[100 * 1024];
+
+        PojoArrayFloat pojo = new PojoArrayFloat();
+        pojo.floats = new float[]{ 1.1f, 4.4f, 9.9f, -1.1f };
+
+        int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
+        assertEquals(33, bytesWritten);
+        int index = 0;
+        assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
+        assertEquals(31, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('o', 255 & dest[index++]);
+        assertEquals('a', 255 & dest[index++]);
+        assertEquals('t', 255 & dest[index++]);
+        assertEquals('s', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.ARRAY << 4) | 1, 255 & dest[index++]);
+        assertEquals(22, 255 & dest[index++]);
+
+        //array element count
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 4, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(1.1f) >> 24), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(1.1f) >> 16), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(1.1f) >>  8), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(1.1f)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(4.4f) >> 24), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(4.4f) >> 16), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(4.4f) >>  8), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(4.4f)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(9.9f) >> 24), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(9.9f) >> 16), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(9.9f) >>  8), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(9.9f)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(-1.1f) >> 24), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(-1.1f) >> 16), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(-1.1f) >>  8), 255 & dest[index++]);
+        assertEquals( 255 & (Float.floatToIntBits(-1.1f)      ), 255 & dest[index++]);
+    }
+
+
+    @Test
     public void testPojoArrayShort() {
         IonObjectWriter writer = new IonObjectWriter(PojoArrayShort.class);
 
