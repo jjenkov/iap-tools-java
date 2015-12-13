@@ -162,6 +162,78 @@ public class IonObjectWriterTest {
 
 
     @Test
+    public void testPojoArrayDouble() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArrayDouble.class);
+
+        byte[] dest   = new byte[100 * 1024];
+
+        PojoArrayDouble pojo = new PojoArrayDouble();
+        pojo.doubles = new double[]{ 1.1d, 4.4d, 9.9d, -1.1d };
+
+        int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
+        assertEquals(50, bytesWritten);
+        int index = 0;
+        assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
+        assertEquals(48, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 7, 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('o', 255 & dest[index++]);
+        assertEquals('u', 255 & dest[index++]);
+        assertEquals('b', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('s', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.ARRAY << 4) | 1, 255 & dest[index++]);
+        assertEquals(38, 255 & dest[index++]);
+
+        //array element count
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 4, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 8, 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(1.1d) >> 56), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(1.1d) >> 48), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(1.1d) >> 40), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(1.1d) >> 32), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(1.1d) >> 24), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(1.1d) >> 16), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(1.1d) >>  8), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(1.1d)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 8, 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(4.4d) >> 56), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(4.4d) >> 48), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(4.4d) >> 40), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(4.4d) >> 32), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(4.4d) >> 24), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(4.4d) >> 16), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(4.4d) >>  8), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(4.4d)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 8, 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(9.9d) >> 56), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(9.9d) >> 48), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(9.9d) >> 40), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(9.9d) >> 32), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(9.9d) >> 24), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(9.9d) >> 16), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(9.9d) >>  8), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(9.9d)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 8, 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(-1.1d) >> 56), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(-1.1d) >> 48), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(-1.1d) >> 40), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(-1.1d) >> 32), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(-1.1d) >> 24), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(-1.1d) >> 16), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(-1.1d) >>  8), 255 & dest[index++]);
+        assertEquals( 255 & (Double.doubleToLongBits(-1.1d)      ), 255 & dest[index++]);
+    }
+
+
+    @Test
     public void testPojoArrayFloat() {
         IonObjectWriter writer = new IonObjectWriter(PojoArrayFloat.class);
 

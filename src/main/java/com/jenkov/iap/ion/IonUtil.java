@@ -82,6 +82,9 @@ public class IonUtil {
             if(float.class.equals(fieldType.getComponentType())){
                 return new IonFieldWriterArrayFloat(field);
             }
+            if(double.class.equals(fieldType.getComponentType())){
+                return new IonFieldWriterArrayDouble(field);
+            }
             return new IonFieldWriterTable(field);
         }
 
@@ -134,6 +137,9 @@ public class IonUtil {
             }
             if(float.class.equals(fieldType.getComponentType())){
                 return new IonFieldReaderArrayFloat(field);
+            }
+            if(double.class.equals(fieldType.getComponentType())){
+                return new IonFieldReaderArrayDouble(field);
             }
             return new IonFieldReaderTable(field);
         } else {
