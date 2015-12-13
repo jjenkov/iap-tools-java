@@ -2,10 +2,7 @@ package com.jenkov.iap.ion.write;
 
 import com.jenkov.iap.ion.IonFieldTypes;
 import com.jenkov.iap.TestPojo;
-import com.jenkov.iap.ion.pojos.PojoArray10Float;
-import com.jenkov.iap.ion.pojos.PojoArrayByte;
-import com.jenkov.iap.ion.pojos.PojoArrayLong;
-import com.jenkov.iap.ion.pojos.PojoWithPojo;
+import com.jenkov.iap.ion.pojos.*;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -161,6 +158,47 @@ public class IonObjectWriterTest {
         assertEquals( 59, 255 & dest[index++]);
 
 
+    }
+
+
+    @Test
+    public void testPojoArrayInt() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArrayInt.class);
+
+        byte[] dest   = new byte[100 * 1024];
+
+        PojoArrayInt pojo = new PojoArrayInt();
+        pojo.ints = new int[]{ 1, 4, 9, -1 };
+
+        int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
+        assertEquals(19, bytesWritten);
+        int index = 0;
+        assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
+        assertEquals(17, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 4, 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('n', 255 & dest[index++]);
+        assertEquals('t', 255 & dest[index++]);
+        assertEquals('s', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.ARRAY << 4) | 1, 255 & dest[index++]);
+        assertEquals(10, 255 & dest[index++]);
+
+        //array element count
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 4, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 1, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 4, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 9, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_NEG << 4) | 1, 255 & dest[index++]);
+        assertEquals( 1, 255 & dest[index++]);
     }
 
 

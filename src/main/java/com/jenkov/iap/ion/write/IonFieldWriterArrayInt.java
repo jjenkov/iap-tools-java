@@ -8,15 +8,15 @@ import java.lang.reflect.Field;
 /**
  * Created by jjenkov on 04-11-2015.
  */
-public class IonFieldWriterArrayLong implements IIonFieldWriter {
+public class IonFieldWriterArrayInt implements IIonFieldWriter {
 
-    private static int MAX_ELEMENT_FIELD_LENGTH = 9;    //an ION long field can max be 9 bytes long
+    private static int MAX_ELEMENT_FIELD_LENGTH           = 9;    //an ION long field can max be 9 bytes long
     private static int COMPLEX_TYPE_ID_SHORT_FIELD_LENGTH = 2;    //an ION long field can max be 9 bytes long
 
     protected Field  field    = null;
     protected byte[] keyField = null;
 
-    public IonFieldWriterArrayLong(Field field) {
+    public IonFieldWriterArrayInt(Field field) {
         this.field = field;
         this.keyField = IonUtil.preGenerateKeyField(field);
     }
@@ -34,7 +34,7 @@ public class IonFieldWriterArrayLong implements IIonFieldWriter {
     @Override
     public int writeValueField(Object sourceObject, byte[] dest, int destOffset, int maxLengthLength) {
         try {
-            long[] value = (long[]) field.get(sourceObject);
+            int[] value = (int[]) field.get(sourceObject);
 
             if(value == null) {
                 dest[destOffset++] = (byte) (255 & ((IonFieldTypes.ARRAY << 4))); //byte array which is null
