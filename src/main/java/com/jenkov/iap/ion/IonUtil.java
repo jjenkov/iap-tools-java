@@ -70,6 +70,9 @@ public class IonUtil {
             if(byte.class.equals(fieldType.getComponentType())){
                 return new IonFieldWriterArrayByte(field);
             }
+            if(short.class.equals(fieldType.getComponentType())){
+                return new IonFieldWriterArrayShort(field);
+            }
             if(int.class.equals(fieldType.getComponentType())){
                 return new IonFieldWriterArrayInt(field);
             }
@@ -116,6 +119,9 @@ public class IonUtil {
         if(fieldType.isArray()){
             if(byte.class.equals(fieldType.getComponentType())){
                 return new IonFieldReaderArrayByte(field);
+            }
+            if(short.class.equals(fieldType.getComponentType())){
+                return new IonFieldReaderArrayShort(field);
             }
             if(int.class.equals(fieldType.getComponentType())){
                 return new IonFieldReaderArrayInt(field);

@@ -162,6 +162,49 @@ public class IonObjectWriterTest {
 
 
     @Test
+    public void testPojoArrayShort() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArrayShort.class);
+
+        byte[] dest   = new byte[100 * 1024];
+
+        PojoArrayShort pojo = new PojoArrayShort();
+        pojo.shorts = new short[]{ 1, 4, 9, -1 };
+
+        int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
+        assertEquals(21, bytesWritten);
+        int index = 0;
+        assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
+        assertEquals(19, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('s', 255 & dest[index++]);
+        assertEquals('h', 255 & dest[index++]);
+        assertEquals('o', 255 & dest[index++]);
+        assertEquals('r', 255 & dest[index++]);
+        assertEquals('t', 255 & dest[index++]);
+        assertEquals('s', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.ARRAY << 4) | 1, 255 & dest[index++]);
+        assertEquals(10, 255 & dest[index++]);
+
+        //array element count
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 4, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 1, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 4, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals( 9, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_NEG << 4) | 1, 255 & dest[index++]);
+        assertEquals( 1, 255 & dest[index++]);
+    }
+
+
+    @Test
     public void testPojoArrayInt() {
         IonObjectWriter writer = new IonObjectWriter(PojoArrayInt.class);
 

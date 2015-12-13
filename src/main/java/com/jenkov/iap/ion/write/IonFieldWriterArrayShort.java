@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 /**
  * Created by jjenkov on 04-11-2015.
  */
-public class IonFieldWriterArrayInt implements IIonFieldWriter {
+public class IonFieldWriterArrayShort implements IIonFieldWriter {
 
     private static int MAX_ELEMENT_FIELD_LENGTH           = 9;    //an ION long field can max be 9 bytes long
     private static int COMPLEX_TYPE_ID_SHORT_FIELD_LENGTH = 2;    //an ION long field can max be 9 bytes long
@@ -16,7 +16,7 @@ public class IonFieldWriterArrayInt implements IIonFieldWriter {
     protected Field  field    = null;
     protected byte[] keyField = null;
 
-    public IonFieldWriterArrayInt(Field field) {
+    public IonFieldWriterArrayShort(Field field) {
         this.field = field;
         this.keyField = IonUtil.preGenerateKeyField(field);
     }
@@ -34,7 +34,7 @@ public class IonFieldWriterArrayInt implements IIonFieldWriter {
     @Override
     public int writeValueField(Object sourceObject, byte[] dest, int destOffset, int maxLengthLength) {
         try {
-            int[] value = (int[]) field.get(sourceObject);
+            short[] value = (short[]) field.get(sourceObject);
 
             if(value == null) {
                 dest[destOffset++] = (byte) (255 & ((IonFieldTypes.ARRAY << 4))); //byte array which is null
@@ -64,12 +64,12 @@ public class IonFieldWriterArrayInt implements IIonFieldWriter {
 
             //write elements
             for(int i=0; i < elementCount; i++){
-                int elementVal = value[i];
+                short elementVal = value[i];
 
                 int ionFieldType = IonFieldTypes.INT_POS;
                 if(elementVal < 0){
                     ionFieldType = IonFieldTypes.INT_NEG;
-                    elementVal  = -elementVal;
+                    elementVal  = (short) -elementVal;
                 }
 
                 int length = IonUtil.lengthOfInt64Value(elementVal);

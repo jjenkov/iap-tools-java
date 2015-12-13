@@ -7,11 +7,11 @@ import java.lang.reflect.Field;
 /**
  * Created by jjenkov on 05-11-2015.
  */
-public class IonFieldReaderArrayInt implements IIonFieldReader {
+public class IonFieldReaderArrayShort implements IIonFieldReader {
 
     private Field field = null;
 
-    public IonFieldReaderArrayInt(Field field) {
+    public IonFieldReaderArrayShort(Field field) {
         this.field = field;
     }
 
@@ -47,20 +47,20 @@ public class IonFieldReaderArrayInt implements IIonFieldReader {
 
 
         //read array elements
-        int[] values = new int[elementCount];
+        short[] values = new short[elementCount];
 
         for(int i=0; i<elementCount; i++){
             int elementLeadByte = 255 & source[sourceOffset++];
             int elementLength   = elementLeadByte & 15;
-            int elementValue   = 0;
+            short elementValue   = 0;
             for(int j=0; j<elementLength; j++){
                 elementValue <<= 8;
                 elementValue |= 255 & source[sourceOffset++];
             }
             if( (elementLeadByte >> 4) == IonFieldTypes.INT_POS){
-                values[i] = elementValue;
+                values[i] =  elementValue;
             } else {
-                values[i] = -elementValue;
+                values[i] = (short) -elementValue;
             }
         }
 

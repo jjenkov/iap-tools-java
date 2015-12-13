@@ -2,10 +2,7 @@ package com.jenkov.iap.ion.read;
 
 import com.jenkov.iap.TestPojo;
 import com.jenkov.iap.TestPojoArray;
-import com.jenkov.iap.ion.pojos.PojoArrayByte;
-import com.jenkov.iap.ion.pojos.PojoArrayInt;
-import com.jenkov.iap.ion.pojos.PojoArrayLong;
-import com.jenkov.iap.ion.pojos.PojoWithPojo;
+import com.jenkov.iap.ion.pojos.*;
 import com.jenkov.iap.ion.write.IonObjectWriter;
 import org.junit.Test;
 
@@ -63,8 +60,34 @@ public class IonObjectReaderTest {
 
     }
 
+
     @Test
-    public void testByteArrayInt() {
+    public void testArrayShort() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArrayShort.class);
+        IonObjectReader reader = new IonObjectReader(PojoArrayShort.class);
+
+        byte[] dest = new byte[100 * 1024];
+
+        PojoArrayShort pojo = new PojoArrayShort();
+        pojo.shorts = new short[]{1, 4, 9, -1};
+
+        int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
+
+        PojoArrayShort pojo2 = (PojoArrayShort) reader.read(dest, 0);
+
+        assertNotNull(pojo2) ;
+        assertNotNull(pojo2.shorts) ;
+        assertEquals(4, pojo2.shorts.length);
+        assertEquals(1, pojo2.shorts[0]);
+        assertEquals(4, pojo2.shorts[1]);
+        assertEquals(9, pojo2.shorts[2]);
+        assertEquals(-1, pojo2.shorts[3]);
+
+    }
+
+
+    @Test
+    public void testArrayInt() {
         IonObjectWriter writer = new IonObjectWriter(PojoArrayInt.class);
         IonObjectReader reader = new IonObjectReader(PojoArrayInt.class);
 
@@ -89,7 +112,7 @@ public class IonObjectReaderTest {
 
 
     @Test
-    public void testByteArrayLong() {
+    public void testArrayLong() {
         IonObjectWriter writer = new IonObjectWriter(PojoArrayLong.class);
         IonObjectReader reader = new IonObjectReader(PojoArrayLong.class);
 
