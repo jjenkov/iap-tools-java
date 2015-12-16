@@ -7,7 +7,7 @@ public class IonFieldTypes {
 
     /* Field type constants */
     public static final int BYTES           =  0;  //a series of raw bytes
-    public static final int BOOLEAN         =  1;
+    public static final int TINY            =  1;  // a number between 1 and 15, useful for booleans and small enums
     public static final int INT_POS         =  2;
     public static final int INT_NEG         =  3;
     public static final int FLOAT           =  4;

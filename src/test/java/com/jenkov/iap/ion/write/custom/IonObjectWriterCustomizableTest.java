@@ -42,7 +42,7 @@ public class IonObjectWriterCustomizableTest {
         assertEquals('d', 255 & dest[index++]);
         assertEquals('0', 255 & dest[index++]);
 
-        assertEquals((IonFieldTypes.BOOLEAN<<4) | 1, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.TINY <<4) | 1, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT <<4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);

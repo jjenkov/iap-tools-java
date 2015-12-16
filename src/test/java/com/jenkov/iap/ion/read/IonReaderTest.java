@@ -69,19 +69,19 @@ public class IonReaderTest {
         index += IonWriter.writeBooleanObj(source, index, null);
 
         reader.parse();
-        assertEquals(IonFieldTypes.BOOLEAN, reader.fieldType);
+        assertEquals(IonFieldTypes.TINY, reader.fieldType);
         assertEquals(0, reader.fieldLength);
         assertTrue(reader.readBoolean());
 
         reader.next();
         reader.parse();
-        assertEquals(IonFieldTypes.BOOLEAN, reader.fieldType);
+        assertEquals(IonFieldTypes.TINY, reader.fieldType);
         assertEquals(0, reader.fieldLength);
         assertFalse(reader.readBoolean());
 
         reader.next();
         reader.parse();
-        assertEquals(IonFieldTypes.BOOLEAN, reader.fieldType);
+        assertEquals(IonFieldTypes.TINY, reader.fieldType);
         assertEquals(0, reader.fieldLength);
         assertNull(reader.readBooleanObj());
     }

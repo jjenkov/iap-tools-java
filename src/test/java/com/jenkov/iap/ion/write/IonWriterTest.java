@@ -17,7 +17,201 @@ public class IonWriterTest {
 
 
     @Test
-    public void testBytes() {
+    public void testPrimitiveWriteMethods() {
+        byte[] dest = new byte[100 *1024];
+
+        IonWriter writer = new IonWriter();
+        writer.setDestination(dest, 0);
+
+
+        int index = 0;
+        writer.writeBytes(new byte[]{1,2,3});
+        assertEquals(5, writer.destIndex);
+        assertEquals((IonFieldTypes.BYTES << 4) | 1, 255 & dest[index++]);
+        assertEquals(3, 255 & dest[index++]);
+        assertEquals(1, 255 & dest[index++]);
+        assertEquals(2, 255 & dest[index++]);
+        assertEquals(3, 255 & dest[index++]);
+
+        writer.writeBytes(null);
+        assertEquals(6, writer.destIndex);
+        assertEquals((IonFieldTypes.BYTES << 4) | 0, 255 & dest[index++]);
+
+        writer.writeBoolean(true);
+        assertEquals(7, writer.destIndex);
+        assertEquals((IonFieldTypes.TINY << 4) | 1, 255 & dest[index++]);
+
+        writer.writeBoolean(false);
+        assertEquals(8, writer.destIndex);
+        assertEquals((IonFieldTypes.TINY << 4) | 2, 255 & dest[index++]);
+
+        writer.writeBoolean(false);
+        assertEquals(9, writer.destIndex);
+        assertEquals((IonFieldTypes.TINY << 4) | 2, 255 & dest[index++]);
+
+        writer.writeBooleanObj(null);
+        assertEquals(10, writer.destIndex);
+        assertEquals((IonFieldTypes.TINY << 4) | 0, 255 & dest[index++]);
+
+        writer.writeBooleanObj(new Boolean(true));
+        assertEquals(11, writer.destIndex);
+        assertEquals((IonFieldTypes.TINY << 4) | 1, 255 & dest[index++]);
+
+        writer.writeBooleanObj(new Boolean(false));
+        assertEquals(12, writer.destIndex);
+        assertEquals((IonFieldTypes.TINY << 4) | 2, 255 & dest[index++]);
+
+        writer.writeInt64(123);
+        assertEquals(14, writer.destIndex);
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals(123, 255 & dest[index++]);
+
+        writer.writeInt64(123456);
+        assertEquals(18, writer.destIndex);
+        assertEquals((IonFieldTypes.INT_POS << 4) | 3, 255 & dest[index++]);
+        assertEquals(255 & 123456 >> 16, 255 & dest[index++]);
+        assertEquals(255 & 123456 >> 8, 255 & dest[index++]);
+        assertEquals(255 & 123456     , 255 & dest[index++]);
+
+        writer.writeInt64(-123);
+        assertEquals(20, writer.destIndex);
+        assertEquals((IonFieldTypes.INT_NEG << 4) | 1, 255 & dest[index++]);
+        assertEquals(123, 255 & dest[index++]);
+
+        writer.writeInt64(-123456);
+        assertEquals(24, writer.destIndex);
+        assertEquals((IonFieldTypes.INT_NEG << 4) | 3, 255 & dest[index++]);
+        assertEquals(255 & 123456 >> 16, 255 & dest[index++]);
+        assertEquals(255 & 123456 >> 8, 255 & dest[index++]);
+        assertEquals(255 & 123456     , 255 & dest[index++]);
+
+
+        writer.writeInt64Obj(null);
+        assertEquals(25, writer.destIndex);
+        assertEquals((IonFieldTypes.INT_POS << 4) | 0, 255 & dest[index++]);
+
+
+        writer.writeInt64Obj(new Long(123));
+        assertEquals(27, writer.destIndex);
+        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals(123, 255 & dest[index++]);
+
+        writer.writeInt64Obj(new Long(123456));
+        assertEquals(31, writer.destIndex);
+        assertEquals((IonFieldTypes.INT_POS << 4) | 3, 255 & dest[index++]);
+        assertEquals(255 & 123456 >> 16, 255 & dest[index++]);
+        assertEquals(255 & 123456 >> 8, 255 & dest[index++]);
+        assertEquals(255 & 123456     , 255 & dest[index++]);
+
+        writer.writeInt64Obj(new Long(-123));
+        assertEquals(33, writer.destIndex);
+        assertEquals((IonFieldTypes.INT_NEG << 4) | 1, 255 & dest[index++]);
+        assertEquals(123, 255 & dest[index++]);
+
+        writer.writeInt64Obj(new Long(-123456));
+        assertEquals(37, writer.destIndex);
+        assertEquals((IonFieldTypes.INT_NEG << 4) | 3, 255 & dest[index++]);
+        assertEquals(255 & 123456 >> 16, 255 & dest[index++]);
+        assertEquals(255 & 123456 >> 8, 255 & dest[index++]);
+        assertEquals(255 & 123456     , 255 & dest[index++]);
+
+
+        writer.writeFloat32(123.123f);
+        assertEquals(42, writer.destIndex);
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(123.123f) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(123.123f) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(123.123f) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(123.123f)      ), 255 & dest[index++]);
+
+        writer.writeFloat32Obj(null);
+        assertEquals(43, writer.destIndex);
+        assertEquals((IonFieldTypes.FLOAT << 4) | 0, 255 & dest[index++]);
+
+        writer.writeFloat32Obj(123.123f);
+        assertEquals(48, writer.destIndex);
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(123.123f) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(123.123f) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(123.123f) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(123.123f)      ), 255 & dest[index++]);
+
+        writer.writeFloat64(123.123d);
+        assertEquals(57, writer.destIndex);
+        assertEquals((IonFieldTypes.FLOAT << 4) | 8, 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 56), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 48), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 40), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 32), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d)      ), 255 & dest[index++]);
+
+
+        writer.writeFloat64Obj(null);
+        assertEquals(58, writer.destIndex);
+        assertEquals((IonFieldTypes.FLOAT << 4) | 0, 255 & dest[index++]);
+
+        writer.writeFloat64Obj(123.123d);
+        assertEquals(67, writer.destIndex);
+        assertEquals((IonFieldTypes.FLOAT << 4) | 8, 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 56), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 48), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 40), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 32), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Double.doubleToLongBits(123.123d)      ), 255 & dest[index++]);
+
+
+        writer.writeUtf8(null);
+        assertEquals(68, writer.destIndex);
+        assertEquals((IonFieldTypes.UTF_8 << 4) | 0, 255 & dest[index++]);
+
+        writer.writeUtf8("Hello");
+        assertEquals(74, writer.destIndex);
+        assertEquals((IonFieldTypes.UTF_8_SHORT << 4) | 5, 255 & dest[index++]);
+        assertEquals('H', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('o', 255 & dest[index++]);
+
+        writer.writeUtf8("01234567890123456789");
+        assertEquals(96, writer.destIndex);
+        assertEquals((IonFieldTypes.UTF_8 << 4) | 1, 255 & dest[index++]);
+        assertEquals(20, 255 & dest[index++]);
+        assertEquals('0', 255 & dest[index++]);
+        assertEquals('1', 255 & dest[index++]);
+        assertEquals('2', 255 & dest[index++]);
+        assertEquals('3', 255 & dest[index++]);
+        assertEquals('4', 255 & dest[index++]);
+        assertEquals('5', 255 & dest[index++]);
+        assertEquals('6', 255 & dest[index++]);
+        assertEquals('7', 255 & dest[index++]);
+        assertEquals('8', 255 & dest[index++]);
+        assertEquals('9', 255 & dest[index++]);
+        assertEquals('0', 255 & dest[index++]);
+        assertEquals('1', 255 & dest[index++]);
+        assertEquals('2', 255 & dest[index++]);
+        assertEquals('3', 255 & dest[index++]);
+        assertEquals('4', 255 & dest[index++]);
+        assertEquals('5', 255 & dest[index++]);
+        assertEquals('6', 255 & dest[index++]);
+        assertEquals('7', 255 & dest[index++]);
+        assertEquals('8', 255 & dest[index++]);
+        assertEquals('9', 255 & dest[index++]);
+
+
+
+
+    }
+
+
+    @Test
+    public void testStaticWriteBytes() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;
@@ -43,49 +237,49 @@ public class IonWriterTest {
 
 
     @Test
-    public void testBoolean() {
+    public void testStaticWriteBoolean() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;
         int bytesWritten = IonWriter.writeBoolean(dest, offset, false);
 
         assertEquals(1, bytesWritten);
-        assertEquals( (IonFieldTypes.BOOLEAN<<4) | 2 , dest[offset]);
+        assertEquals( (IonFieldTypes.TINY <<4) | 2 , dest[offset]);
 
         offset = 20;
         bytesWritten = IonWriter.writeBoolean(dest, offset, true);
 
         assertEquals(1, bytesWritten);
-        assertEquals( (IonFieldTypes.BOOLEAN<<4) | 1, dest[offset]);
+        assertEquals( (IonFieldTypes.TINY <<4) | 1, dest[offset]);
     }
 
 
     @Test
-    public void testBooleanObj() {
+    public void testStaticWriteBooleanObj() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;
         int bytesWritten = IonWriter.writeBooleanObj(dest, offset, false);
 
         assertEquals(1, bytesWritten);
-        assertEquals( (IonFieldTypes.BOOLEAN<<4) | 2, dest[offset]);
+        assertEquals( (IonFieldTypes.TINY <<4) | 2, dest[offset]);
 
         offset = 20;
         bytesWritten = IonWriter.writeBooleanObj(dest, offset, true);
 
         assertEquals(1, bytesWritten);
-        assertEquals( (IonFieldTypes.BOOLEAN<<4) | 1, dest[offset]);
+        assertEquals( (IonFieldTypes.TINY <<4) | 1, dest[offset]);
 
         offset = 30;
         bytesWritten = IonWriter.writeBooleanObj(dest, offset, null);
 
         assertEquals(1, bytesWritten);
-        assertEquals( (IonFieldTypes.BOOLEAN<<4) | 0, dest[offset]);
+        assertEquals( (IonFieldTypes.TINY <<4) | 0, dest[offset]);
     }
 
 
     @Test
-    public void testInt64() {
+    public void testStaticWriteInt64() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;
@@ -108,7 +302,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testInt64Obj() {
+    public void testStaticWriteInt64Obj() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;
@@ -136,7 +330,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testFloat32() {
+    public void testStaticWriteFloat32() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;
@@ -154,7 +348,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testFloat32Obj() {
+    public void testStaticWriteFloat32Obj() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;
@@ -178,7 +372,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testFloat64() {
+    public void testStaticWriteFloat64() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;
@@ -200,7 +394,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testFloat64Obj() {
+    public void testStaticWriteFloat64Obj() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;
@@ -228,7 +422,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testUtf8() throws UnsupportedEncodingException {
+    public void testStaticWriteUtf8() throws UnsupportedEncodingException {
         byte[] dest = new byte[10 * 1024];
 
         String value  = "Hello World Long";
@@ -298,7 +492,7 @@ public class IonWriterTest {
     }
 
 
-    public void testUtf8Short() throws UnsupportedEncodingException {
+    public void testStaticWriteUtf8Short() throws UnsupportedEncodingException {
         byte[] dest = new byte[10 * 1024];
 
         String value  = "Hello World";
@@ -357,7 +551,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testUtcTime() {
+    public void testStaticWriteUtcTime() {
         byte[] dest   = new byte[10 * 1024];
 
         Calendar calendar = new GregorianCalendar();
@@ -441,7 +635,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testComplexTypeIdShort()  {
+    public void testStaticWriteComplexTypeIdShort()  {
         byte[] dest   = new byte[10 * 1024];
 
         byte[] typeId = new byte[] {1,2,3};
@@ -459,7 +653,7 @@ public class IonWriterTest {
 
 
         @Test
-    public void testKey() throws UnsupportedEncodingException {
+    public void testStaticWriteKey() throws UnsupportedEncodingException {
         byte[] dest = new byte[10 * 1024];
 
         String value  = "Hello";
@@ -506,7 +700,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testKeyCompact() throws UnsupportedEncodingException {
+    public void testStaticWriteKeyCompact() throws UnsupportedEncodingException {
         byte[] dest = new byte[10 * 1024];
 
         String value  = "Hello";
@@ -550,7 +744,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testObject() {
+    public void testStaticWriteObject() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;
@@ -569,7 +763,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testTable() {
+    public void testStaticWriteTable() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;
@@ -588,7 +782,7 @@ public class IonWriterTest {
 
 
     @Test
-    public void testArray() {
+    public void testStaticWriteArray() {
         byte[] dest = new byte[10 * 1024];
 
         int offset = 10;

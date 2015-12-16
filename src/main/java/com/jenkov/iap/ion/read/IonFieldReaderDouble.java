@@ -24,11 +24,30 @@ public class IonFieldReaderDouble implements IIonFieldReader {
             return 1; //double field with null value is only 1 byte long
         }
 
+        /*
         long theLong = 255 & source[sourceOffset++];;
         for(int i=1;i<length; i++){
             theLong <<= 8;
             theLong |= 255 & source[sourceOffset++];
         }
+        */
+
+        long theLong = 255 & source[sourceOffset++];
+        theLong <<= 8;
+        theLong |= 255 & source[sourceOffset++];
+        theLong <<= 8;
+        theLong |= 255 & source[sourceOffset++];
+        theLong <<= 8;
+        theLong |= 255 & source[sourceOffset++];
+        theLong <<= 8;
+        theLong |= 255 & source[sourceOffset++];
+        theLong <<= 8;
+        theLong |= 255 & source[sourceOffset++];
+        theLong <<= 8;
+        theLong |= 255 & source[sourceOffset++];
+        theLong <<= 8;
+        theLong |= 255 & source[sourceOffset++];
+
 
         try {
             field.set(destination, Double.longBitsToDouble(theLong));
