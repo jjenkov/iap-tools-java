@@ -16,3 +16,8 @@ You can read more about IAP and ION here:
 http://tutorials.jenkov.com/iap/index.html
 
 
+You can read how to use IAP Tools for Java here:
+
+http://tutorials.jenkov.com/iap-tools-java/index.html
+
+
