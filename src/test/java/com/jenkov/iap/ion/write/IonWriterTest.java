@@ -166,7 +166,7 @@ public class IonWriterTest {
         assertEquals(255 & (Double.doubleToLongBits(123.123d)      ), 255 & dest[index++]);
 
 
-        writer.writeUtf8(null);
+        writer.writeUtf8((String) null);
         assertEquals(68, writer.destIndex);
         assertEquals((IonFieldTypes.UTF_8 << 4) | 0, 255 & dest[index++]);
 
@@ -204,6 +204,29 @@ public class IonWriterTest {
         assertEquals('8', 255 & dest[index++]);
         assertEquals('9', 255 & dest[index++]);
 
+
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        calendar.set(Calendar.YEAR , 2015);
+        calendar.set(Calendar.MONTH, 11);
+        calendar.set(Calendar.DAY_OF_MONTH, 31);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+
+        writer.writeUtc(calendar, 9);
+        assertEquals(106, writer.destIndex);
+        assertEquals((IonFieldTypes.UTC_DATE_TIME << 4) | 9, 255 & dest[index++]);
+        assertEquals(2015 >>   8, 255 & dest[index++]);
+        assertEquals(2015  & 255, 255 & dest[index++]);
+        assertEquals(  12, 255 & dest[index++]);
+        assertEquals(  31, 255 & dest[index++]);
+        assertEquals(  23, 255 & dest[index++]);
+        assertEquals(  59, 255 & dest[index++]);
+        assertEquals(  59, 255 & dest[index++]);
+        assertEquals( 999 >> 8 , 255 & dest[index++]);
+        assertEquals( 999 & 255, 255 & dest[index++]);
 
 
 

@@ -201,6 +201,73 @@ public class IonWriter {
 
     }
 
+    public void writeUtf8(byte[] value){
+        if(value == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.UTF_8 << 4));
+            return ;
+        }
+
+        int length         = value.length;
+
+        if(length <=15){
+            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.UTF_8_SHORT << 4) | length));
+            System.arraycopy(value, 0, this.dest, this.destIndex, length);
+            this.destIndex += length;
+        } else {
+            int lengthLength   = IonUtil.lengthOfInt64Value(length);
+            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.UTF_8 << 4) | lengthLength));
+
+            for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+                this.dest[this.destIndex++] = (byte) (255 & (length >> i));
+            }
+
+            System.arraycopy(value, 0, this.dest, this.destIndex, length);
+            this.destIndex += length;
+        }
+
+    }
+
+    public void writeUtc(Calendar dateTime, int length){
+        if(dateTime == null){
+            dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.UTC_DATE_TIME << 4));
+            return ;
+        }
+        dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.UTC_DATE_TIME << 4) | length));
+
+        int year = dateTime.get(Calendar.YEAR);
+        dest[this.destIndex++] = (byte) (255 & (year >>   8));
+        dest[this.destIndex++] = (byte) (255 & (year &  255));
+
+        if(length == 2) { return; }  // 1 + length (2)
+
+        dest[this.destIndex++] = (byte) (255 & (dateTime.get(Calendar.MONTH) + 1));
+
+        if(length == 3) { return ;}  // 1 + length (3)
+
+        dest[this.destIndex++] = (byte) (255 & (dateTime.get(Calendar.DAY_OF_MONTH)));
+
+        if(length == 4) { return ;}  // 1 + length (4)
+
+        dest[this.destIndex++] = (byte) (255 & (dateTime.get(Calendar.HOUR_OF_DAY)));
+
+        if(length == 5) { return ;}  // 1 + length (5)
+
+        dest[this.destIndex++] = (byte) (255 & (dateTime.get(Calendar.MINUTE)));
+
+        if(length == 6) { return ;}  // 1 + length (6)
+
+        dest[this.destIndex++] = (byte) (255 & (dateTime.get(Calendar.SECOND)));
+
+        if(length == 7) { return ;}  // 1 + length (7)
+
+        int millis =  dateTime.get(Calendar.MILLISECOND);
+        dest[this.destIndex++] = (byte) (255 & (millis >>  8));
+        dest[this.destIndex++] = (byte) (255 & (millis));
+
+        return;
+
+    }
+
 
     public static int writeBytes(byte[] dest, int destOffset, byte[] value){
 
@@ -382,7 +449,6 @@ public class IonWriter {
         }
     }
 
-
     public static int writeUtf8(byte[] dest, int destOffset, byte[] value){
         if(value == null){
             dest[destOffset++] = (byte) (255 & (IonFieldTypes.UTF_8 << 4));
@@ -408,7 +474,6 @@ public class IonWriter {
             return 1 + lengthLength + length;
         }
     }
-
 
     public static int writeUtc(byte[] dest, int destOffset, Calendar dateTime, int length) {
         if(dateTime == null){
