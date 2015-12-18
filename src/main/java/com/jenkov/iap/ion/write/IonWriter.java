@@ -268,6 +268,140 @@ public class IonWriter {
 
     }
 
+    public void writeObjectBegin(int lengthLength){
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.OBJECT << 4) | lengthLength));
+    }
+
+    public void writeObjectEnd(int objectStartIndex, int lengthLength, int length){
+        objectStartIndex++;  //jump over the lead byte of the ION Object field
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            dest[objectStartIndex++] = (byte) (255 & (length >> i));
+        }
+    }
+
+    public void writeTableBegin(int lengthLength){
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.TABLE << 4) | lengthLength));
+    }
+
+    public void writeTableEnd(int objectStartIndex, int lengthLength, int length){
+        objectStartIndex++;  //jump over the lead byte of the ION Object field
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            dest[objectStartIndex++] = (byte) (255 & (length >> i));
+        }
+    }
+
+    public void writeArrayBegin(int lengthLength){
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.ARRAY << 4) | lengthLength));
+    }
+
+    public void writeArrayEnd(int objectStartIndex, int lengthLength, int length){
+        objectStartIndex++;  //jump over the lead byte of the ION Object field
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            dest[objectStartIndex++] = (byte) (255 & (length >> i));
+        }
+    }
+
+    public void writeKey(String value){
+        if(value == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.KEY << 4));
+            return ;
+        }
+
+        byte[] utf8Bytes = null;
+        try {
+            //todo Faster way to encode UTF-8 from String?
+            utf8Bytes = value.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            //should never happen - UTF-8 is always supported.
+        }
+
+        int length         = utf8Bytes.length;
+        int lengthLength   = IonUtil.lengthOfInt64Value(length);
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.KEY << 4) | lengthLength));
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            this.dest[destIndex++] = (byte) (255 & (length >> i));
+        }
+
+        System.arraycopy(utf8Bytes, 0, dest, this.destIndex, length);
+        this.destIndex += length;
+    }
+
+    public void writeKey(byte[] value){
+        if(value == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.KEY << 4));
+            return ;
+        }
+
+        int length         = value.length;
+        int lengthLength   = IonUtil.lengthOfInt64Value(length);
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.KEY << 4) | lengthLength));
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            this.dest[this.destIndex++] = (byte) (255 & (length >> i));
+        }
+
+        System.arraycopy(value, 0, this.dest, this.destIndex, length);
+        this.destIndex += length;
+
+    }
+
+    public void writeKeyShort(String value){
+        if(value == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.KEY_SHORT << 4));
+            return ;
+        }
+
+        byte[] utf8Bytes = null;
+        try {
+            //todo Faster way to encode UTF-8 from String?
+            utf8Bytes = value.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            //should never happen - UTF-8 is always supported.
+        }
+
+        int length         = utf8Bytes.length;
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.KEY_SHORT << 4) | length));
+
+        System.arraycopy(utf8Bytes, 0, this.dest, this.destIndex, length);
+        this.destIndex += length;
+    }
+
+    public void writeKeyShort(byte[] value){
+        if(value == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.KEY_SHORT << 4));
+            return ;
+        }
+
+        int length         = value.length;
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.KEY_SHORT << 4) | length));
+
+        System.arraycopy(value, 0, this.dest, this.destIndex, length);
+        this.destIndex += length;
+    }
+
+    public void writeDirect(byte[] ionFieldBytes){
+        System.arraycopy(ionFieldBytes, 0, this.dest, this.destIndex, ionFieldBytes.length );
+        this.destIndex += ionFieldBytes.length;
+    }
+
+    public void writeComplexTypeIdShort(byte[] value){
+        if(value == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.COMPLEX_TYPE_ID_SHORT << 4));
+            return;
+        }
+
+        int length         = value.length;
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.COMPLEX_TYPE_ID_SHORT << 4) | length));
+
+        System.arraycopy(value, 0, this.dest, this.destIndex, length);
+        this.destIndex += length;
+    }
 
     public static int writeBytes(byte[] dest, int destOffset, byte[] value){
 
@@ -515,7 +649,6 @@ public class IonWriter {
         return 10;  // 1 + length (9)
     }
 
-
     public static int writeComplexTypeIdShort(byte[] dest, int destOffset, byte[] value){
         if(value == null){
             dest[destOffset++] = (byte) (255 & (IonFieldTypes.COMPLEX_TYPE_ID_SHORT << 4));
@@ -529,9 +662,6 @@ public class IonWriter {
 
         return 1 + length;
     }
-
-
-
 
     public static int writeKey(byte[] dest, int destOffset, String value){
         if(value == null){
@@ -561,7 +691,6 @@ public class IonWriter {
         return 1 + lengthLength + length;
     }
 
-
     public static int writeKey(byte[] dest, int destOffset, byte[] value){
         if(value == null){
             dest[destOffset++] = (byte) (255 & (IonFieldTypes.KEY << 4));
@@ -580,8 +709,6 @@ public class IonWriter {
 
         return 1 + lengthLength + length;
     }
-
-
 
     public static int writeKeyShort(byte[] dest, int destOffset, String value){
         if(value == null){
@@ -605,8 +732,6 @@ public class IonWriter {
 
         return 1 + length;
     }
-
-
 
     public static int writeKeyShort(byte[] dest, int destOffset, byte[] value){
         if(value == null){
