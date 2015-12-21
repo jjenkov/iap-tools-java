@@ -446,7 +446,7 @@ public class IonReaderTest {
 
 
     @Test
-    public void testReadingObjects() {
+    public void testReadObjects() {
         byte[] source = new byte[10 * 1024];
 
         int index = 0;
@@ -468,29 +468,7 @@ public class IonReaderTest {
             if(reader.fieldType == IonFieldTypes.OBJECT){
                 reader.moveInto();
 
-                object = new HashMap();
-                while(reader.hasNext()){
-                    reader.next();
-                    reader.parse();
-
-                    String key = null;
-                    if(reader.fieldType == IonFieldTypes.KEY ||
-                       reader.fieldType == IonFieldTypes.KEY_SHORT){
-
-                        key = reader.readKeyAsUtf8String();
-                    }
-
-                    if(reader.hasNext()){
-                        reader.next();
-                        reader.parse();
-
-                        if("name".equals(key)){
-                            object.put(key, reader.readUtf8String());
-                        } else if("id".equals(key)){
-                            object.put(key, reader.readInt64());
-                        }
-                    }
-                }
+                object = parseObject();
 
                 reader.moveOutOf();
             }
@@ -498,8 +476,63 @@ public class IonReaderTest {
 
         assertNotNull(object);
         assertEquals(2, object.size());
+        assertEquals("John", object.get("name")) ;
+        assertEquals(new Long(1234)  , object.get("id")) ;
+
+
+
+        index = 0;
+        object1StartIndex = index;
+        index += IonWriter.writeObjectBegin(source, index, 2);
+        IonWriter.writeObjectEnd(source, object1StartIndex, 2, index - object1StartIndex -2 -1); //-2 = lengthLength, -1 = leadbyte
+
+        reader.setSource(source, 0, index);
+
+        while(reader.hasNext()){
+            reader.next();
+            reader.parse();
+
+            if(reader.fieldType == IonFieldTypes.OBJECT){
+                reader.moveInto();
+
+                object = parseObject();
+
+                reader.moveOutOf();
+            }
+        }
+
+        assertNotNull(object);
+        assertEquals(0, object.size());
+
     }
 
+    private Map parseObject() {
+        Map object;
+        object = new HashMap();
+        while(reader.hasNext()){
+            reader.next();
+            reader.parse();
+
+            String key = null;
+            if(reader.fieldType == IonFieldTypes.KEY ||
+               reader.fieldType == IonFieldTypes.KEY_SHORT){
+
+                key = reader.readKeyAsUtf8String();
+            }
+
+            if(reader.hasNext()){
+                reader.next();
+                reader.parse();
+
+                if("name".equals(key)){
+                    object.put(key, reader.readUtf8String());
+                } else if("id".equals(key)){
+                    object.put(key, reader.readInt64());
+                }
+            }
+        }
+        return object;
+    }
 
 
 }
