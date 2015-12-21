@@ -99,8 +99,8 @@ public class IonReader {
         return this;
     }
 
-    public IonReader parseInto() {
-        //parseInto() only works for complex types like objects, tables and arrays
+    public IonReader moveInto() {
+        //moveInto() only works for complex types like objects, tables and arrays
 
         long stackValue = this.index - 1 - this.fieldLengthLength;
         stackValue <<= 32;
@@ -110,12 +110,12 @@ public class IonReader {
 
         this.scopeEndIndex = this.nextIndex;
         this.nextIndex = this.index;  //restart nextIndex counting from inside object.
-        parse(); //yes?
+        //parse(); //yes?
 
         return this;
     }
 
-    public void parseOutOf() {
+    public void moveOutOf() {
 
         long stackValue = this.intoIndexStack[--this.intoIndexStackIndex];
 
@@ -355,7 +355,7 @@ public class IonReader {
         return new String(this.source, this.index, this.fieldLength);
     }
 
-    public int readKeyCompact(byte[] dest){
+    public int readKeyShort(byte[] dest){
         if(this.fieldLengthLength == 0) return 0;
 
         int length = Math.min(dest.length, this.fieldLength);
@@ -363,7 +363,7 @@ public class IonReader {
         return length;
     }
 
-    public int readKeyCompact(byte[] dest, int offset, int length){
+    public int readKeyShort(byte[] dest, int offset, int length){
         if(this.fieldLengthLength == 0) return 0;
 
         length = Math.min(length, this.fieldLength);
@@ -371,7 +371,7 @@ public class IonReader {
         return length;
     }
 
-    public String readKeyCompactAsUtf8String(){
+    public String readKeyShortAsUtf8String(){
         if(this.fieldLengthLength == 0) return null;
 
         return new String(this.source, this.index, this.fieldLength);
@@ -388,6 +388,7 @@ public class IonReader {
         }
         return true;
     }
+
 
 
 }

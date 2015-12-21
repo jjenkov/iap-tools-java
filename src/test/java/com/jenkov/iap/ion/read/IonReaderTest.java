@@ -4,14 +4,10 @@ import com.jenkov.iap.ion.IonFieldTypes;
 import com.jenkov.iap.ion.write.IonWriter;
 import org.junit.Test;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
+import java.util.*;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 
 /**
@@ -316,7 +312,7 @@ public class IonReaderTest {
         assertEquals(IonFieldTypes.KEY_SHORT, reader.fieldType);
         assertEquals(5, reader.fieldLength);
 
-        int length = reader.readKeyCompact(dest);
+        int length = reader.readKeyShort(dest);
         assertEquals(5, length);
         assertEquals('H', dest[0]);
         assertEquals('e', dest[1]);
@@ -324,19 +320,19 @@ public class IonReaderTest {
         assertEquals('l', dest[3]);
         assertEquals('o', dest[4]);
 
-        length = reader.readKeyCompact(dest, 1, 3);
+        length = reader.readKeyShort(dest, 1, 3);
         assertEquals(3, length);
         assertEquals('H', dest[1]);
         assertEquals('e', dest[2]);
         assertEquals('l', dest[3]);
 
-        assertEquals("Hello", reader.readKeyCompactAsUtf8String());
+        assertEquals("Hello", reader.readKeyShortAsUtf8String());
 
         reader.next();
         reader.parse();
-        length = reader.readKeyCompact(dest, 0, 3);
+        length = reader.readKeyShort(dest, 0, 3);
         assertEquals(0, length);
-        assertNull(reader.readKeyCompactAsUtf8String());
+        assertNull(reader.readKeyShortAsUtf8String());
 
     }
 
@@ -388,7 +384,9 @@ public class IonReaderTest {
         assertEquals(IonFieldTypes.OBJECT, reader.fieldType);
         assertTrue(reader.hasNext());
 
-        reader.parseInto();
+        reader.moveInto();
+        reader.next();
+        reader.parse();
         assertEquals(IonFieldTypes.KEY, reader.fieldType);
         assertTrue(reader.hasNext());
 
@@ -407,7 +405,7 @@ public class IonReaderTest {
         assertEquals(IonFieldTypes.INT_POS, reader.fieldType);
         assertFalse(reader.hasNext());
 
-        reader.parseOutOf();
+        reader.moveOutOf();
         assertEquals(IonFieldTypes.OBJECT, reader.fieldType);
         assertEquals(object1StartIndex + 1 + 2, reader.index); // +1 for lead byte, +2 for lengthLength
         assertEquals(object2StartIndex        , reader.nextIndex);
@@ -420,7 +418,9 @@ public class IonReaderTest {
         assertEquals(IonFieldTypes.OBJECT, reader.fieldType);
         assertFalse(reader.hasNext());
 
-        reader.parseInto();
+        reader.moveInto();
+        reader.next();
+        reader.parse();
         assertEquals(IonFieldTypes.KEY, reader.fieldType);
         assertTrue(reader.hasNext());
 
@@ -439,9 +439,65 @@ public class IonReaderTest {
         assertEquals(IonFieldTypes.INT_POS, reader.fieldType);
         assertFalse(reader.hasNext());
 
-        reader.parseOutOf();
+        reader.moveOutOf();
         assertFalse(reader.hasNext());
 
+    }
+
+
+    @Test
+    public void testReadingObjects() {
+        byte[] source = new byte[10 * 1024];
+
+        int index = 0;
+        int object1StartIndex = index;
+        index += IonWriter.writeObjectBegin(source, index, 2);
+        index += IonWriter.writeKey (source, index, "name");
+        index += IonWriter.writeUtf8(source, index, "John");
+        index += IonWriter.writeKey (source, index, "id");
+        index += IonWriter.writeInt64 (source, index, 1234);
+        IonWriter.writeObjectEnd(source, object1StartIndex, 2, index - object1StartIndex -2 -1); //-2 = lengthLength, -1 = leadbyte
+
+        reader.setSource(source, 0, index);
+
+        Map object = null;
+        while(reader.hasNext()){
+            reader.next();
+            reader.parse();
+
+            if(reader.fieldType == IonFieldTypes.OBJECT){
+                reader.moveInto();
+
+                object = new HashMap();
+                while(reader.hasNext()){
+                    reader.next();
+                    reader.parse();
+
+                    String key = null;
+                    if(reader.fieldType == IonFieldTypes.KEY ||
+                       reader.fieldType == IonFieldTypes.KEY_SHORT){
+
+                        key = reader.readKeyAsUtf8String();
+                    }
+
+                    if(reader.hasNext()){
+                        reader.next();
+                        reader.parse();
+
+                        if("name".equals(key)){
+                            object.put(key, reader.readUtf8String());
+                        } else if("id".equals(key)){
+                            object.put(key, reader.readInt64());
+                        }
+                    }
+                }
+
+                reader.moveOutOf();
+            }
+        }
+
+        assertNotNull(object);
+        assertEquals(2, object.size());
     }
 
 
