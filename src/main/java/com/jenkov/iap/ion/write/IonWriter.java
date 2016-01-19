@@ -403,6 +403,28 @@ public class IonWriter {
         this.destIndex += length;
     }
 
+
+    /*
+    Extended field types
+    */
+    public void writeElementCount(long elementCount){
+        int lengthLength = IonUtil.lengthOfInt64Value(elementCount);
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.EXTENDED << 4) | lengthLength));
+        this.dest[this.destIndex++] = IonFieldTypes.ELEMENT_COUNT; //extended type id follows after lead byte.
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            this.dest[this.destIndex++] = (byte) (255 & (elementCount >> i));
+        }
+
+    }
+
+
+    /*
+     ======================================================
+     Static versions follow below, of same methods as above
+     ======================================================
+     */
+
     public static int writeBytes(byte[] dest, int destOffset, byte[] value){
 
         if(value == null){
@@ -792,6 +814,22 @@ public class IonWriter {
     public static int writeDirect(byte[] dest, int destOffset, byte[] ionFieldBytes){
         System.arraycopy(ionFieldBytes, 0, dest, destOffset, ionFieldBytes.length );
         return ionFieldBytes.length;
+    }
+
+
+    /*
+        Extended field types
+     */
+    public static int writeElementCount(byte[] dest, int destOffset, long elementCount){
+        int lengthLength = IonUtil.lengthOfInt64Value(elementCount);
+        dest[destOffset++] = (byte) (255 & ((IonFieldTypes.EXTENDED << 4) | lengthLength));
+        dest[destOffset++] = IonFieldTypes.ELEMENT_COUNT; //extended type id follows after lead byte.
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            dest[destOffset++] = (byte) (255 & (elementCount >> i));
+        }
+
+        return 2 + lengthLength; // 1 lead byte, 1 extended type id byte, lengthLength element count bytes
     }
 
 

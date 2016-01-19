@@ -23,6 +23,7 @@ public class IonReader {
     public int fieldType   = 0;
     public int fieldLengthLength = 0;
     public int fieldLength = 0;
+    public int fieldTypeExtended = 0;
 
     private long[] intoIndexStack = null;
     private int   intoIndexStackIndex = 0;
@@ -86,7 +87,18 @@ public class IonReader {
                 break;
             }
 
-            //fine for all fields that use the lengthLength field normally - meaning non-compact fields.
+            case IonFieldTypes.EXTENDED : {
+                this.fieldTypeExtended = this.source[index++]; //read extended field type - first byte after lead byte
+                switch(this.fieldTypeExtended) {
+
+                    case IonFieldTypes.ELEMENT_COUNT : {
+                        this.fieldLength = this.fieldLengthLength;
+                    }
+                }
+                break;
+            }
+
+            //fine for all fields that use the lengthLength field normally - meaning Normal length fields (not Short and Tiny).
             default : {
                 this.fieldLength = 0;
                 for(int i=0; i<this.fieldLengthLength; i++){
@@ -375,6 +387,20 @@ public class IonReader {
         if(this.fieldLengthLength == 0) return null;
 
         return new String(this.source, this.index, this.fieldLength);
+    }
+
+    public long readElementCount() {
+        //this.index++; //move over the first byte after lead byte - because this byte is the extended field id byte.
+
+        int valueIndex = this.index;
+        long value = 255 & this.source[valueIndex++];
+        for(int i=1; i<this.fieldLengthLength; i++){
+            value <<= 8;
+            value |= 255 & this.source[valueIndex++];
+        }
+
+        return value;
+
     }
 
     public boolean matches(byte[] expected) {

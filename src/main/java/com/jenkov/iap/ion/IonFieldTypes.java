@@ -5,7 +5,7 @@ package com.jenkov.iap.ion;
  */
 public class IonFieldTypes {
 
-    /* Field type constants */
+    /* Core type ID constants */
     public static final int BYTES           =  0;  //a series of raw bytes
     public static final int TINY            =  1;  // a number between 1 and 15, useful for booleans and small enums
     public static final int INT_POS         =  2;
@@ -28,25 +28,19 @@ public class IonFieldTypes {
 
 
     /*
-      The two reserved types will be used for either:
-
-        UTF_8 - 0 to 15 bytes
-        UTF_8 - 16 to 31 bytes
-        DATETIME
-        TIME
-        DURATION
-
-      Which one we choose will be determined after measuring a lot of data traffic going through VStack
-
-      Extended types:
-       - DATETIME
-       - TIME
-       - DURATION
-
-       Note that it does not make sense to represent UTF_8 (0 to 15 bytes) and UTF_8 (16 to 31 bytes) as extended
-       types. The one byte these types save, the lose again with the type extension byte.
-
+        Extended type ID constants - can be from 0 to 255 - but we use only from 16 to 255 to avoid
+        numeric clashes with the core type IDs.
      */
+    public static final int ELEMENT_COUNT = 16;
+
+    /*
+        complex type id (not short version)
+        reference
+        UTC time
+     */
+
+
+
 
 
 

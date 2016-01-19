@@ -1,6 +1,6 @@
-package com.jenkov.iap.ion;
+package com.jenkov.iap.ion.read;
 
-import com.jenkov.iap.ion.read.IIonFieldReader;
+import com.jenkov.iap.ion.IonFieldTypes;
 
 import java.lang.reflect.Field;
 
@@ -38,6 +38,8 @@ public class IonFieldReaderArrayShort implements IIonFieldReader {
         //read array field element count
         int elementCountLeadByte = source[sourceOffset++];
         int elementCountLength   = elementCountLeadByte & 15;
+        sourceOffset++; //step over extended type byte... todo maybe validate it?
+
 
         int elementCount = 0;
         for(int i=0; i<elementCountLength; i++){
@@ -52,13 +54,13 @@ public class IonFieldReaderArrayShort implements IIonFieldReader {
         for(int i=0; i<elementCount; i++){
             int elementLeadByte = 255 & source[sourceOffset++];
             int elementLength   = elementLeadByte & 15;
-            short elementValue   = 0;
+            int elementValue   = 0;
             for(int j=0; j<elementLength; j++){
                 elementValue <<= 8;
                 elementValue |= 255 & source[sourceOffset++];
             }
             if( (elementLeadByte >> 4) == IonFieldTypes.INT_POS){
-                values[i] =  elementValue;
+                values[i] = (short) elementValue;
             } else {
                 values[i] = (short) -elementValue;
             }

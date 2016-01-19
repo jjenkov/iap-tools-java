@@ -24,6 +24,7 @@ public class IonObjectWriter {
         }
     }
 
+
     public int writeObject(Object src, int maxLengthLength, byte[] destination, int destinationOffset){
         destination[destinationOffset++] = (byte) (255 & ((IonFieldTypes.OBJECT << 4) | maxLengthLength));
 
@@ -48,6 +49,8 @@ public class IonObjectWriter {
 
         return 1 + maxLengthLength + fullFieldLength;
     }
+
+
 
 
 }

@@ -7,7 +7,10 @@ IAP Tools Todo List
 
 Features
 ---------------------------
- - Support arrays of all primitive types.
+ - Support arrays of all primitive types. Missing:
+  - String - read + write
+  - Short - read
+  - Boolean - read + write
 
  - Support BigDecimal (?) ... as UTF-8 ?
 
@@ -19,7 +22,7 @@ Features
 
  - Nonblocking client
 
-
+ - Validation - more validation when reading ION data structures.
 
 
 

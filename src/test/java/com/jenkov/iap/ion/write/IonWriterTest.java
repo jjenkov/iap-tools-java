@@ -387,6 +387,44 @@ public class IonWriterTest {
 
 
     @Test
+    public void testWriteElementCount() {
+        byte[] dest = new byte[100 *1024];
+
+        IonWriter writer = new IonWriter();
+        writer.setDestination(dest, 0);
+
+
+        int elementCount = 1024;
+        int index = 0;
+        writer.writeElementCount(elementCount);
+        assertEquals(4, writer.destIndex);
+        assertEquals((IonFieldTypes.EXTENDED << 4) | 2, 255 & dest[index++]);
+        assertEquals(IonFieldTypes.ELEMENT_COUNT, 255 & dest[index++]);
+
+        assertEquals(elementCount >> 8, 255 & dest[index++]);
+        assertEquals(elementCount & 255, 255 & dest[index++]);
+    }
+
+
+    @Test
+    public void testWriteElementCountStatic() {
+        byte[] dest = new byte[100 *1024];
+        int destOffset = 0;
+
+        int elementCount = 1024;
+        int index = 0;
+
+        destOffset += IonWriter.writeElementCount(dest, destOffset, elementCount);
+        assertEquals(4, destOffset);
+        assertEquals((IonFieldTypes.EXTENDED << 4) | 2, 255 & dest[index++]);
+        assertEquals(IonFieldTypes.ELEMENT_COUNT, 255 & dest[index++]);
+
+        assertEquals(elementCount >> 8, 255 & dest[index++]);
+        assertEquals(elementCount & 255, 255 & dest[index++]);
+    }
+
+
+    @Test
     public void testStaticWriteBytes() {
         byte[] dest = new byte[10 * 1024];
 
@@ -407,7 +445,6 @@ public class IonWriterTest {
         bytesWritten = IonWriter.writeBytes(dest, offset, null);
         assertEquals(0, 255 & (dest[offset] >> 4));
         assertEquals(IonFieldTypes.BYTES << 4, 15 & (dest[offset++]));
-
     }
 
 

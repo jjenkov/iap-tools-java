@@ -171,10 +171,10 @@ public class IonObjectWriterTest {
         pojo.doubles = new double[]{ 1.1d, 4.4d, 9.9d, -1.1d };
 
         int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
-        assertEquals(50, bytesWritten);
+        assertEquals(51, bytesWritten);
         int index = 0;
         assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
-        assertEquals(48, 255 & dest[index++]);
+        assertEquals(49, 255 & dest[index++]);
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 7, 255 & dest[index++]);
         assertEquals('d', 255 & dest[index++]);
         assertEquals('o', 255 & dest[index++]);
@@ -185,10 +185,11 @@ public class IonObjectWriterTest {
         assertEquals('s', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.ARRAY << 4) | 1, 255 & dest[index++]);
-        assertEquals(38, 255 & dest[index++]);
+        assertEquals(39, 255 & dest[index++]);
 
         //array element count
-        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.EXTENDED << 4) | 1, 255 & dest[index++]);
+        assertEquals(IonFieldTypes.ELEMENT_COUNT, 255 & dest[index++]);
         assertEquals( 4, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.FLOAT << 4) | 8, 255 & dest[index++]);
@@ -243,10 +244,10 @@ public class IonObjectWriterTest {
         pojo.floats = new float[]{ 1.1f, 4.4f, 9.9f, -1.1f };
 
         int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
-        assertEquals(33, bytesWritten);
+        assertEquals(34, bytesWritten);
         int index = 0;
         assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
-        assertEquals(31, 255 & dest[index++]);
+        assertEquals(32, 255 & dest[index++]);
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
         assertEquals('l', 255 & dest[index++]);
@@ -256,10 +257,11 @@ public class IonObjectWriterTest {
         assertEquals('s', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.ARRAY << 4) | 1, 255 & dest[index++]);
-        assertEquals(22, 255 & dest[index++]);
+        assertEquals(23, 255 & dest[index++]);
 
         //array element count
-        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.EXTENDED << 4) | 1, 255 & dest[index++]);
+        assertEquals(IonFieldTypes.ELEMENT_COUNT, 255 & dest[index++]);
         assertEquals( 4, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
@@ -298,10 +300,10 @@ public class IonObjectWriterTest {
         pojo.shorts = new short[]{ 1, 4, 9, -1 };
 
         int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
-        assertEquals(21, bytesWritten);
+        assertEquals(22, bytesWritten);
         int index = 0;
         assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
-        assertEquals(19, 255 & dest[index++]);
+        assertEquals(20, 255 & dest[index++]);
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
         assertEquals('s', 255 & dest[index++]);
         assertEquals('h', 255 & dest[index++]);
@@ -311,10 +313,11 @@ public class IonObjectWriterTest {
         assertEquals('s', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.ARRAY << 4) | 1, 255 & dest[index++]);
-        assertEquals(10, 255 & dest[index++]);
+        assertEquals(11, 255 & dest[index++]);
 
         //array element count
-        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.EXTENDED << 4) | 1, 255 & dest[index++]);
+        assertEquals(IonFieldTypes.ELEMENT_COUNT, 255 & dest[index++]);
         assertEquals( 4, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
@@ -341,10 +344,10 @@ public class IonObjectWriterTest {
         pojo.ints = new int[]{ 1, 4, 9, -1 };
 
         int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
-        assertEquals(19, bytesWritten);
+        assertEquals(20, bytesWritten);
         int index = 0;
         assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
-        assertEquals(17, 255 & dest[index++]);
+        assertEquals(18, 255 & dest[index++]);
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 4, 255 & dest[index++]);
         assertEquals('i', 255 & dest[index++]);
         assertEquals('n', 255 & dest[index++]);
@@ -352,10 +355,11 @@ public class IonObjectWriterTest {
         assertEquals('s', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.ARRAY << 4) | 1, 255 & dest[index++]);
-        assertEquals(10, 255 & dest[index++]);
+        assertEquals(11, 255 & dest[index++]);
 
         //array element count
-        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.EXTENDED << 4) | 1, 255 & dest[index++]);
+        assertEquals(IonFieldTypes.ELEMENT_COUNT, 255 & dest[index++]);
         assertEquals( 4, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
@@ -382,10 +386,10 @@ public class IonObjectWriterTest {
         pojo.longs = new long[]{ 1, 4, 9, -1 };
 
         int bytesWritten = writer.writeObject(pojo, 1, dest, 0);
-        assertEquals(20, bytesWritten);
+        assertEquals(21, bytesWritten);
         int index = 0;
         assertEquals((IonFieldTypes.OBJECT << 4) | 1, 255 & dest[index++]);
-        assertEquals( 18, 255 & dest[index++]);
+        assertEquals( 19, 255 & dest[index++]);
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 5, 255 & dest[index++]);
         assertEquals('l', 255 & dest[index++]);
         assertEquals('o', 255 & dest[index++]);
@@ -394,10 +398,11 @@ public class IonObjectWriterTest {
         assertEquals('s', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.ARRAY << 4) | 1, 255 & dest[index++]);
-        assertEquals(10, 255 & dest[index++]);
+        assertEquals(11, 255 & dest[index++]);
 
         //array element count
-        assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.EXTENDED << 4) | 1, 255 & dest[index++]);
+        assertEquals(IonFieldTypes.ELEMENT_COUNT, 255 & dest[index++]);
         assertEquals( 4, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);

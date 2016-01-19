@@ -336,9 +336,47 @@ public class IonReaderTest {
 
     }
 
+    @Test
+    public void testReadElementCount() {
+        byte[] dest = new byte[10 * 1024];
+
+        int index = 0;
+        index += IonWriter.writeElementCount(dest, index, 1024);
+        index += IonWriter.writeElementCount(dest, index, 2048);
+
+        assertEquals(8, index);
+
+        reader.setSource(dest, 0, dest.length);
+        reader.next();
+        reader.parse();
+
+        assertEquals(IonFieldTypes.EXTENDED     , reader.fieldType);
+        assertEquals(IonFieldTypes.ELEMENT_COUNT, reader.fieldTypeExtended);
+        assertEquals(2, reader.fieldLengthLength);
+        assertEquals(2, reader.fieldLength);
+
+        int offset = 2;
+        assertEquals(1024 >> 8 , 255 & dest[offset++]);
+        assertEquals(1024 & 255, 255 & dest[offset++]);
+
+        reader.next();
+        reader.parse();
+        assertEquals(IonFieldTypes.EXTENDED     , reader.fieldType);
+        assertEquals(IonFieldTypes.ELEMENT_COUNT, reader.fieldTypeExtended);
+        assertEquals(2, reader.fieldLengthLength);
+        assertEquals(2, reader.fieldLength);
+
+        offset = 6;
+        assertEquals(2048 >> 8  , 255 & dest[offset++]);
+        assertEquals(2048 & 255, 255 & dest[offset++]);
+
+    }
+
+
+
 
     @Test
-    public void testParseIntoAndOutOf() {
+    public void testMoveIntoAndOutOf() {
         byte[] source = new byte[10 * 1024];
 
         int index = 0;
@@ -533,6 +571,8 @@ public class IonReaderTest {
         }
         return object;
     }
+
+
 
 
 }
