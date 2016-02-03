@@ -11,13 +11,20 @@ ION can be used as a separate data format. It is very flexible, compact and fast
 You can use ION with IAP, with HTTP (instead of e.g. JSON), and also in log files
 and data files.
 
-You can read more about IAP and ION here:
+
+## IAP Tools Tutorial
+We have a tutorial for IAP Tools here:
+
+http://tutorials.jenkov.com/iap-tools-java/index.html
+
+
+## IAP / ION Specification
+The official specifications for IAP and ION can be found here:
 
 http://tutorials.jenkov.com/iap/index.html
 
 
-You can read how to use IAP Tools for Java here:
 
-http://tutorials.jenkov.com/iap-tools-java/index.html
+
 
 
