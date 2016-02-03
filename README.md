@@ -1,4 +1,4 @@
-# iap-tools-java
+# IAP Tools for Java (iap-tools-java)
 A Java toolkit for working with the IAP network protocol and its data format ION.
 
 IAP is a network protocol intended to replace HTTP, and possibly other protocols too.
