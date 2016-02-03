@@ -30,6 +30,10 @@ can find these benchmarks here:
 
 http://tutorials.jenkov.com/iap/ion-performance-benchmarks.html
 
+The benchmark code is kept in a separate Github repository here:
+
+https://github.com/jjenkov/iap-tools-java-benchmarks
+
 
 
 
