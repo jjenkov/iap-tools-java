@@ -16,9 +16,9 @@ public class IonFieldWriterArrayFloat implements IIonFieldWriter {
     protected Field  field    = null;
     protected byte[] keyField = null;
 
-    public IonFieldWriterArrayFloat(Field field) {
+    public IonFieldWriterArrayFloat(Field field, String alias) {
         this.field = field;
-        this.keyField = IonUtil.preGenerateKeyField(field);
+        this.keyField = IonUtil.preGenerateKeyField(alias);
     }
 
     @Override

@@ -13,9 +13,9 @@ public class IonFieldWriterByte implements IIonFieldWriter {
     protected Field  field    = null;
     protected byte[] keyField = null;
 
-    public IonFieldWriterByte(Field field) {
+    public IonFieldWriterByte(Field field, String alias) {
         this.field = field;
-        this.keyField = IonUtil.preGenerateKeyField(field);
+        this.keyField = IonUtil.preGenerateKeyField(alias);
     }
 
 

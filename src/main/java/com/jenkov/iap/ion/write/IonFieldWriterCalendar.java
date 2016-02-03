@@ -16,9 +16,9 @@ public class IonFieldWriterCalendar implements IIonFieldWriter {
 
     protected int length = 7;
 
-    public IonFieldWriterCalendar(Field field) {
+    public IonFieldWriterCalendar(Field field, String alias) {
         this.field = field;
-        this.keyField = IonUtil.preGenerateKeyField(field);
+        this.keyField = IonUtil.preGenerateKeyField(alias);
     }
 
     @Override

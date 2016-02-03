@@ -21,9 +21,9 @@ public class IonFieldWriterObject implements IIonFieldWriter {
     public IIonFieldWriter[] fieldWriters = null;
 
 
-    public IonFieldWriterObject(Field field) {
+    public IonFieldWriterObject(Field field, String alias) {
         this.field = field;
-        this.keyField = IonUtil.preGenerateKeyField(field);
+        this.keyField = IonUtil.preGenerateKeyField(alias);
 
         Field[] fields = field.getType().getDeclaredFields();
         this.fieldWriters = new IIonFieldWriter[fields.length];

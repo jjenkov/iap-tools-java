@@ -603,6 +603,49 @@ public class IonObjectWriterTest {
 
         assertEquals((IonFieldTypes.INT_POS    << 4) | 1, 255 & dest[index++]);
         assertEquals(   9, 255 & dest[index++]);
+    }
+
+
+
+    @Test
+    public void testFieldAliases() {
+        IonObjectWriter writer = new IonObjectWriter(SmallPojo.class, config -> {
+            if("field0".equals(config.name)){
+                config.alias = "f0";
+            } else if("field1".equals(config.name)){
+                config.alias = "f1";
+            } else if("field2".equals(config.name)){
+                config.include = false;
+            }
+        });
+
+        byte[] dest   = new byte[100 * 1024];
+
+        SmallPojo pojo = new SmallPojo();
+
+        int bytesWritten = writer.writeObject(pojo, 2, dest, 0);
+
+        System.out.println("bytesWritten = " + bytesWritten);
+
+        int index = 0;
+
+        assertEquals((IonFieldTypes.OBJECT << 4) | 2, 255 & dest[index++]);
+        assertEquals(   0, 255 & dest[index++]);
+        assertEquals(  10, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 2, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('0', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.TINY << 4) | 1, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 2, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('1', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.INT_POS << 4) | 2, 255 & dest[index++]);
+        assertEquals( 1234 >> 8 , 255 & dest[index++]);
+        assertEquals( 1234 & 255, 255 & dest[index++]);
 
     }
 

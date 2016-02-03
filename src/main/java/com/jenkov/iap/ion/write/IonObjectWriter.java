@@ -4,15 +4,25 @@ import com.jenkov.iap.ion.IonFieldTypes;
 import com.jenkov.iap.ion.IonUtil;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by jjenkov on 04-11-2015.
+ * An IonObjectWriter instance can write an object (instance) of some class to ION data ("ionize" the object in other words).
+ * An IonObjectWriter is targeted at a single class. To serialize objects of multiple classes, create one IonObjectWriter
+ * per class.
+ *
  */
 public class IonObjectWriter {
 
     public Class   typeClass = null;
     public IIonFieldWriter[] fieldWriters = null;
 
+    /**
+     * Creates an IonObjectWriter targeted at the class passed as parameter to this constructor.
+     *
+     * @param typeClass The class this IonObjectWriter should be able to write instances of (to ION).
+     */
     public IonObjectWriter(Class typeClass) {
         this.typeClass = typeClass;
 
@@ -21,6 +31,47 @@ public class IonObjectWriter {
 
         for(int i=0; i < fields.length; i++){
             fieldWriters[i] = IonUtil.createFieldWriter(fields[i]);
+        }
+    }
+
+
+    /**
+     * Creates an IonObjectWriter targeted at the class passed as parameter to this constructor.
+     * The IIonObjectWriterConfigurator can configure (modify) this IonObjectWriter instance. For instance,
+     * it can signal that some fields should not be included when writing the object, or modify what field
+     * name is to be used when writing the object.
+     *
+     * @param typeClass    The class this IonObjectWriter should be able to write instances of (to ION).
+     * @param configurator The configurator that can configure each field writer (one per field of the target class) in this IonWriter - even exclude them.
+     */
+    public IonObjectWriter(Class typeClass, IIonObjectWriterConfigurator configurator){
+        this.typeClass = typeClass;
+
+        Field[] fields = this.typeClass.getDeclaredFields();
+
+        List<IIonFieldWriter> fieldWriterTemp = new ArrayList<IIonFieldWriter>();
+
+        IonFieldWriterConfiguration fieldConfiguration = new IonFieldWriterConfiguration();
+
+        for(int i=0; i < fields.length; i++){
+            fieldConfiguration.include = true;
+            fieldConfiguration.name = fields[i].getName();
+
+            configurator.configure(fieldConfiguration);
+
+            if(fieldConfiguration.include){
+                if(fieldConfiguration.alias == null){
+                    fieldWriterTemp.add(IonUtil.createFieldWriter(fields[i]));
+                } else {
+                    fieldWriterTemp.add(IonUtil.createFieldWriter(fields[i], fieldConfiguration.alias));
+                }
+            }
+        }
+
+        this.fieldWriters = new IIonFieldWriter[fieldWriterTemp.size()];
+
+        for(int i=0, n=fieldWriterTemp.size(); i < n; i++){
+            this.fieldWriters[i] = fieldWriterTemp.get(i);
         }
     }
 

@@ -20,9 +20,9 @@ public class IonFieldWriterTable implements IIonFieldWriter {
     protected IIonFieldWriter[] fieldWritersForArrayType = null;
 
 
-    public IonFieldWriterTable(Field field) {
+    public IonFieldWriterTable(Field field, String alias) {
         this.field = field;
-        this.keyField = IonUtil.preGenerateKeyField(field);
+        this.keyField = IonUtil.preGenerateKeyField(alias);
 
         Class typeInTable = field.getType().getComponentType();
 

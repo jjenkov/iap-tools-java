@@ -13,9 +13,9 @@ public class IonFieldWriterDouble implements IIonFieldWriter {
     protected byte[] keyField = null;
 
 
-    public IonFieldWriterDouble(Field field) {
+    public IonFieldWriterDouble(Field field, String alias) {
         this.field = field;
-        this.keyField = IonUtil.preGenerateKeyField(field);
+        this.keyField = IonUtil.preGenerateKeyField(alias);
     }
 
 

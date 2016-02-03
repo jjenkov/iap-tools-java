@@ -16,7 +16,7 @@ public class IonFieldWriterArrayLong implements IIonFieldWriter {
     protected Field  field    = null;
     protected byte[] keyField = null;
 
-    public IonFieldWriterArrayLong(Field field) {
+    public IonFieldWriterArrayLong(Field field, String alias) {
         this.field = field;
         this.keyField = IonUtil.preGenerateKeyField(field);
     }

@@ -28,8 +28,9 @@ public class IonObjectReader {
         for(int i=0; i < fields.length; i++){
             putFieldReader(fields[i], IonUtil.createFieldReader(fields[i]));
         }
-
     }
+
+
 
     private void putFieldReader(Field field, IIonFieldReader fieldReader) {
         try {
