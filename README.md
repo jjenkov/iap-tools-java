@@ -24,6 +24,12 @@ The official specifications for IAP and ION can be found here:
 http://tutorials.jenkov.com/iap/index.html
 
 
+## ION vs. Other Data Formats
+If you are curious about ION's capabilities compared to other data formats, we have a rough comparision here:
+
+http://tutorials.jenkov.com/iap/ion-vs-other-formats.html
+
+
 ## ION Benchmarks
 As mentioned, ION is fast and compact. To back up this claim we have implemented a long list of benchmarks. You
 can find these benchmarks here:
