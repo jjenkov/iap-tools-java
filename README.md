@@ -1,9 +1,9 @@
 # IAP Tools for Java
 A Java toolkit for working with the IAP network protocol and its data format ION. IAP is a network protocol intended to replace HTTP, and possibly other protocols too.
 
-ION is IAP's standard data format. ION is used to encode IAP messages.
-ION can also be used to encode data (e.g. the result from a remote procedure call),
-but you can also nest other encodings as raw bytes inside ION.
+IAP encodes messages in a data format called ION.
+ION can be used to encode a wide variety of data (e.g. the result from a remote procedure call),
+and you can also nest other encodings (e.g raw bytes) inside ION.
 
 ION can be used separately from IAP. It is very flexible, compact and fast.
 You can use ION with IAP, with HTTP (instead of e.g. JSON), and also in log files
