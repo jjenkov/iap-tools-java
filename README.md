@@ -3,11 +3,11 @@ A Java toolkit for working with the IAP network protocol and its data format ION
 
 IAP is a network protocol intended to replace HTTP, and possibly other protocols too.
 
-IAP uses of a common message format (encoded using ION). This common message format can
-be used to transport messages from a set of semantic protocols. Semantic protocols are
-sub-protocols of IAP (protocols within IAP).
+IAP has a standard, binary data format called ION. ION is used to encode IAP messages.
+ION can also be used to encode data (e.g. the result from a remote procedure call),
+but you can also nest other encodings as raw bytes inside ION.
 
-ION can be used as a separate data format. It is very flexible, compact and fast.
+ION can be used separately from IAP. It is very flexible, compact and fast.
 You can use ION with IAP, with HTTP (instead of e.g. JSON), and also in log files
 and data files.
 
