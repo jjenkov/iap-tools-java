@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
  * An IIonObjectWriterConfigurator can read the <code>field</code> field to see what field (field writer)
  * this configuration is for.
  *
- * The name of the field is stored in the <code>name</code> field (but is also accesible
+ * The name of the field is stored in the <code>name</code> field (but is also accessible
  * via field.getName()).
  *
  * The <code>include</code> field defaults to true, but can be set to false. The IonObjectWriter will then not
