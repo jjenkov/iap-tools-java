@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * An IonObjectWriter instance can write an object (instance) of some class to ION data ("ionize" the object in other words).
- * An IonObjectWriter is targeted at a single class. To serialize objects of multiple classes, create one IonObjectWriter
+ * An IonObjectWriter is targeted at a single Java class. To serialize objects of multiple classes, create one IonObjectWriter
  * per class.
  *
  */
@@ -39,10 +39,10 @@ public class IonObjectWriter {
      * Creates an IonObjectWriter targeted at the class passed as parameter to this constructor.
      * The IIonObjectWriterConfigurator can configure (modify) this IonObjectWriter instance. For instance,
      * it can signal that some fields should not be included when writing the object, or modify what field
-     * name is to be used when writing the object.
+     * fieldName is to be used when writing the object.
      *
      * @param typeClass    The class this IonObjectWriter should be able to write instances of (to ION).
-     * @param configurator The configurator that can configure each field writer (one per field of the target class) in this IonWriter - even exclude them.
+     * @param configurator The configurator that can configure each field writer (one per field of the target class) in this IonObjectWriter - even exclude them.
      */
     public IonObjectWriter(Class typeClass, IIonObjectWriterConfigurator configurator){
         this.typeClass = typeClass;
@@ -55,7 +55,8 @@ public class IonObjectWriter {
 
         for(int i=0; i < fields.length; i++){
             fieldConfiguration.include = true;
-            fieldConfiguration.name = fields[i].getName();
+            fieldConfiguration.fieldName = fields[i].getName();
+            fieldConfiguration.alias = null;
 
             configurator.configure(fieldConfiguration);
 

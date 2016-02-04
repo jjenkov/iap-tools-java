@@ -271,5 +271,64 @@ public class IonObjectReaderTest {
     }
 
 
+    @Test
+    public void testReadWithConfigurator() {
+        IonObjectWriter writer = new IonObjectWriter(SmallPojo.class);
+        IonObjectReader reader = new IonObjectReader(SmallPojo.class);
+
+        SmallPojo sourcePojo = new SmallPojo();
+        sourcePojo.field0 = false;
+        sourcePojo.field1 = 999;
+        sourcePojo.field2 = 999.99f;
+
+        byte[] source   = new byte[100 * 1024];
+
+        writer.writeObject(sourcePojo, 2, source, 0);
+
+        SmallPojo readPojo = (SmallPojo) reader.read(source, 0);
+
+        assertEquals(false  , readPojo.field0);
+        assertEquals(999    , readPojo.field1);
+        assertEquals(999.99F, readPojo.field2, 0F);
+
+
+        IonObjectReader reader2 = new IonObjectReader(SmallPojo.class, config -> {
+            if("field2".equals(config.fieldName)){
+                config.include = false;
+            }
+        });
+
+        SmallPojo readPojo2 = (SmallPojo) reader2.read(source, 0);
+        assertEquals(false  , readPojo2.field0);
+        assertEquals(999    , readPojo2.field1);
+        assertEquals(123.12F, readPojo2.field2, 0F);  //value should not be read.
+
+
+        IonObjectWriter writer3 = new IonObjectWriter(SmallPojo.class, config -> {
+            if("field0".equals(config.fieldName)){
+                config.alias = "f0";
+            }
+        });
+
+        IonObjectReader reader3 = new IonObjectReader(SmallPojo.class, config -> {
+            if("field0".equals(config.fieldName)){
+                config.alias = "f0";
+            }
+        });
+
+
+        writer3.writeObject(sourcePojo, 2, source, 0);
+
+        SmallPojo readPojo3 = (SmallPojo) reader3.read(source, 0);
+
+        assertEquals(false  , readPojo3.field0);
+        assertEquals(999    , readPojo3.field1);
+        assertEquals(999.99F, readPojo3.field2, 0F);
+
+
+
+    }
+
+
 
 }

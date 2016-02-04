@@ -610,11 +610,11 @@ public class IonObjectWriterTest {
     @Test
     public void testFieldAliases() {
         IonObjectWriter writer = new IonObjectWriter(SmallPojo.class, config -> {
-            if("field0".equals(config.name)){
+            if("field0".equals(config.fieldName)){
                 config.alias = "f0";
-            } else if("field1".equals(config.name)){
+            } else if("field1".equals(config.fieldName)){
                 config.alias = "f1";
-            } else if("field2".equals(config.name)){
+            } else if("field2".equals(config.fieldName)){
                 config.include = false;
             }
         });

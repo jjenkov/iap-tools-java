@@ -9,7 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by jjenkov on 05-11-2015.
+ * An IonObjectReader instance can read an object (instance) of some class from ION data ("normalize" the object in
+ * other words). An IonObjectReader instance is targeted at a single Java class. To read objects of multiple classes,
+ * create on IonObjectReader per class you want to read instances of.
+ *
+ *
  */
 public class IonObjectReader {
 
@@ -20,21 +24,61 @@ public class IonObjectReader {
 
     private IonKeyFieldKey currentKeyFieldKey = new IonKeyFieldKey();
 
+
+    /**
+     * Creates an IonObjectReader targeted at the given class.
+     * @param typeClass The class this IonObjectReader instance should be able to read instances of, from ION data.
+     */
     public IonObjectReader(Class typeClass) {
         this.typeClass = typeClass;
 
         Field[] fields = this.typeClass.getDeclaredFields();
 
         for(int i=0; i < fields.length; i++){
-            putFieldReader(fields[i], IonUtil.createFieldReader(fields[i]));
+            putFieldReader(fields[i].getName(), IonUtil.createFieldReader(fields[i]));
+        }
+    }
+
+
+    /**
+     * Creates an IonObjectReader targeted at the given class.
+     * The IIonObjectReaderConfigurator can configure (modify) this IonObjectReader instance.
+     * For instance, the configurator can signal that some fields should not be read, or that different field names
+     * are used in the ION data which should be mapped to other field names in the target Java class.
+     *
+     * @param typeClass The class this IonObjectReader instance should be able to read instances of, from ION data.
+     * @param configurator  The configurator that can configure each field reader (one per field in the target class) of this IonObjectReader - even exclude them.
+     */
+    public IonObjectReader(Class typeClass, IIonObjectReaderConfigurator configurator) {
+        this.typeClass = typeClass;
+
+        Field[] fields = this.typeClass.getDeclaredFields();
+
+        IonFieldReaderConfiguration fieldConfiguration = new IonFieldReaderConfiguration();
+
+
+        for(int i=0; i < fields.length; i++) {
+            fieldConfiguration.include = true;
+            fieldConfiguration.fieldName = fields[i].getName();
+            fieldConfiguration.alias = null;
+
+            configurator.configure(fieldConfiguration);
+
+            if (fieldConfiguration.include) {
+                if (fieldConfiguration.alias == null) {
+                    putFieldReader(fields[i].getName(), IonUtil.createFieldReader(fields[i]));
+                } else {
+                    putFieldReader(fieldConfiguration.alias, IonUtil.createFieldReader(fields[i]));
+                }
+            }
         }
     }
 
 
 
-    private void putFieldReader(Field field, IIonFieldReader fieldReader) {
+    private void putFieldReader(String fieldName, IIonFieldReader fieldReader) {
         try {
-            this.fieldReaderMap.put(new IonKeyFieldKey(field.getName().getBytes("UTF-8")), fieldReader);
+            this.fieldReaderMap.put(new IonKeyFieldKey(fieldName.getBytes("UTF-8")), fieldReader);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

@@ -490,7 +490,7 @@ public class IonReaderTest {
         int index = 0;
         int object1StartIndex = index;
         index += IonWriter.writeObjectBegin(source, index, 2);
-        index += IonWriter.writeKey (source, index, "name");
+        index += IonWriter.writeKey (source, index, "fieldName");
         index += IonWriter.writeUtf8(source, index, "John");
         index += IonWriter.writeKey (source, index, "id");
         index += IonWriter.writeInt64 (source, index, 1234);
@@ -514,7 +514,7 @@ public class IonReaderTest {
 
         assertNotNull(object);
         assertEquals(2, object.size());
-        assertEquals("John", object.get("name")) ;
+        assertEquals("John", object.get("fieldName")) ;
         assertEquals(new Long(1234)  , object.get("id")) ;
 
 
@@ -562,7 +562,7 @@ public class IonReaderTest {
                 reader.next();
                 reader.parse();
 
-                if("name".equals(key)){
+                if("fieldName".equals(key)){
                     object.put(key, reader.readUtf8String());
                 } else if("id".equals(key)){
                     object.put(key, reader.readInt64());
