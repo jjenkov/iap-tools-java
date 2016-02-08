@@ -505,9 +505,7 @@ public class IonReaderTest {
 
             if(reader.fieldType == IonFieldTypes.OBJECT){
                 reader.moveInto();
-
                 object = parseObject();
-
                 reader.moveOutOf();
             }
         }
@@ -516,8 +514,6 @@ public class IonReaderTest {
         assertEquals(2, object.size());
         assertEquals("John", object.get("fieldName")) ;
         assertEquals(new Long(1234)  , object.get("id")) ;
-
-
 
         index = 0;
         object1StartIndex = index;
@@ -532,9 +528,7 @@ public class IonReaderTest {
 
             if(reader.fieldType == IonFieldTypes.OBJECT){
                 reader.moveInto();
-
                 object = parseObject();
-
                 reader.moveOutOf();
             }
         }
@@ -543,6 +537,49 @@ public class IonReaderTest {
         assertEquals(0, object.size());
 
     }
+    
+    @Test
+    public void testReadTable() {
+        byte[] source = new byte[10 * 1024];
+
+        int index = 0;
+        int object1StartIndex = index;
+        index += IonWriter.writeTableBegin(source, index, 2);
+        final String [] HEADERS =  new String[] {"field1FirstName", "field2LastName", "field3ID", "field4Phone", "field5Deceased" };
+        // write headers
+        index += IonWriter.writeKeys(source, index, HEADERS );
+        // write rows
+        index += IonWriter.writeValues(source, index, new Object[] {"John", "Doe", new Integer( 1234 ), "(512) 867-5309", Boolean.TRUE });
+        index += IonWriter.writeValues(source, index, new Object[] {"John", "Doe", new Integer( 1234 ), "(512) 867-5309", Boolean.FALSE });
+        IonWriter.writeTableEnd(source, object1StartIndex, 2, index - object1StartIndex -2 -1); //-2 = lengthLength, -1 = leadbyte
+
+        reader.setSource(source, 0, index);
+
+        String [] headers = null;
+        while(reader.hasNext()){
+            reader.next();
+            reader.parse();
+
+            if(reader.fieldType == IonFieldTypes.TABLE){
+                reader.moveInto();
+                headers = parseHeaders();
+                reader.moveOutOf();
+            }
+        }
+
+        assertNotNull(headers);
+        assertEquals(HEADERS.length, headers.length );
+        for ( int i = 0; i < HEADERS.length; i ++) {
+            assertEquals(HEADERS[i], headers[i] );
+        }
+ 
+        // TODO: Row test to follow.
+		
+        index = 0;
+        object1StartIndex = index;
+        index += IonWriter.writeObjectBegin(source, index, 2);
+        IonWriter.writeObjectEnd(source, object1StartIndex, 2, index - object1StartIndex -2 -1); //-2 = lengthLength, -1 = leadbyte
+    }    
 
     private Map parseObject() {
         Map object;
@@ -572,7 +609,53 @@ public class IonReaderTest {
         return object;
     }
 
+    /** Get the table header names. */
+    private String []  parseHeaders() {
+    	List<String>  headers = new LinkedList<String>();
+        while(reader.hasNext()){
+            reader.next();
+            reader.parse();
 
+            String key = null;
+            if(reader.fieldType == IonFieldTypes.KEY ||
+               reader.fieldType == IonFieldTypes.KEY_SHORT){
+                key = reader.readKeyAsUtf8String();
+                headers.add( key );
+            }
+        }
+        String[] headerArr = new String[headers.size()];
+        headerArr = headers.toArray(headerArr);        
+        return headerArr;
+    }
 
+    /** Get the table row columns. */
+    private String []  parseRowCols() {
+    	List<String>  rowCols = new LinkedList<String>();
+    	int index = 0;
+        while(reader.hasNext()){
+            reader.next();
+            reader.parse();
 
+            String key = null;
+            switch (reader.fieldType) {
+            	case IonFieldTypes.KEY: 
+            	case IonFieldTypes.KEY_SHORT:
+            	case IonFieldTypes.UTF_8:
+            	case IonFieldTypes.UTF_8_SHORT: {
+                    key = reader.readKeyAsUtf8String();
+                    rowCols.add( key );
+            	}
+            	// case IonFieldTypes.TINY:
+            	// case IonFieldTypes.INT_POS:
+            	// case IonFieldTypes.INT_NEG:
+            	// case IonFieldTypes.FLOAT:
+            	// case IonFieldTypes.TABLE:
+            	// case IonFieldTypes.ARRAY:
+            	default: throw new IllegalArgumentException( "cannot handle object type \"" + reader.fieldType + "\" type at position " + index++ + "." );
+            }
+        }
+        String[] rowColsArr = new String[rowCols.size()];
+        rowColsArr = rowCols.toArray(rowColsArr);        
+        return rowColsArr;
+    }
 }
