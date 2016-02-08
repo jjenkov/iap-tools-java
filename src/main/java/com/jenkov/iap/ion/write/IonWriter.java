@@ -14,6 +14,8 @@ import java.util.Calendar;
  */
 public class IonWriter {
 
+	/** Maximum length of keyShort String. */
+	public static int KEY_SHORT_MAX = 15; 
 
     public byte[] dest      = null;
     public int    destIndex = 0;
@@ -371,7 +373,7 @@ public class IonWriter {
         System.arraycopy(utf8Bytes, 0, this.dest, this.destIndex, length);
         this.destIndex += length;
     }
-
+    
     public void writeKeyShort(byte[] value){
         if(value == null){
             this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.KEY_SHORT << 4));
@@ -832,6 +834,96 @@ public class IonWriter {
         return 2 + lengthLength; // 1 lead byte, 1 extended type id byte, lengthLength element count bytes
     }
 
+    /** Method for use with tables. Writes proper type based on Object class. */
+    public void writeValues( Object [] values){
+    	int index = 0;
+    	for ( Object value : values ) {
+    	    String clazz = value.getClass().getSimpleName();
+    	    switch( clazz ) {
+    	    	case "String": { writeUtf8( (String) values[ index++ ] ); break;}
+    	    	case "Boolean": { writeBooleanObj( (Boolean) values[ index++ ] ); break;}
+    	    	case "Float": { writeFloat32Obj( (Float) values[ index++ ] ); break;}
+    	    	case "Double": { writeFloat64Obj( (Double) values[ index++ ] ); break;}
+    	    	case "Integer": { writeInt64Obj( (Long) values[ index++ ] ); break;}
+    	    	case "Long": { writeInt64Obj( (Long) values[ index++ ] ); break;}
+    	    	default: throw new IllegalArgumentException( "cannot handle object \"" + value + "\" type at position " + index + ". Do not use primitives with this method." );
+    	    }
+    	}
+    }
+    
+    /** Method for use with tables. Writes proper type based on Object class. */
+    public static int writeValues( byte[] dest, int destOffset, Object [] values){
+        if(values == null){
+            dest[destOffset++] = (byte) (255 & (IonFieldTypes.INT_POS << 4));
+            return 1;
+        }
+    	int index = 0;
+    	int length = 0;
+    	for ( Object value : values ) {
+    	    String clazz = value.getClass().getSimpleName();
+    	    switch( clazz ) {
+    	    	case "String": { length += IonWriter.writeUtf8( dest, destOffset + length, (String) values[ index++ ] ); break;}
+    	    	case "Boolean": { length += IonWriter.writeBooleanObj( dest, destOffset + length, (Boolean) values[ index++ ] ); break;}
+    	    	case "Float": { length += IonWriter.writeFloat32Obj( dest, destOffset + length, (Float) values[ index++ ] ); break;}
+    	    	case "Double": { length += IonWriter.writeFloat64Obj( dest, destOffset + length, (Double) values[ index++ ] ); break;}
+    	    	case "Integer": { length += IonWriter.writeInt64Obj( dest, destOffset + length, new Long( (Integer) values[ index++ ]) ); break;}
+    	    	case "Long": { length += IonWriter.writeInt64Obj( dest, destOffset + length, (Long) values[ index++ ] ); break;}
+    	    	default: throw new IllegalArgumentException( "cannot handle object \"" + value + "\" type at position " + index + ". Do not use primitives with this method." );
+    	    }
+    	}
+    	return length;
+    }
+    
+    /** A convenience method for writing multiple keys. */
+    public void writeKeys(String [] keys){
+    	for ( String key : keys ) {
+    		this.writeKey(key);
+    	}
+    }
+    
+    /** A convenience method for writing multiple short keys. */
+    public void writeKeyShorts(String [] keys){
+    	int index = 0;
+    	for ( String key : keys ) {
+    		if ( key.length() >= KEY_SHORT_MAX) {
+    			throw new IllegalArgumentException( "key \"" + key + "\" in position " + index++ + " is longer than maxium length " + KEY_SHORT_MAX );
+    		}    		
+    		this.writeKeyShort(key);
+    	}
+    }
+    
+    /** A convenience method for writing multiple keys. */
+    public static int writeKeys(byte [] dest, int destOffset, String [] keys ) {
+        if(keys == null){
+            dest[destOffset++] = (byte) (255 & (IonFieldTypes.KEY << 4));
+            return 1;
+        }
+        int total = 0;
+    	for ( String key: keys) {
+    		int length = IonWriter.writeKey(dest, destOffset, key);
+    		destOffset += length;
+    		total += length;
+        }
+    	return total;
+    }
 
-
+    /** A convenience method for writing multiple short keys. */
+    public static int writeKeyShorts(byte [] dest, int destOffset, String [] keys ) {
+        if(keys == null){
+            dest[destOffset++] = (byte) (255 & (IonFieldTypes.KEY << 4));
+            return 1;
+        }
+        int total = 0;
+        int index = 0;
+    	for ( String key: keys) {
+    		if ( key.length() >= KEY_SHORT_MAX) {
+    			throw new IllegalArgumentException( "key \"" + key + "\" in position " + index++ + " is longer than maxium length " + KEY_SHORT_MAX );
+    		}
+    		int length = IonWriter.writeKeyShort(dest, destOffset, key);
+    		destOffset += length;
+    		total += length;
+        }
+    	return total;
+    }
+       
 }
