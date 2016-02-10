@@ -40,5 +40,16 @@ https://github.com/jjenkov/iap-tools-java-benchmarks
 
 
 
+## A Note to Contributors
+We are happy to receive contributions to IAP Tools, but please be aware that we have already a plan for the future direction
+of the API. We will not be accepting pull requests that do not fit 100% with that direction.
+
+If you want a feature, you can ask for it. If it fits with where IAP Tools is going, we will add the feature
+(sooner or later). If not, we will reject the feature and tell you why.
+
+If you need some kind of feature that isn't on our road map, implement the feature in a component that wraps the IAP Tools
+component(s) that it uses. That way you can have that feature - outside of IAP Tools - but at least you have it.
+
+
 
 
