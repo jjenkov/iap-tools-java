@@ -32,10 +32,11 @@ public class IonUtil {
         return 8;
     }
 
-    public static IIonFieldWriter createFieldWriter(Field field){
-        return createFieldWriter(field, field.getName());
+    public static IIonFieldWriter createFieldWriter(Field field, IIonObjectWriterConfigurator configurator){
+        return createFieldWriter(field, field.getName(), configurator);
     }
-    public static IIonFieldWriter createFieldWriter(Field field, String alias){
+
+    public static IIonFieldWriter createFieldWriter(Field field, String alias, IIonObjectWriterConfigurator configurator){
         field.setAccessible(true); //allows access to private fields, and supposedly speeds up reflection...  ?
         Class fieldType = field.getType();
 
@@ -88,11 +89,12 @@ public class IonUtil {
             if(double.class.equals(fieldType.getComponentType())){
                 return new IonFieldWriterArrayDouble(field, alias);
             }
-            return new IonFieldWriterTable(field, alias);
+            return new IonFieldWriterTable(field, alias, configurator);
         }
 
-        return new IonFieldWriterObject(field, alias);
+        return new IonFieldWriterObject(field, alias, configurator);
     }
+
 
     public static IIonFieldReader createFieldReader(Field field){
         field.setAccessible(true); //allows access to private fields, and supposedly speeds up reflection...  ?

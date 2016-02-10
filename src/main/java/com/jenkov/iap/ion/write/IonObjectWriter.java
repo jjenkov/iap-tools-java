@@ -23,15 +23,9 @@ public class IonObjectWriter {
      *
      * @param typeClass The class this IonObjectWriter should be able to write instances of (to ION).
      */
+
     public IonObjectWriter(Class typeClass) {
-        this.typeClass = typeClass;
-
-        Field[] fields = this.typeClass.getDeclaredFields();
-        this.fieldWriters = new IIonFieldWriter[fields.length];
-
-        for(int i=0; i < fields.length; i++){
-            fieldWriters[i] = IonUtil.createFieldWriter(fields[i]);
-        }
+        this(typeClass, IonObjectWriterConfiguratorNopImpl.DEFAULT_INSTANCE);
     }
 
 
@@ -49,7 +43,7 @@ public class IonObjectWriter {
 
         Field[] fields = this.typeClass.getDeclaredFields();
 
-        List<IIonFieldWriter> fieldWriterTemp = new ArrayList<IIonFieldWriter>();
+        List<IIonFieldWriter> fieldWritersTemp = new ArrayList<IIonFieldWriter>();
 
         IonFieldWriterConfiguration fieldConfiguration = new IonFieldWriterConfiguration();
 
@@ -62,17 +56,17 @@ public class IonObjectWriter {
 
             if(fieldConfiguration.include){
                 if(fieldConfiguration.alias == null){
-                    fieldWriterTemp.add(IonUtil.createFieldWriter(fields[i]));
+                    fieldWritersTemp.add(IonUtil.createFieldWriter(fields[i], configurator));
                 } else {
-                    fieldWriterTemp.add(IonUtil.createFieldWriter(fields[i], fieldConfiguration.alias));
+                    fieldWritersTemp.add(IonUtil.createFieldWriter(fields[i], fieldConfiguration.alias, configurator));
                 }
             }
         }
 
-        this.fieldWriters = new IIonFieldWriter[fieldWriterTemp.size()];
+        this.fieldWriters = new IIonFieldWriter[fieldWritersTemp.size()];
 
-        for(int i=0, n=fieldWriterTemp.size(); i < n; i++){
-            this.fieldWriters[i] = fieldWriterTemp.get(i);
+        for(int i=0, n=fieldWritersTemp.size(); i < n; i++){
+            this.fieldWriters[i] = fieldWritersTemp.get(i);
         }
     }
 

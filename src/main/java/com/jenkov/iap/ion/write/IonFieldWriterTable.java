@@ -6,6 +6,8 @@ import com.jenkov.iap.ion.IonUtil;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jjenkov on 04-11-2015.
@@ -20,20 +22,42 @@ public class IonFieldWriterTable implements IIonFieldWriter {
     protected IIonFieldWriter[] fieldWritersForArrayType = null;
 
 
-    public IonFieldWriterTable(Field field, String alias) {
+    public IonFieldWriterTable(Field field, String alias, IIonObjectWriterConfigurator configurator) {
         this.field = field;
         this.keyField = IonUtil.preGenerateKeyField(alias);
 
         Class typeInTable = field.getType().getComponentType();
 
         Field [] typeInTableFields = typeInTable.getDeclaredFields();
-        fieldWritersForArrayType = new IIonFieldWriter[typeInTableFields.length];
 
-        byte[][] fieldNames = new byte[typeInTableFields.length][];
+        List<IonFieldWriterConfiguration> fieldWriterConfigurationsTemp = new ArrayList<>();
+
+        for(int i=0; i<typeInTableFields.length; i++){
+            IonFieldWriterConfiguration fieldConfiguration = new IonFieldWriterConfiguration();
+            fieldConfiguration.field = typeInTableFields[i];
+            fieldConfiguration.include = true;
+            fieldConfiguration.fieldName = typeInTableFields[i].getName();
+            fieldConfiguration.alias = null;
+
+            configurator.configure(fieldConfiguration);
+
+            if(fieldConfiguration.include){
+                fieldWriterConfigurationsTemp.add(fieldConfiguration);
+            }
+        }
+
+
+        fieldWritersForArrayType = new IIonFieldWriter[fieldWriterConfigurationsTemp.size()];
+        byte[][] fieldNames = new byte[fieldWriterConfigurationsTemp.size()][];
         int totalKeyFieldsLength = 0;
-        for(int i=0; i < typeInTableFields.length; i++){
+
+        for(int i=0; i < fieldWriterConfigurationsTemp.size(); i++){
             try {
-                fieldNames[i] = typeInTableFields[i].getName().getBytes("UTF-8");
+                if(fieldWriterConfigurationsTemp.get(i).alias != null){
+                    fieldNames[i] = fieldWriterConfigurationsTemp.get(i).alias.getBytes("UTF-8");
+                } else {
+                    fieldNames[i] = fieldWriterConfigurationsTemp.get(i).fieldName.getBytes("UTF-8");
+                }
 
                 totalKeyFieldsLength += fieldNames[i].length;
 
@@ -44,8 +68,10 @@ public class IonFieldWriterTable implements IIonFieldWriter {
                     totalKeyFieldsLength += 1 + IonUtil.lengthOfInt64Value(fieldNames[i].length);
                 }
 
-                fieldWritersForArrayType[i] = IonUtil.createFieldWriter(typeInTableFields[i]);
+                fieldWritersForArrayType[i] = IonUtil.createFieldWriter(fieldWriterConfigurationsTemp.get(i).field, configurator);
+
             } catch (UnsupportedEncodingException e) {
+                //todo rethrow this exception if it ever occurs.
                 e.printStackTrace();
             }
 
