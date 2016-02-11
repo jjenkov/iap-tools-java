@@ -48,6 +48,7 @@ public class IonObjectWriter {
         IonFieldWriterConfiguration fieldConfiguration = new IonFieldWriterConfiguration();
 
         for(int i=0; i < fields.length; i++){
+            fieldConfiguration.field = fields[i];
             fieldConfiguration.include = true;
             fieldConfiguration.fieldName = fields[i].getName();
             fieldConfiguration.alias = null;
