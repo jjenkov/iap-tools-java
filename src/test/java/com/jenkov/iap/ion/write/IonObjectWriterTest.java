@@ -786,4 +786,288 @@ public class IonObjectWriterTest {
         assertEquals(  9, 255 & dest[index++]);
     }
 
+
+    @Test
+    public void testConfiguratorOnTablesRecursively() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArray10Float.class, fieldConfig -> {
+
+            assertNotNull(fieldConfig.field);
+
+            if(PojoArray10Float.class.equals(fieldConfig.field.getDeclaringClass())){
+                if("field0".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f0";
+                }
+                System.out.println("Configurator applied to PojoArray10Float");
+            }
+            if(Pojo10Float.class.equals(fieldConfig.field.getDeclaringClass())){
+                System.out.println("Configurator applied to Pojo10Float");
+                if("field0".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f0";
+                } else if("field1".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f1";
+                } else if("field2".equals(fieldConfig.fieldName)){
+                    fieldConfig.include = false;
+                }
+            }
+        });
+
+        byte[] dest   = new byte[100 * 1024];
+
+        PojoArray10Float pojo = new PojoArray10Float(3);
+
+        int bytesWritten = writer.writeObject(pojo, 2, dest, 0);
+
+        System.out.println("bytesWritten = " + bytesWritten);
+
+        int index = 0;
+        assertEquals((IonFieldTypes.OBJECT << 4) | 2, 255 & dest[index++]);
+        assertEquals(   0, 255 & dest[index++]);
+        assertEquals( 199, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 5, 255 & dest[index++]);
+        assertEquals('p', 255 & dest[index++]);
+        assertEquals('o', 255 & dest[index++]);
+        assertEquals('j', 255 & dest[index++]);
+        assertEquals('o', 255 & dest[index++]);
+        assertEquals('s', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.TABLE << 4) | 2, 255 & dest[index++]);
+        assertEquals(   0, 255 & dest[index++]);
+        assertEquals( 190, 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 2, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('0', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 2, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('1', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('3', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('4', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('5', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('6', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('7', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('8', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('9', 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F)      ), 255 & dest[index++]);
+
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F)      ), 255 & dest[index++]);
+
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1.1F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12.12F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(1234.1234F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(12345.12345F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1.1F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12.12F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-123.123F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-1234.1234F)      ), 255 & dest[index++]);
+
+        assertEquals((IonFieldTypes.FLOAT << 4) | 4, 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F) >> 24), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F) >> 16), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F) >>  8), 255 & dest[index++]);
+        assertEquals(255 & (Float.floatToIntBits(-12345.12345F)      ), 255 & dest[index++]);
+
+
+    }
+
+
+
+
+
 }
