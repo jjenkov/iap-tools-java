@@ -96,7 +96,15 @@ public class IonUtil {
     }
 
 
+    //todo remove this ?
+    /*
     public static IIonFieldReader createFieldReader(Field field){
+        return createFieldReader(field, null);
+    }
+    */
+
+    public static IIonFieldReader createFieldReader(Field field, IIonObjectReaderConfigurator configurator){
+
         field.setAccessible(true); //allows access to private fields, and supposedly speeds up reflection...  ?
         Class fieldType = field.getType();
 
@@ -146,9 +154,9 @@ public class IonUtil {
             if(double.class.equals(fieldType.getComponentType())){
                 return new IonFieldReaderArrayDouble(field);
             }
-            return new IonFieldReaderTable(field);
+            return new IonFieldReaderTable(field, configurator);
         } else {
-            return new IonFieldReaderObject(field);
+            return new IonFieldReaderObject(field, configurator);
         }
 
         //todo support object field writer
