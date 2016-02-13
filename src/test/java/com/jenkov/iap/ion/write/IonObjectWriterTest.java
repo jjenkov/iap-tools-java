@@ -676,16 +676,6 @@ public class IonObjectWriterTest {
         byte[] dest   = new byte[100 * 1024];
 
         PojoWithPojo pojo = new PojoWithPojo();
-        pojo.field0.field0 = 10;
-        pojo.field0.field1 = 11;
-        pojo.field0.field2 = 12;
-        pojo.field0.field3 = 13;
-        pojo.field0.field4 = 14;
-        pojo.field0.field5 = 15;
-        pojo.field0.field6 = 16;
-        pojo.field0.field7 = 17;
-        pojo.field0.field8 = 18;
-        pojo.field0.field9 = 19;
 
         int bytesWritten = writer.writeObject(pojo, 2, dest, 0);
 
@@ -709,14 +699,14 @@ public class IonObjectWriterTest {
         assertEquals('0', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
-        assertEquals( 10, 255 & dest[index++]);
+        assertEquals(  0, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 2, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
         assertEquals('1', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
-        assertEquals( 11, 255 & dest[index++]);
+        assertEquals(  1, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
@@ -727,7 +717,7 @@ public class IonObjectWriterTest {
         assertEquals('3', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
-        assertEquals( 13, 255 & dest[index++]);
+        assertEquals(  3, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
@@ -738,7 +728,7 @@ public class IonObjectWriterTest {
         assertEquals('4', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
-        assertEquals( 14, 255 & dest[index++]);
+        assertEquals(  4, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
@@ -749,7 +739,7 @@ public class IonObjectWriterTest {
         assertEquals('5', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
-        assertEquals( 15, 255 & dest[index++]);
+        assertEquals(  5, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
@@ -760,7 +750,7 @@ public class IonObjectWriterTest {
         assertEquals('6', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
-        assertEquals( 16, 255 & dest[index++]);
+        assertEquals(  6, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
@@ -771,7 +761,7 @@ public class IonObjectWriterTest {
         assertEquals('7', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
-        assertEquals( 17, 255 & dest[index++]);
+        assertEquals(  7, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
@@ -782,7 +772,7 @@ public class IonObjectWriterTest {
         assertEquals('8', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
-        assertEquals( 18, 255 & dest[index++]);
+        assertEquals(  8, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);
@@ -793,7 +783,7 @@ public class IonObjectWriterTest {
         assertEquals('9', 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.INT_POS << 4) | 1, 255 & dest[index++]);
-        assertEquals( 19, 255 & dest[index++]);
+        assertEquals(  9, 255 & dest[index++]);
     }
 
 
@@ -821,10 +811,12 @@ public class IonObjectWriterTest {
             }
         });
 
+        byte[] dest   = new byte[100 * 1024];
+
         PojoArray10Float pojo = new PojoArray10Float(3);
 
-        byte[] dest   = new byte[100 * 1024];
         int bytesWritten = writer.writeObject(pojo, 2, dest, 0);
+
         System.out.println("bytesWritten = " + bytesWritten);
 
         int index = 0;

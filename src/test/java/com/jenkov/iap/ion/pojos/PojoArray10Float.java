@@ -8,7 +8,7 @@ public class PojoArray10Float {
     public Pojo10Float[] pojos = null;
 
     public PojoArray10Float() {
-
+        this(3);
     }
 
     public PojoArray10Float(int count) {
