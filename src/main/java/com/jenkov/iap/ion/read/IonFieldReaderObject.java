@@ -22,38 +22,22 @@ public class IonFieldReaderObject implements IIonFieldReader {
 
     private IonKeyFieldKey currentKeyFieldKey = new IonKeyFieldKey();
 
-    public IonFieldReaderObject(Field field, IIonObjectReaderConfigurator configurator) {
+    public IonFieldReaderObject(Field field) {
         this.field = field;
 
         this.typeClass = field.getType();
 
         Field[] fields = this.typeClass.getDeclaredFields();
 
-        IonFieldReaderConfiguration fieldConfiguration = new IonFieldReaderConfiguration();
-
-
         for(int i=0; i < fields.length; i++){
-            fieldConfiguration.field     =  fields[i];
-            fieldConfiguration.include   = true;
-            fieldConfiguration.fieldName = fields[i].getName();
-            fieldConfiguration.alias     = null;
-
-            configurator.configure(fieldConfiguration);
-
-            if (fieldConfiguration.include) {
-                if (fieldConfiguration.alias == null) {
-                    putFieldReader(fields[i].getName(), IonUtil.createFieldReader(fields[i], configurator));
-                } else {
-                    putFieldReader(fieldConfiguration.alias, IonUtil.createFieldReader(fields[i], configurator));
-                }
-            }
+            putFieldReader(fields[i], IonUtil.createFieldReader(fields[i]));
         }
 
     }
 
-    private void putFieldReader(String fieldName, IIonFieldReader fieldReader) {
+    private void putFieldReader(Field field, IIonFieldReader fieldReader) {
         try {
-            this.fieldReaderMap.put(new IonKeyFieldKey(fieldName.getBytes("UTF-8")), fieldReader);
+            this.fieldReaderMap.put(new IonKeyFieldKey(field.getName().getBytes("UTF-8")), fieldReader);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

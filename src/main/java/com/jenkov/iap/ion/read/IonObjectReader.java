@@ -30,8 +30,6 @@ public class IonObjectReader {
      * @param typeClass The class this IonObjectReader instance should be able to read instances of, from ION data.
      */
     public IonObjectReader(Class typeClass) {
-        this(typeClass, new IonObjectReaderConfiguratorNopImpl());
-        /*
         this.typeClass = typeClass;
 
         Field[] fields = this.typeClass.getDeclaredFields();
@@ -39,8 +37,7 @@ public class IonObjectReader {
         for(int i=0; i < fields.length; i++){
             putFieldReader(fields[i].getName(), IonUtil.createFieldReader(fields[i]));
         }
-        */
-     }
+    }
 
 
     /**
@@ -59,19 +56,19 @@ public class IonObjectReader {
 
         IonFieldReaderConfiguration fieldConfiguration = new IonFieldReaderConfiguration();
 
+
         for(int i=0; i < fields.length; i++) {
-            fieldConfiguration.field     =  fields[i];
-            fieldConfiguration.include   = true;
+            fieldConfiguration.include = true;
             fieldConfiguration.fieldName = fields[i].getName();
-            fieldConfiguration.alias     = null;
+            fieldConfiguration.alias = null;
 
             configurator.configure(fieldConfiguration);
 
             if (fieldConfiguration.include) {
                 if (fieldConfiguration.alias == null) {
-                    putFieldReader(fields[i].getName(), IonUtil.createFieldReader(fields[i], configurator));
+                    putFieldReader(fields[i].getName(), IonUtil.createFieldReader(fields[i]));
                 } else {
-                    putFieldReader(fieldConfiguration.alias, IonUtil.createFieldReader(fields[i], configurator));
+                    putFieldReader(fieldConfiguration.alias, IonUtil.createFieldReader(fields[i]));
                 }
             }
         }
