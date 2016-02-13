@@ -324,11 +324,183 @@ public class IonObjectReaderTest {
         assertEquals(false  , readPojo3.field0);
         assertEquals(999    , readPojo3.field1);
         assertEquals(999.99F, readPojo3.field2, 0F);
-
-
-
     }
 
+
+
+
+    @Test
+    public void testReadWithConfiguratorRecursively() {
+        IonObjectWriter writer = new IonObjectWriter(PojoWithPojo.class, fieldConfig -> {
+
+            assertNotNull(fieldConfig.field);
+
+            if(PojoWithPojo.class.equals(fieldConfig.field.getDeclaringClass())){
+                if("field0".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f0";
+                }
+            }
+            if(Pojo10Int.class.equals(fieldConfig.field.getDeclaringClass())){
+                if("field0".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f0";
+                } else if("field1".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f1";
+                }
+            }
+        });
+
+        byte[] dest   = new byte[100 * 1024];
+
+        PojoWithPojo pojo = new PojoWithPojo();
+        pojo.field0.field0 = 10;
+        pojo.field0.field1 = 11;
+        pojo.field0.field2 = 12;
+        pojo.field0.field3 = 13;
+        pojo.field0.field4 = 14;
+        pojo.field0.field5 = 15;
+        pojo.field0.field6 = 16;
+        pojo.field0.field7 = 17;
+        pojo.field0.field8 = 18;
+        pojo.field0.field9 = 19;
+
+        int bytesWritten = writer.writeObject(pojo, 2, dest, 0);
+
+        System.out.println("bytesWritten = " + bytesWritten);
+
+
+        IonObjectReader reader = new IonObjectReader(PojoWithPojo.class, fieldConfig -> {
+            if(PojoWithPojo.class.equals(fieldConfig.field.getDeclaringClass())){
+                if("field0".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f0";
+                }
+            }
+            if(Pojo10Int.class.equals(fieldConfig.field.getDeclaringClass())){
+                if("field0".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f0";
+                } else if("field1".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f1";
+                } else if("field2".equals(fieldConfig.fieldName)){
+                    fieldConfig.include = false;
+                }
+            }
+        });
+
+        PojoWithPojo pojoRead = (PojoWithPojo) reader.read(dest, 0);
+
+        assertNotNull(pojoRead);
+        assertNotNull(pojoRead.field0);
+
+        assertEquals(10, pojoRead.field0.field0);
+        assertEquals(11, pojoRead.field0.field1);
+        assertEquals( 2, pojoRead.field0.field2);
+        assertEquals(13, pojoRead.field0.field3);
+        assertEquals(14, pojoRead.field0.field4);
+        assertEquals(15, pojoRead.field0.field5);
+        assertEquals(16, pojoRead.field0.field6);
+        assertEquals(17, pojoRead.field0.field7);
+        assertEquals(18, pojoRead.field0.field8);
+        assertEquals(19, pojoRead.field0.field9);
+    }
+
+
+    @Test
+    public void testReadWithConfiguratorOnTablesRecursively() {
+        IonObjectWriter writer = new IonObjectWriter(PojoArray10Float.class, fieldConfig -> {
+
+            assertNotNull(fieldConfig.field);
+
+            if(PojoArray10Float.class.equals(fieldConfig.field.getDeclaringClass())){
+                if("field0".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f0";
+                }
+            }
+            if(Pojo10Float.class.equals(fieldConfig.field.getDeclaringClass())){
+                if("field0".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f0";
+                } else if("field1".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f1";
+                }
+            }
+        });
+
+        PojoArray10Float pojo = new PojoArray10Float(3);
+        pojo.pojos[0].field0 = 111.111f;
+        pojo.pojos[0].field2 = 222.222f; //this field is ignored in the reader, so in the read object it should have the default value.
+        pojo.pojos[0].field3 = 333.333f;
+
+        pojo.pojos[1].field0 = 444.444f;
+        pojo.pojos[1].field2 = 222.222f; //this field is ignored in the reader, so in the read object it should have the default value.
+        pojo.pojos[1].field3 = 555.555f;
+
+        pojo.pojos[2].field0 = 666.666f;
+        pojo.pojos[2].field2 = 222.222f; //this field is ignored in the reader, so in the read object it should have the default value.
+        pojo.pojos[2].field3 = 777.777f;
+
+
+        byte[] dest   = new byte[100 * 1024];
+
+        int bytesWritten = writer.writeObject(pojo, 2, dest, 0);
+        System.out.println("bytesWritten = " + bytesWritten);
+
+
+        IonObjectReader reader = new IonObjectReader(PojoArray10Float.class, fieldConfig -> {
+            if(PojoArray10Float.class.equals(fieldConfig.field.getDeclaringClass())){
+                if("field0".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f0";
+                }
+//                System.out.println("Configurator applied to PojoArray10Float");
+            }
+            if(Pojo10Float.class.equals(fieldConfig.field.getDeclaringClass())){
+                if("field0".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f0";
+                } else if("field1".equals(fieldConfig.fieldName)){
+                    fieldConfig.alias = "f1";
+                } else if("field2".equals(fieldConfig.fieldName)){
+                    fieldConfig.include = false;
+                }
+//                System.out.println("Configurator applied to Pojo10Float");
+            }
+        });
+
+
+        PojoArray10Float pojoRead = (PojoArray10Float) reader.read(dest, 0);
+
+        assertEquals(3, pojoRead.pojos.length);
+
+        assertEquals(111.111F     , pojoRead.pojos[0].field0, 0F);
+        assertEquals(12.12F       , pojoRead.pojos[0].field1, 0F);
+        assertEquals(123.123F     , pojoRead.pojos[0].field2, 0F);
+        assertEquals(333.333F     , pojoRead.pojos[0].field3, 0F);
+        assertEquals(12345.12345F , pojoRead.pojos[0].field4, 0F);
+        assertEquals(-1.1F        , pojoRead.pojos[0].field5, 0F);
+        assertEquals(-12.12F      , pojoRead.pojos[0].field6, 0F);
+        assertEquals(-123.123F    , pojoRead.pojos[0].field7, 0F);
+        assertEquals(-1234.1234F  , pojoRead.pojos[0].field8, 0F);
+        assertEquals(-12345.12345F, pojoRead.pojos[0].field9, 0F);
+
+        assertEquals(444.444F     , pojoRead.pojos[1].field0, 0F);
+        assertEquals(12.12F       , pojoRead.pojos[1].field1, 0F);
+        assertEquals(123.123F     , pojoRead.pojos[1].field2, 0F);
+        assertEquals(555.555F     , pojoRead.pojos[1].field3, 0F);
+        assertEquals(12345.12345F , pojoRead.pojos[1].field4, 0F);
+        assertEquals(-1.1F        , pojoRead.pojos[1].field5, 0F);
+        assertEquals(-12.12F      , pojoRead.pojos[1].field6, 0F);
+        assertEquals(-123.123F    , pojoRead.pojos[1].field7, 0F);
+        assertEquals(-1234.1234F  , pojoRead.pojos[1].field8, 0F);
+        assertEquals(-12345.12345F, pojoRead.pojos[1].field9, 0F);
+
+        assertEquals(666.666F     , pojoRead.pojos[2].field0, 0F);
+        assertEquals(12.12F       , pojoRead.pojos[2].field1, 0F);
+        assertEquals(123.123F     , pojoRead.pojos[2].field2, 0F);
+        assertEquals(777.777F     , pojoRead.pojos[2].field3, 0F);
+        assertEquals(12345.12345F , pojoRead.pojos[2].field4, 0F);
+        assertEquals(-1.1F        , pojoRead.pojos[2].field5, 0F);
+        assertEquals(-12.12F      , pojoRead.pojos[2].field6, 0F);
+        assertEquals(-123.123F    , pojoRead.pojos[2].field7, 0F);
+        assertEquals(-1234.1234F  , pojoRead.pojos[2].field8, 0F);
+        assertEquals(-12345.12345F, pojoRead.pojos[2].field9, 0F);
+
+    }
 
 
 }
