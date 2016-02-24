@@ -58,6 +58,24 @@ public class IonWriter {
         this.destIndex += length;
     }
 
+    public void writeBytes(byte[] source, int sourceOffset, int sourceLength) {
+        if(source == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.BYTES << 4)); //lengthLength = 0 means null value
+            return ;
+        }
+
+        int lengthLength = IonUtil.lengthOfInt64Value(sourceLength);
+
+        this.dest[destIndex++] = (byte) (255 & ((IonFieldTypes.BYTES << 4) | lengthLength));
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            dest[destIndex++] = (byte) (255 & (sourceLength >> i));
+        }
+
+        System.arraycopy(source, sourceOffset, dest, destIndex, sourceLength);
+        this.destIndex += sourceLength;
+    }
+
     public void writeBoolean(boolean value){
         if(value){
             this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 1));
@@ -223,6 +241,30 @@ public class IonWriter {
 
             System.arraycopy(value, 0, this.dest, this.destIndex, length);
             this.destIndex += length;
+        }
+
+    }
+
+    public void writeUtf8(byte[] source, int sourceOffset, int sourceLength){
+        if(source == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.UTF_8 << 4));
+            return ;
+        }
+
+        if(sourceLength <=15){
+            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.UTF_8_SHORT << 4) | sourceLength));
+            System.arraycopy(source, sourceOffset, this.dest, this.destIndex, sourceLength);
+            this.destIndex += sourceLength;
+        } else {
+            int lengthLength   = IonUtil.lengthOfInt64Value(sourceLength);
+            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.UTF_8 << 4) | lengthLength));
+
+            for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+                this.dest[this.destIndex++] = (byte) (255 & (sourceLength >> i));
+            }
+
+            System.arraycopy(source, sourceOffset, this.dest, this.destIndex, sourceLength);
+            this.destIndex += sourceLength;
         }
 
     }
@@ -446,6 +488,26 @@ public class IonWriter {
         return 1 + lengthLength + length;
     }
 
+    public static int writeBytes(byte[] dest, int destOffset, byte[] source, int sourceOffset, int sourceLength){
+
+        if(source == null){
+            dest[destOffset++] = (byte) (255 & (IonFieldTypes.BYTES << 4)); //lengthLength = 0 means null value
+            return 1;
+        }
+
+        int lengthLength = IonUtil.lengthOfInt64Value(sourceLength);
+
+        dest[destOffset++] = (byte) (255 & ((IonFieldTypes.BYTES << 4) | lengthLength));
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            dest[destOffset++] = (byte) (255 & (sourceLength >> i));
+        }
+
+        System.arraycopy(source, sourceOffset, dest, destOffset, sourceLength);
+
+        return 1 + lengthLength + sourceLength;
+    }
+
     public static int writeBoolean(byte[] dest, int destOffset, boolean value){
         if(value){
             dest[destOffset++] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 1));
@@ -628,6 +690,30 @@ public class IonWriter {
             System.arraycopy(value, 0, dest, destOffset, length);
 
             return 1 + lengthLength + length;
+        }
+    }
+
+    public static int writeUtf8(byte[] dest, int destOffset, byte[] source, int sourceOffset, int sourceLength){
+        if(source == null){
+            dest[destOffset++] = (byte) (255 & (IonFieldTypes.UTF_8 << 4));
+            return 1;
+        }
+
+        if(sourceLength <= 15 ){
+            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8_SHORT << 4) | sourceLength));
+            System.arraycopy(source, sourceOffset, dest, destOffset, sourceLength);
+            return 1 + sourceLength;
+        } else {
+            int lengthLength   = IonUtil.lengthOfInt64Value(sourceLength);
+            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.UTF_8 << 4) | lengthLength));
+
+            for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+                dest[destOffset++] = (byte) (255 & (sourceLength >> i));
+            }
+
+            System.arraycopy(source, sourceOffset, dest, destOffset, sourceLength);
+
+            return 1 + lengthLength + sourceLength;
         }
     }
 

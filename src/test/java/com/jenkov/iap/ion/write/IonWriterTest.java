@@ -15,10 +15,11 @@ import static org.junit.Assert.assertEquals;
  */
 public class IonWriterTest {
 
+    byte[] dest = new byte[100 *1024];
+
+
     @Test
     public void testDirectWriteMethod() throws UnsupportedEncodingException {
-        byte[] dest = new byte[100 * 1024];
-
         int index = 10;
         IonWriter writer = new IonWriter();
         writer.setDestination(dest, index);
@@ -171,6 +172,103 @@ public class IonWriterTest {
     }
 
 
+    @Test
+    public void testWriteBytes() {
+
+        int index = 0;
+        int bytesWritten = IonWriter.writeBytes(dest, 0, new byte[]{1,2,3,4,5}, 1,3);
+        assertEquals(5, bytesWritten);
+        assertEquals((IonFieldTypes.BYTES << 4) | 1, 255 & dest[index++]);
+        assertEquals(3, 255 & dest[index++]); //length byte
+        assertEquals(2, 255 & dest[index++]);
+        assertEquals(3, 255 & dest[index++]);
+        assertEquals(4, 255 & dest[index++]);
+
+        index = 10;
+        IonWriter writer = new IonWriter();
+        writer.setDestination(dest, 10);
+        writer.writeBytes(new byte[]{6,7,8,9,10}, 1,3);
+
+        assertEquals(15, writer.destIndex);
+        assertEquals((IonFieldTypes.BYTES << 4) | 1, 255 & dest[index++]);
+        assertEquals(3, 255 & dest[index++]); //length byte
+        assertEquals(7, 255 & dest[index++]);
+        assertEquals(8, 255 & dest[index++]);
+        assertEquals(9, 255 & dest[index++]);
+    }
+
+
+    @Test
+    public void testWriteUtf8() {
+        int index = 0;
+        int bytesWritten = IonWriter.writeUtf8(dest, 0, new byte[]{1,2,3,4,5}, 1,3);
+        assertEquals(4, bytesWritten);
+        assertEquals((IonFieldTypes.UTF_8_SHORT << 4) | 3, 255 & dest[index++]);
+        assertEquals(2, 255 & dest[index++]);
+        assertEquals(3, 255 & dest[index++]);
+        assertEquals(4, 255 & dest[index++]);
+
+        index = 10;
+        bytesWritten = IonWriter.writeUtf8(dest, index, new byte[]{'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r'}, 1,16);
+        assertEquals(18, bytesWritten);
+        assertEquals((IonFieldTypes.UTF_8 << 4) | 1, 255 & dest[index++]);
+        assertEquals(16, 255 & dest[index++]);
+        assertEquals('b', 255 & dest[index++]);
+        assertEquals('c', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('g', 255 & dest[index++]);
+        assertEquals('h', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('j', 255 & dest[index++]);
+        assertEquals('k', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('m', 255 & dest[index++]);
+        assertEquals('n', 255 & dest[index++]);
+        assertEquals('o', 255 & dest[index++]);
+        assertEquals('p', 255 & dest[index++]);
+        assertEquals('q', 255 & dest[index++]);
+
+        index = 10;
+        IonWriter writer = new IonWriter();
+        writer.setDestination(dest, 10);
+        writer.writeUtf8(new byte[]{6,7,8,9,10}, 1,3);
+
+        assertEquals(14, writer.destIndex);
+        assertEquals((IonFieldTypes.UTF_8_SHORT << 4) | 3, 255 & dest[index++]);
+        assertEquals(7, 255 & dest[index++]);
+        assertEquals(8, 255 & dest[index++]);
+        assertEquals(9, 255 & dest[index++]);
+
+
+        index = 10;
+        writer.setDestination(dest, 10);
+        writer.writeUtf8(new byte[]{'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r'}, 1,16);
+
+        assertEquals(28, writer.destIndex);
+        assertEquals((IonFieldTypes.UTF_8 << 4) | 1, 255 & dest[index++]);
+        assertEquals(16, 255 & dest[index++]);
+        assertEquals('b', 255 & dest[index++]);
+        assertEquals('c', 255 & dest[index++]);
+        assertEquals('d', 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('f', 255 & dest[index++]);
+        assertEquals('g', 255 & dest[index++]);
+        assertEquals('h', 255 & dest[index++]);
+        assertEquals('i', 255 & dest[index++]);
+        assertEquals('j', 255 & dest[index++]);
+        assertEquals('k', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('m', 255 & dest[index++]);
+        assertEquals('n', 255 & dest[index++]);
+        assertEquals('o', 255 & dest[index++]);
+        assertEquals('p', 255 & dest[index++]);
+        assertEquals('q', 255 & dest[index++]);
+
+
+    }
+
 
     @Test
     public void testPrimitiveWriteMethods() {
@@ -188,6 +286,7 @@ public class IonWriterTest {
         assertEquals(1, 255 & dest[index++]);
         assertEquals(2, 255 & dest[index++]);
         assertEquals(3, 255 & dest[index++]);
+
 
         writer.writeBytes(null);
         assertEquals(6, writer.destIndex);
