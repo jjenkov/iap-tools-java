@@ -389,6 +389,22 @@ public class IonReader {
         return new String(this.source, this.index, this.fieldLength);
     }
 
+    public long readKeyShortAsLong() {
+        if(this.fieldLengthLength == 0) {
+            return 0;
+        }
+
+        int valueIndex = this.index;
+        long value = 255 & this.source[valueIndex++];
+        for(int i=1; i<this.fieldLengthLength; i++){
+            value <<= 8;
+            value |= 255 & this.source[valueIndex++];
+        }
+
+        return value;
+    }
+
+
     public long readElementCount() {
         //this.index++; //move over the first byte after lead byte - because this byte is the extended field id byte.
 

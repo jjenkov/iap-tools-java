@@ -18,6 +18,22 @@ public class IonReaderTest {
     IonReader reader = new IonReader();
 
     @Test
+    public void testSetSource() {
+        byte[] source = new byte[10 * 1024];
+
+        int index = 0;
+        index += IonWriter.writeBytes(source, index, new byte[]{1, 2, 3, 4, 5});
+        index += IonWriter.writeBytes(source, index, null);
+
+        IonReader ionReader = new IonReader();
+        assertFalse(ionReader.hasNext());
+
+        ionReader.setSource(source, 0, index);
+        assertTrue(ionReader.hasNext());
+    }
+
+
+    @Test
     public void testReadBytes() {
         byte[] source = new byte[10 * 1024];
         byte[] dest   = new byte[10 * 1024];

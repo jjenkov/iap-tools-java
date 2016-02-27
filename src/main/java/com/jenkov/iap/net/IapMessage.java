@@ -18,7 +18,7 @@ public class IapMessage {
 
     // start + end index of a byte sequence representing the receiver id
     public int receiverIdOffset     = -1;
-    public int receiverIdLength     = 0;
+    public int receiverIdLength     =  0;
 
 
     public long    connectionId     = -1;
