@@ -1,4 +1,4 @@
-package com.jenkov.iap.net;
+package com.jenkov.iap.message;
 
 import org.junit.Test;
 

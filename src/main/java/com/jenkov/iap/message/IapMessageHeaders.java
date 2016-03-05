@@ -1,4 +1,4 @@
-package com.jenkov.iap.net;
+package com.jenkov.iap.message;
 
 /**
  * Created by jjenkov on 21-02-2016.

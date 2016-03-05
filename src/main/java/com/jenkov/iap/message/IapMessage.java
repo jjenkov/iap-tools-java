@@ -1,4 +1,4 @@
-package com.jenkov.iap.net;
+package com.jenkov.iap.message;
 
 /**
  * A class that can be used to represent an IAP message. An IapMessage instance does not contain all information
