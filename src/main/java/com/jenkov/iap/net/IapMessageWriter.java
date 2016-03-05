@@ -1,5 +1,6 @@
 package com.jenkov.iap.net;
 
+import com.jenkov.iap.ion.IonFieldTypes;
 import com.jenkov.iap.ion.IonKeyField;
 import com.jenkov.iap.ion.write.IonWriter;
 
@@ -18,6 +19,15 @@ public class IapMessageWriter {
     public static final IonKeyField SEMANTIC_PROTOCOL_ID_KEY      = new IonKeyField(new byte[]{IapMessageHeaders.SEMANTIC_PROTOCOL_ID_KEY_FIELD_VALUE});
     public static final IonKeyField SEMANTIC_PROTOCOL_VERSION_KEY = new IonKeyField(new byte[]{IapMessageHeaders.SEMANTIC_PROTOCOL_VERSION_KEY_FIELD_VALUE});
     public static final IonKeyField MESSAGE_TYPE_KEY              = new IonKeyField(new byte[]{IapMessageHeaders.MESSAGE_TYPE_KEY_FIELD_VALUE});
+
+
+    public static int writeMessageBegin(byte[] dest, int destOffset, int lengthLength){
+        return IonWriter.writeObjectBegin(dest, destOffset, lengthLength);
+    }
+
+    public static void writeMessageEnd(byte[] dest, int destOffset, int lengthLength, int length){
+        IonWriter.writeObjectEnd(dest, destOffset, lengthLength, length);
+    }
 
 
     public static int writeSenderId(byte[] dest, int destOffset, byte[] senderId) {
@@ -126,11 +136,13 @@ public class IapMessageWriter {
     }
 
 
-    public static int writeIapMessageHeaders(byte[] dest, int destOffset, IapMessage message){
+    public static int writeIapMessageHeaders(byte[] dest, int destOffset, IapMessage message, int lengthLength){
         int totalLength = 0;
 
+        totalLength += writeMessageBegin(dest, destOffset, lengthLength);
+
         if(message.senderIdLength > 0){
-            totalLength += writeSenderId(dest, destOffset, message.data, message.senderIdOffset, message.senderIdLength);
+            totalLength += writeSenderId(dest, destOffset + totalLength, message.data, message.senderIdOffset, message.senderIdLength);
         }
         if(message.receiverIdLength > 0 ){
             totalLength += writeReceiverId(dest, destOffset + totalLength, message.data, message.receiverIdOffset, message.receiverIdLength);

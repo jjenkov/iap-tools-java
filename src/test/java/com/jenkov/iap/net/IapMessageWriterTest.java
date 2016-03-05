@@ -220,9 +220,9 @@ public class IapMessageWriterTest {
     public void testWriteIapMessageHeaders() {
         IapMessage message = new IapMessage();
 
-        int bytesWritten = IapMessageWriter.writeIapMessageHeaders(dest, 0, message);
+        int bytesWritten = IapMessageWriter.writeIapMessageHeaders(dest, 0, message, 2);
 
-        assertEquals(0, bytesWritten);
+        assertEquals(3, bytesWritten);
 
         message.data = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29};
 
@@ -250,7 +250,11 @@ public class IapMessageWriterTest {
         //message.semanticProtocolIdLength =
 
         int index = 0;
-        bytesWritten = IapMessageWriter.writeIapMessageHeaders(dest, index, message);
+        bytesWritten = IapMessageWriter.writeIapMessageHeaders(dest, index, message, 2);
+
+        assertEquals((IonFieldTypes.OBJECT << 4) | 2, 255 & dest[index++]);
+        assertEquals(0, 255 & dest[index++]);   //reserved 2 empty bytes for the length later (lengthLength = 2).
+        assertEquals(0, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 1, 255 & dest[index++]);
         assertEquals(IapMessageHeaders.SENDER_ID_KEY_FIELD_VALUE, 255 & dest[index++]);

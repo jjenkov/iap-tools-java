@@ -1,5 +1,6 @@
 package com.jenkov.iap.net;
 
+import com.jenkov.iap.error.IapToolsException;
 import com.jenkov.iap.ion.IonFieldTypes;
 import com.jenkov.iap.ion.read.IonReader;
 
@@ -10,9 +11,11 @@ public class IapMessageReader {
 
     public IonReader ionReader = new IonReader();
 
+    /*
     public void setSource(byte[] source, int offset, int length){
         this.ionReader.setSource(source, offset, length);
     }
+    */
 
 
     public IapMessage readIapMessage(byte[] source, int sourceOffset){
@@ -22,8 +25,37 @@ public class IapMessageReader {
 
 
     public IapMessage readIapMessage(byte[] source, int sourceOffset, IapMessage message) {
-
         message.data = source;
+
+
+        int leadByte     = 255 & source[sourceOffset];
+
+        int ionFieldType        = leadByte >> 4;
+
+        if(ionFieldType != IonFieldTypes.OBJECT){
+            throw new IapToolsException("IAP message should use ION Object field type. Was something else.");
+        }
+
+        int messageLengthLength = leadByte & 15;
+
+        System.out.println("messageLengthLength = " + messageLengthLength);
+
+        int messageLength = 0;
+        for(int i=0; i<messageLengthLength; i++){
+            messageLength <<= 8;
+            messageLength |= 255 & source[sourceOffset + 1 + i]; //+1 to get past lead byte
+        }
+        System.out.println("messageLength = " + messageLength);
+
+        this.ionReader.setSource(source, 0, 1 + messageLengthLength + messageLength);
+
+
+
+        //read into message ION Object field - we have verified above that it exists.
+        ionReader.next();
+        ionReader.parse();
+        ionReader.moveInto();
+
 
         boolean endOfHeadersFound = false;
         while(!endOfHeadersFound && ionReader.hasNext()){
@@ -123,6 +155,8 @@ public class IapMessageReader {
                 }
             }
         }
+
+        ionReader.moveOutOf();
 
         return message;
     }
