@@ -807,10 +807,10 @@ public class IonObjectWriterTest {
                 if("field0".equals(fieldConfig.fieldName)){
                     fieldConfig.alias = "f0";
                 }
-                System.out.println("Configurator applied to PojoArray10Float");
+                //System.out.println("Configurator applied to PojoArray10Float");
             }
             if(Pojo10Float.class.equals(fieldConfig.field.getDeclaringClass())){
-                System.out.println("Configurator applied to Pojo10Float");
+                //System.out.println("Configurator applied to Pojo10Float");
                 if("field0".equals(fieldConfig.fieldName)){
                     fieldConfig.alias = "f0";
                 } else if("field1".equals(fieldConfig.fieldName)){
