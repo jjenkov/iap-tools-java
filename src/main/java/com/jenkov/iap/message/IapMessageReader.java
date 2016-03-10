@@ -74,8 +74,11 @@ public class IapMessageReader {
                         ionReader.next();
                         ionReader.parse();
 
-                        message.senderIdOffset = ionReader.index;        // index of first byte of sender id
-                        message.senderIdLength = ionReader.fieldLength;  // length of sender id
+                        if(message.senderId != null){
+                            message.senderId.source = source;
+                            message.senderId.offset = ionReader.index;        // index of first byte of sender id
+                            message.senderId.length = ionReader.fieldLength;  // length of sender id
+                        }
                         break;
                     }
 
@@ -83,8 +86,11 @@ public class IapMessageReader {
                         ionReader.next();
                         ionReader.parse();
 
-                        message.receiverIdOffset = ionReader.index;
-                        message.receiverIdLength = ionReader.fieldLength;
+                        if(message.receiverId != null){
+                            message.receiverId.source = source;
+                            message.receiverId.offset = ionReader.index;
+                            message.receiverId.length = ionReader.fieldLength;
+                        }
                         break;
                     }
 
@@ -128,24 +134,36 @@ public class IapMessageReader {
                         ionReader.next();
                         ionReader.parse();
 
-                        message.semanticProtocolIdOffset = ionReader.index;
-                        message.semanticProtocolIdLength = ionReader.fieldLength;
+                        if(message.semanticProtocolId != null){
+                            message.semanticProtocolId.source = source;
+                            message.semanticProtocolId.offset = ionReader.index;
+                            message.semanticProtocolId.length = ionReader.fieldLength;
+
+                        }
+
                         break;
                     }
                     case IapMessageHeaders.SEMANTIC_PROTOCOL_VERSION_KEY_FIELD_VALUE : {
                         ionReader.next();
                         ionReader.parse();
 
-                        message.semanticProtocolVersionOffset = ionReader.index;
-                        message.semanticProtocolVersionLength = ionReader.fieldLength;
+                        if(message.semanticProtocolVersion != null){
+                            message.semanticProtocolVersion.source = source;
+                            message.semanticProtocolVersion.offset = ionReader.index;
+                            message.semanticProtocolVersion.length = ionReader.fieldLength;
+
+                        }
                         break;
                     }
                     case IapMessageHeaders.MESSAGE_TYPE_KEY_FIELD_VALUE : {
                         ionReader.next();
                         ionReader.parse();
 
-                        message.messageTypeOffset = ionReader.index;
-                        message.messageTypeLength = ionReader.fieldLength;
+                        if(message.messageType != null){
+                            message.messageType.source = source;
+                            message.messageType.offset = ionReader.index;
+                            message.messageType.length = ionReader.fieldLength;
+                        }
                         break;
                     }
 

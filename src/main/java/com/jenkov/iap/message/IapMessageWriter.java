@@ -140,13 +140,12 @@ public class IapMessageWriter {
 
         totalLength += writeMessageBegin(dest, destOffset, lengthLength);
 
-        if(message.senderIdLength > 0){
-            totalLength += writeSenderId(dest, destOffset + totalLength, message.data, message.senderIdOffset, message.senderIdLength);
+        if(message.receiverId != null ){
+            totalLength += writeReceiverId(dest, destOffset + totalLength, message.receiverId.source, message.receiverId.offset, message.receiverId.length);
         }
-        if(message.receiverIdLength > 0 ){
-            totalLength += writeReceiverId(dest, destOffset + totalLength, message.data, message.receiverIdOffset, message.receiverIdLength);
+        if(message.senderId != null){
+            totalLength += writeSenderId(dest, destOffset + totalLength, message.senderId.source, message.senderId.offset, message.senderId.length);
         }
-
         if(message.channelId > -1 ){
             totalLength += writeChannelId(dest, destOffset + totalLength, message.channelId);
         }
@@ -160,16 +159,16 @@ public class IapMessageWriter {
             totalLength += writeIsLastInSequence(dest, destOffset + totalLength, message.isLastInSequence);
         }
 
-        if(message.semanticProtocolIdLength > 0){
-            totalLength += writeSemanticProtocolId(dest, destOffset + totalLength, message.data, message.semanticProtocolIdOffset, message.semanticProtocolIdLength);
+        if(message.semanticProtocolId != null){
+            totalLength += writeSemanticProtocolId(dest, destOffset + totalLength, message.semanticProtocolId.source, message.semanticProtocolId.offset, message.semanticProtocolId.length);
         }
 
-        if(message.semanticProtocolVersionLength > 0){
-            totalLength += writeSemanticProtocolVersion(dest, destOffset + totalLength, message.data, message.semanticProtocolIdOffset, message.semanticProtocolIdLength);
+        if(message.semanticProtocolVersion != null){
+            totalLength += writeSemanticProtocolVersion(dest, destOffset + totalLength, message.semanticProtocolVersion.source, message.semanticProtocolVersion.offset, message.semanticProtocolVersion.length);
         }
 
-        if(message.messageTypeLength > 0){
-            totalLength += writeMessageType(dest, destOffset + totalLength, message.data, message.messageTypeOffset, message.messageTypeLength);
+        if(message.messageType != null){
+            totalLength += writeMessageType(dest, destOffset + totalLength, message.data, message.messageType.offset, message.messageType.length);
         }
 
         return totalLength;

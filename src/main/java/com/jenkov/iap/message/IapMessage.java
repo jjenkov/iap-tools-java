@@ -1,5 +1,7 @@
 package com.jenkov.iap.message;
 
+import com.jenkov.iap.ion.types.Utf8;
+
 /**
  * A class that can be used to represent an IAP message. An IapMessage instance does not contain all information
  * from an IAP message. An IapMessage instance primarily contains the standard IAP message headers, with a potential
@@ -13,12 +15,14 @@ public class IapMessage {
     public byte[] data    = null; //a reference to the byte array containing the
 
     // start + end index of a byte sequence representing the sender id
-    public int senderIdOffset       = -1;
-    public int senderIdLength       = 0;
+    public Utf8 senderId = null;
+    //public int senderIdOffset       = -1;
+    //public int senderIdLength       = 0;
 
     // start + end index of a byte sequence representing the receiver id
-    public int receiverIdOffset     = -1;
-    public int receiverIdLength     =  0;
+    public Utf8 receiverId = null;
+    //public int receiverIdOffset     = -1;
+    //public int receiverIdLength     =  0;
 
 
     public long    connectionId     = -1;
@@ -29,16 +33,19 @@ public class IapMessage {
 
 
     // start + end index of a byte sequence representing the semantic protocol id
-    public int semanticProtocolIdOffset = 0;
-    public int semanticProtocolIdLength = 0;
+    public Utf8 semanticProtocolId = null;
+    //public int semanticProtocolIdOffset = 0;
+    //public int semanticProtocolIdLength = 0;
 
     // start + end index of a byte sequence representing the semantic protocol version
-    public int semanticProtocolVersionOffset = 0;
-    public int semanticProtocolVersionLength = 0;
+    public Utf8 semanticProtocolVersion = null;
+    //public int semanticProtocolVersionOffset = 0;
+    //public int semanticProtocolVersionLength = 0;
 
     // start + end index of a byte sequence representing the message type
-    public int messageTypeOffset = 0;
-    public int messageTypeLength = 0;
+    public Utf8 messageType = null;
+    //public int messageTypeOffset = 0;
+    //public int messageTypeLength = 0;
 
 
 }

@@ -1,6 +1,7 @@
 package com.jenkov.iap.message;
 
 import com.jenkov.iap.ion.IonFieldTypes;
+import com.jenkov.iap.ion.types.Utf8;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
@@ -226,28 +227,36 @@ public class IapMessageWriterTest {
 
         message.data = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29};
 
-        message.senderIdOffset = 1;
-        message.senderIdLength = 3;
+        message.receiverId = new Utf8();
+        message.receiverId.source = message.data;
+        message.receiverId.offset = 1;
+        message.receiverId.length = 3;
 
-        message.receiverIdOffset = 6;
-        message.receiverIdLength = 3;
+        message.senderId = new Utf8();
+        message.senderId.source = message.data;
+        message.senderId.offset = 6;
+        message.senderId.length = 3;
 
         message.channelId = 11;
         message.sequenceId = 12;
         message.sequenceIndex = 13;
         message.isLastInSequence = true;
 
-        message.semanticProtocolIdOffset = 16;
-        message.semanticProtocolIdLength = 3;
+        message.semanticProtocolId = new Utf8();
+        message.semanticProtocolId.source = message.data;
+        message.semanticProtocolId.offset = 16;
+        message.semanticProtocolId.length = 3;
 
-        message.semanticProtocolVersionOffset = 21;
-        message.semanticProtocolVersionLength = 3;
+        message.semanticProtocolVersion = new Utf8();
+        message.semanticProtocolVersion.source = message.data;
+        message.semanticProtocolVersion.offset = 21;
+        message.semanticProtocolVersion.length = 3;
 
-        message.messageTypeOffset = 26;
-        message.messageTypeLength = 3;
+        message.messageType = new Utf8();
+        message.messageType.source = message.data;
+        message.messageType.offset = 26;
+        message.messageType.length = 3;
 
-
-        //message.semanticProtocolIdLength =
 
         int index = 0;
         bytesWritten = IapMessageWriter.writeIapMessageHeaders(dest, index, message, 2);
@@ -256,17 +265,17 @@ public class IapMessageWriterTest {
         assertEquals(0, 255 & dest[index++]);   //reserved 2 empty bytes for the length later (lengthLength = 2).
         assertEquals(0, 255 & dest[index++]);
 
+
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 1, 255 & dest[index++]);
-        assertEquals(IapMessageHeaders.SENDER_ID_KEY_FIELD_VALUE, 255 & dest[index++]);
+        assertEquals(IapMessageHeaders.RECEIVER_ID_KEY_FIELD_VALUE, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.UTF_8_SHORT << 4) | 3, 255 & dest[index++]);
         assertEquals(1, 255 & dest[index++]);
         assertEquals(2, 255 & dest[index++]);
         assertEquals(3, 255 & dest[index++]);
 
-
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 1, 255 & dest[index++]);
-        assertEquals(IapMessageHeaders.RECEIVER_ID_KEY_FIELD_VALUE, 255 & dest[index++]);
+        assertEquals(IapMessageHeaders.SENDER_ID_KEY_FIELD_VALUE, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.UTF_8_SHORT << 4) | 3, 255 & dest[index++]);
         assertEquals(6, 255 & dest[index++]);
@@ -312,9 +321,9 @@ public class IapMessageWriterTest {
         assertEquals(IapMessageHeaders.SEMANTIC_PROTOCOL_VERSION_KEY_FIELD_VALUE, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.UTF_8_SHORT << 4) | 3, 255 & dest[index++]);
-        assertEquals(16, 255 & dest[index++]);
-        assertEquals(17, 255 & dest[index++]);
-        assertEquals(18, 255 & dest[index++]);
+        assertEquals(21, 255 & dest[index++]);
+        assertEquals(22, 255 & dest[index++]);
+        assertEquals(23, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 1, 255 & dest[index++]);
         assertEquals(IapMessageHeaders.MESSAGE_TYPE_KEY_FIELD_VALUE, 255 & dest[index++]);
