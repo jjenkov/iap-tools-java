@@ -47,6 +47,34 @@ public class IapTcpClient {
      * You must make sure that the ByteBuffer has been "flipped" correctly before the writing
      * takes place. This method does not call ByteBuffer.flip() before accessing the ByteBuffer.
      *
+     * <br><br>
+     * This method uses a busy loop to keep trying to write data to the underlying SocketChannel.
+     * This method will keep looping until all data in the ByteBuffer has been written to the SocketChannel.
+     *
+     * @param source The ByteBuffer which contents you want written to the underlying SocketChannel.
+
+     */
+    public int writeAll(ByteBuffer source) throws IOException, InterruptedException {
+        int totalBytesWritten = 0;
+        while(source.hasRemaining()){
+            int bytesWritten = this.socketChannel.write(source);
+            totalBytesWritten += bytesWritten;
+        }
+
+        return totalBytesWritten;
+    }
+
+
+    /**
+     * Writes all bytes in the ByteBuffer to the underlying socket channel.
+     * You must make sure that the ByteBuffer has been "flipped" correctly before the writing
+     * takes place. This method does not call ByteBuffer.flip() before accessing the ByteBuffer.
+     *
+     * <br><br>
+     * This method will call SocketChannel.write() in a loop until all data in the ByteBuffer has been fully written.
+     * For every call to SocketChannel.write() which results in 0 bytes being written, this method will sleep N nanoseconds
+     * to give the OS + network time to send any queued data out on the network.
+     *
      * @param source The ByteBuffer which contents you want written to the underlying SocketChannel.
      * @param nanoSecondDelay In case a write attempt results in 0 bytes being written, the thread will sleep this amount
      *                        of nano seconds before trying next time, to give the OS + network some time to send the data
@@ -77,20 +105,20 @@ public class IapTcpClient {
     /**
      * This method reads all immediately available data from the underlying SocketChannel. In other words, this
      * method keeps calling SocketChannel.read() until either the ByteBuffer is full, or the SocketChannel.read()
-     * method returns 0 (= 0 bytes read). After one of these events occur, this readAll() method returns - with
+     * method returns 0 (= 0 bytes read). After one of these events occur, this readAvailable() method returns - with
      * the total number of bytes read as return value.
      *
      * @param dest The ByteBuffer to read the available data into.
      * @return     The total number of bytes read into the ByteBuffer.
      * @throws IOException If reading data from the underlying SocketChannel fails.
      */
-    public int readAll(ByteBuffer dest) throws IOException {
+    public int readAvailable(ByteBuffer dest) throws IOException {
         int totalBytesRead = 0;
         int bytesRead = this.socketChannel.read(dest);
 
         while(bytesRead > 0 && dest.hasRemaining()){
             totalBytesRead += bytesRead;
-            this.socketChannel.read(dest);
+            bytesRead = this.socketChannel.read(dest);
         }
         return totalBytesRead;
     }
