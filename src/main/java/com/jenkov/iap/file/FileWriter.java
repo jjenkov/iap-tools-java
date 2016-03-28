@@ -14,6 +14,16 @@ import java.util.Date;
  */
 public class FileWriter implements AutoCloseable {
 
+    public static final int ONE_SECOND = 1000;
+    public static final int ONE_MINUTE = ONE_SECOND * 60;
+    public static final int ONE_HOUR   = ONE_MINUTE * 60;
+    public static final int ONE_DAY    = ONE_HOUR   * 24;
+
+    public static final int ONE_MB     = 1024 * 1024;
+
+
+
+
     /** the record length for each record is stored as an int (4 bytes) in the log file. */
     private static final int RECORD_LENGTH_BYTE_COUNT = 4;
     private static final int BUFFERED_OUTPUT_STREAM_BUFFER_SIZE = 8 * 1024 * 1024;
@@ -165,18 +175,23 @@ public class FileWriter implements AutoCloseable {
     }
     */
 
-    public void write(byte[] logRecordBytes) throws IOException {
-        write(logRecordBytes, 0, logRecordBytes.length);
+    public void write(byte[] data) throws IOException {
+        write(data, 0, data.length);
     }
 
-    public void write(byte[] logRecordBytes, int offset, int length) throws IOException {
+    public void write(byte[] dataSource, int offset, int length) throws IOException {
         //checkForLogFileRoll(length + RECORD_LENGTH_BYTE_COUNT);
         //this.dataOutput.writeInt(length);
         //this.currentLogFileSize +=  length + RECORD_LENGTH_BYTE_COUNT; //4 bytes for the record length int stored before each record
 
         checkForLogFileRoll(length);
-        this.output.write(logRecordBytes, offset, length);
+        this.output.write(dataSource, offset, length);
         this.currentLogFileSize +=  length;
+    }
+
+
+    public void flush() throws IOException {
+        this.output.flush();
     }
 
 
