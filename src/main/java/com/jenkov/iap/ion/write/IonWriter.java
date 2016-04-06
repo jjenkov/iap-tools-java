@@ -460,6 +460,38 @@ public class IonWriter {
 
     }
 
+    public void writeComplexTypeId(byte[] complexTypeId){
+        int lengthLength = IonUtil.lengthOfInt64Value(complexTypeId.length);
+
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.EXTENDED << 4) | lengthLength));
+        this.dest[this.destIndex++] = IonFieldTypes.COMPLEX_TYPE_ID; //extended type id follows after lead byte.
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            this.dest[this.destIndex++] = (byte) (255 & (complexTypeId.length >> i));
+        }
+
+        for(int i=0; i<complexTypeId.length; i++){
+            this.dest[this.destIndex++] = complexTypeId[i];
+        }
+
+    }
+
+    public void writeComplexTypeVersion(byte[] complexTypeVersion){
+        int lengthLength = IonUtil.lengthOfInt64Value(complexTypeVersion.length);
+
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.EXTENDED << 4) | lengthLength));
+        this.dest[this.destIndex++] = IonFieldTypes.COMPLEX_TYPE_VERSION; //extended type id follows after lead byte.
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            this.dest[this.destIndex++] = (byte) (255 & (complexTypeVersion.length >> i));
+        }
+
+        for(int i=0; i<complexTypeVersion.length; i++){
+            this.dest[this.destIndex++] = complexTypeVersion[i];
+        }
+
+    }
+
 
     /*
      ======================================================
@@ -916,6 +948,40 @@ public class IonWriter {
         }
 
         return 2 + lengthLength; // 1 lead byte, 1 extended type id byte, lengthLength element count bytes
+    }
+
+
+    public static int writeComplexTypeId(byte[] dest, int destOffset, byte[] value) {
+        int lengthLength = IonUtil.lengthOfInt64Value(value.length);
+        dest[destOffset++] = (byte) (255 & ((IonFieldTypes.EXTENDED << 4) | lengthLength));
+        dest[destOffset++] = (byte) IonFieldTypes.COMPLEX_TYPE_ID;
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            dest[destOffset++] = (byte) (255 & (value.length >> i));
+        }
+
+        for(int i=0; i<value.length; i++){
+            dest[destOffset++] = value[i];
+        }
+
+        return 2 + lengthLength + value.length;
+    }
+
+
+    public static int writeComplexTypeVersion(byte[] dest, int destOffset, byte[] value) {
+        int lengthLength = IonUtil.lengthOfInt64Value(value.length);
+        dest[destOffset++] = (byte) (255 & ((IonFieldTypes.EXTENDED << 4) | lengthLength));
+        dest[destOffset++] = (byte) IonFieldTypes.COMPLEX_TYPE_VERSION;
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            dest[destOffset++] = (byte) (255 & (value.length >> i));
+        }
+
+        for(int i=0; i<value.length; i++){
+            dest[destOffset++] = value[i];
+        }
+
+        return 2 + lengthLength + value.length;
     }
 
 

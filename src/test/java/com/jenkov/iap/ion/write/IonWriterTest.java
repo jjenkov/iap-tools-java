@@ -484,6 +484,100 @@ public class IonWriterTest {
         assertEquals( 999 & 255, 255 & dest[index++]);
     }
 
+    @Test
+    public void testWriteComplexTypeId() throws UnsupportedEncodingException {
+        byte[] dest = new byte[100 * 1024];
+
+        byte[] complexTypeId = "123abc".getBytes("UTF-8");
+
+        IonWriter writer = new IonWriter();
+        writer.setDestination(dest, 0);
+
+        writer.writeComplexTypeId(dest, 0, complexTypeId);
+
+        int index = 0;
+        assertEquals( (IonFieldTypes.EXTENDED << 4) | 1, 255 & dest[index++]);
+        assertEquals( IonFieldTypes.COMPLEX_TYPE_ID    , 255 & dest[index++]);
+        assertEquals( complexTypeId.length             , 255 & dest[index++]);
+
+        assertEquals( '1' , 255 & dest[index++]);
+        assertEquals( '2' , 255 & dest[index++]);
+        assertEquals( '3' , 255 & dest[index++]);
+        assertEquals( 'a' , 255 & dest[index++]);
+        assertEquals( 'b' , 255 & dest[index++]);
+        assertEquals( 'c' , 255 & dest[index++]);
+    }
+
+    @Test
+    public void testWriteComplexTypeIdStatic() throws UnsupportedEncodingException {
+        byte[] dest = new byte[100 * 1024];
+
+        byte[] complexTypeId = "123abc".getBytes("UTF-8");
+
+        IonWriter.writeComplexTypeId(dest, 0, complexTypeId);
+
+        int index = 0;
+        assertEquals( (IonFieldTypes.EXTENDED << 4) | 1, 255 & dest[index++]);
+        assertEquals( IonFieldTypes.COMPLEX_TYPE_ID    , 255 & dest[index++]);
+        assertEquals( complexTypeId.length             , 255 & dest[index++]);
+
+        assertEquals( '1' , 255 & dest[index++]);
+        assertEquals( '2' , 255 & dest[index++]);
+        assertEquals( '3' , 255 & dest[index++]);
+        assertEquals( 'a' , 255 & dest[index++]);
+        assertEquals( 'b' , 255 & dest[index++]);
+        assertEquals( 'c' , 255 & dest[index++]);
+    }
+
+    @Test
+    public void testWriteComplexTypeVersion() throws UnsupportedEncodingException {
+        byte[] dest = new byte[100 * 1024];
+
+        byte[] complexTypeId = "01.02.03".getBytes("UTF-8");
+
+        IonWriter writer = new IonWriter();
+        writer.setDestination(dest, 0);
+
+        writer.writeComplexTypeVersion(dest, 0, complexTypeId);
+
+        int index = 0;
+        assertEquals( (IonFieldTypes.EXTENDED << 4) | 1   , 255 & dest[index++]);
+        assertEquals( IonFieldTypes.COMPLEX_TYPE_VERSION  , 255 & dest[index++]);
+        assertEquals( complexTypeId.length                , 255 & dest[index++]);
+
+        assertEquals( '0' , 255 & dest[index++]);
+        assertEquals( '1' , 255 & dest[index++]);
+        assertEquals( '.' , 255 & dest[index++]);
+        assertEquals( '0' , 255 & dest[index++]);
+        assertEquals( '2' , 255 & dest[index++]);
+        assertEquals( '.' , 255 & dest[index++]);
+        assertEquals( '0' , 255 & dest[index++]);
+        assertEquals( '3' , 255 & dest[index++]);
+    }
+
+    @Test
+    public void testWriteComplexTypeVersionStatic() throws UnsupportedEncodingException {
+        byte[] dest = new byte[100 * 1024];
+
+        byte[] complexTypeVersion = "01.02.03".getBytes("UTF-8");
+
+        IonWriter.writeComplexTypeVersion(dest, 0, complexTypeVersion);
+
+        int index = 0;
+        assertEquals( (IonFieldTypes.EXTENDED << 4) | 1   , 255 & dest[index++]);
+        assertEquals( IonFieldTypes.COMPLEX_TYPE_VERSION  , 255 & dest[index++]);
+        assertEquals( complexTypeVersion.length                , 255 & dest[index++]);
+
+        assertEquals( '0' , 255 & dest[index++]);
+        assertEquals( '1' , 255 & dest[index++]);
+        assertEquals( '.' , 255 & dest[index++]);
+        assertEquals( '0' , 255 & dest[index++]);
+        assertEquals( '2' , 255 & dest[index++]);
+        assertEquals( '.' , 255 & dest[index++]);
+        assertEquals( '0' , 255 & dest[index++]);
+        assertEquals( '3' , 255 & dest[index++]);
+    }
+
 
     @Test
     public void testWriteElementCount() {

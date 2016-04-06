@@ -15,7 +15,7 @@ public class IonFieldTypes {
 
     public static final int UTF_8_SHORT     =  6;
     public static final int UTC_DATE_TIME   =  7;
-    public static final int COPY            =  8;   //a reference to a field stored in the IAP connection cache.
+    public static final int COPY            =  8;   //a relative reference to a field located earlier in same ION structure.
 
     public static final int OBJECT          =  9;
     public static final int TABLE           = 10;
@@ -29,14 +29,15 @@ public class IonFieldTypes {
 
     /*
         Extended type ID constants - can be from 0 to 255 - but we use only from 16 to 255 to avoid
-        numeric clashes with the core type IDs.
+        numeric clashes with the core type IDs. The clashes are only "mental". They could be avoided in code.
      */
-    public static final int ELEMENT_COUNT = 16;
+    public static final int ELEMENT_COUNT        = 16;  //extended short
+    public static final int COMPLEX_TYPE_ID      = 17;  //extended normal
+    public static final int COMPLEX_TYPE_VERSION = 18;  //extended short - 15 chars to indicate version must be enough
 
     /*
-        complex type id (not short version)
         reference
-        UTC time
+        UTC time (without date)
      */
 
 

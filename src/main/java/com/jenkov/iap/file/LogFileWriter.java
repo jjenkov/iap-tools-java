@@ -27,6 +27,8 @@ public class LogFileWriter {
         this.calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
+
+
     public void writeRecord(byte[] source, int sourceOffset, int sourceLength) {
 
         this.calendar.setTimeInMillis(System.currentTimeMillis());
