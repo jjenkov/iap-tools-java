@@ -93,6 +93,25 @@ public class IonReader {
 
                     case IonFieldTypes.ELEMENT_COUNT : {
                         this.fieldLength = this.fieldLengthLength;
+                        break;
+                    }
+                    case IonFieldTypes.COMPLEX_TYPE_ID : {
+                        this.fieldLength = 0;
+                        for(int i=0; i<this.fieldLengthLength; i++){
+                            this.fieldLength <<= 8;
+                            this.fieldLength |= 255 & this.source[index++];
+                        }
+                        this.nextIndex += 1 + this.fieldLengthLength + this.fieldLength;
+                        break;
+                    }
+                    case IonFieldTypes.COMPLEX_TYPE_VERSION : {
+                        this.fieldLength = 0;
+                        for(int i=0; i<this.fieldLengthLength; i++){
+                            this.fieldLength <<= 8;
+                            this.fieldLength |= 255 & this.source[index++];
+                        }
+                        this.nextIndex += 1 + this.fieldLengthLength + this.fieldLength;
+                        break;
                     }
                 }
                 break;
@@ -343,6 +362,39 @@ public class IonReader {
         System.arraycopy(this.source, this.index, dest, offset, length);
         return length;
     }
+
+    public int readComplexTypeId(byte[] dest){
+        if(this.fieldLengthLength == 0) return 0;
+
+        int length = Math.min(dest.length, this.fieldLength);
+        System.arraycopy(this.source, this.index, dest, 0, length);
+        return length;
+    }
+
+    public int readComplexTypeId(byte[] dest, int offset, int length){
+        if(this.fieldLengthLength == 0) return 0;
+
+        length = Math.min(length, this.fieldLength);
+        System.arraycopy(this.source, this.index, dest, offset, length);
+        return length;
+    }
+
+    public int readComplexTypeVersion(byte[] dest){
+        if(this.fieldLengthLength == 0) return 0;
+
+        int length = Math.min(dest.length, this.fieldLength);
+        System.arraycopy(this.source, this.index, dest, 0, length);
+        return length;
+    }
+
+    public int readComplexTypeVersion(byte[] dest, int offset, int length){
+        if(this.fieldLengthLength == 0) return 0;
+
+        length = Math.min(length, this.fieldLength);
+        System.arraycopy(this.source, this.index, dest, offset, length);
+        return length;
+    }
+
 
 
     public int readKey(byte[] dest){

@@ -273,7 +273,74 @@ public class IonReaderTest {
 
     }
 
-        @Test
+
+    @Test
+    public void testReadComplexTypeId() {
+        byte[] source = new byte[10 * 1024];
+        byte[] dest   = new byte[10 * 1024];
+
+        int index = 0;
+
+        byte[] bytes = new byte[]{1,2,4 };
+        index += IonWriter.writeComplexTypeId(source, index, bytes);
+
+        reader.setSource(source, 0, 4);
+        reader.next();
+        reader.parse();
+
+        assertEquals(IonFieldTypes.EXTENDED, reader.fieldType);
+        assertEquals(IonFieldTypes.COMPLEX_TYPE_ID, reader.fieldTypeExtended);
+        reader.readComplexTypeId(dest);
+
+        assertEquals(1, dest[0]);
+        assertEquals(2, dest[1]);
+        assertEquals(4, dest[2]);
+
+        assertEquals(0, dest[3]);
+        assertEquals(0, dest[4]);
+        assertEquals(0, dest[5]);
+
+        reader.readComplexTypeId(dest, 3, 3);
+
+        assertEquals(1, dest[3]);
+        assertEquals(2, dest[4]);
+        assertEquals(4, dest[5]);
+    }
+
+    @Test
+    public void testReadComplexTypeVersion() {
+        byte[] source = new byte[10 * 1024];
+        byte[] dest   = new byte[10 * 1024];
+
+        int index = 0;
+
+        byte[] bytes = new byte[]{1,2,4 };
+        index += IonWriter.writeComplexTypeVersion(source, index, bytes);
+
+        reader.setSource(source, 0, 4);
+        reader.next();
+        reader.parse();
+
+        assertEquals(IonFieldTypes.EXTENDED, reader.fieldType);
+        assertEquals(IonFieldTypes.COMPLEX_TYPE_VERSION, reader.fieldTypeExtended);
+        reader.readComplexTypeId(dest);
+
+        assertEquals(1, dest[0]);
+        assertEquals(2, dest[1]);
+        assertEquals(4, dest[2]);
+
+        assertEquals(0, dest[3]);
+        assertEquals(0, dest[4]);
+        assertEquals(0, dest[5]);
+
+        reader.readComplexTypeId(dest, 3, 3);
+
+        assertEquals(1, dest[3]);
+        assertEquals(2, dest[4]);
+        assertEquals(4, dest[5]);
+    }
+
+    @Test
     public void testReadKey() {
         byte[] source = new byte[10 * 1024];
         byte[] dest   = new byte[10 * 1024];
