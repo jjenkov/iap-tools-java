@@ -11,7 +11,7 @@ import java.io.IOException;
 public class FileWriterTest {
 
 
-    @Test
+    //@Test
     public void testLogRolling() throws IOException {
         FileWriter fileWriter = new FileWriter("test-data/testfile", 10 * 1000, 1024);
 

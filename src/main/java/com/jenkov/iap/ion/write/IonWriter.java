@@ -312,6 +312,7 @@ public class IonWriter {
 
     public void writeObjectBegin(int lengthLength){
         this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.OBJECT << 4) | lengthLength));
+        this.destIndex += lengthLength;
     }
 
     public void writeObjectEnd(int objectStartIndex, int lengthLength, int length){
@@ -324,6 +325,7 @@ public class IonWriter {
 
     public void writeTableBegin(int lengthLength){
         this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.TABLE << 4) | lengthLength));
+        this.destIndex += lengthLength;
     }
 
     public void writeTableEnd(int objectStartIndex, int lengthLength, int length){
@@ -336,6 +338,7 @@ public class IonWriter {
 
     public void writeArrayBegin(int lengthLength){
         this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.ARRAY << 4) | lengthLength));
+        this.destIndex += lengthLength;
     }
 
     public void writeArrayEnd(int objectStartIndex, int lengthLength, int length){

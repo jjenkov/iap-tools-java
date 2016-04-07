@@ -108,6 +108,7 @@ public class IonWriterTest {
         int lengthLength = 2;
         writer.writeArrayBegin(lengthLength);
 
+        assertEquals(13, writer.destIndex);
         assertEquals((IonFieldTypes.ARRAY << 4) | 2, 255 & dest[index++]);
         assertEquals(0, 255 & dest[index++]);
         assertEquals(0, 255 & dest[index++]);
@@ -133,6 +134,7 @@ public class IonWriterTest {
         int lengthLength = 2;
         writer.writeTableBegin(lengthLength);
 
+        assertEquals(13, writer.destIndex);
         assertEquals((IonFieldTypes.TABLE << 4) | 2, 255 & dest[index++]);
         assertEquals(0, 255 & dest[index++]);
         assertEquals(0, 255 & dest[index++]);
@@ -158,6 +160,7 @@ public class IonWriterTest {
         int lengthLength = 2;
         writer.writeObjectBegin(lengthLength);
 
+        assertEquals(13, writer.destIndex);
         assertEquals((IonFieldTypes.OBJECT << 4) | 2, 255 & dest[index++]);
         assertEquals(0, 255 & dest[index++]);
         assertEquals(0, 255 & dest[index++]);
