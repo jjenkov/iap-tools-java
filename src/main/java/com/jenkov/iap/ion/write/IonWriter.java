@@ -2,6 +2,7 @@ package com.jenkov.iap.ion.write;
 
 import com.jenkov.iap.ion.IonFieldTypes;
 import com.jenkov.iap.ion.IonUtil;
+import com.jenkov.iap.ion.types.Key;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
@@ -38,6 +39,62 @@ public class IonWriter {
     public void setOffset(int offset){
         this.destIndex = offset;
     }
+
+    /*
+    public void writeKeyBytes(Key key, byte[] source, int offset, int length){
+        writeKey(key.source, key.offset, key.length);
+        writeBytes(source, offset, length);
+    }
+
+    public void writeKeyBoolean(Key key, boolean value){
+        writeKey(key.source, key.offset, key.length);
+        writeBoolean(value);
+    }
+
+    public void writeKeyBoooleanObj(Key key, Boolean value){
+        writeKey(key.source, key.offset, key.length);
+
+    }
+
+    public void writeKeyInt64(Key key, long value){
+
+    }
+
+    public void writeKeyInt64Obj(Key key, Long value){
+
+    }
+
+    public void writeKeyFloat32(Key key, float value){
+
+    }
+
+    public void writeKeyFloat32Obj(Key key, Float value){
+
+    }
+
+    public void writeKeyFloat64(Key key, double value){
+
+    }
+
+    public void writePKeyFloat64Obj(Key key, Double value){
+
+    }
+
+    public void writeKeyUtf8(Key key, String value){
+
+    }
+
+    public void writeKeyUtf8(Key key, byte[] value){
+
+    }
+
+    public void writeKeyUtf8(Key key, byte[] value, int offset, int length){
+
+    }
+    */
+
+
+
 
     public void writeBytes(byte[] value) {
         if(value == null){
@@ -392,8 +449,26 @@ public class IonWriter {
 
         System.arraycopy(value, 0, this.dest, this.destIndex, length);
         this.destIndex += length;
-
     }
+
+    public void writeKey(byte[] source, int offset, int length){
+        if(source == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.KEY << 4));
+            return ;
+        }
+
+        int lengthLength   = IonUtil.lengthOfInt64Value(length);
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.KEY << 4) | lengthLength));
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            this.dest[this.destIndex++] = (byte) (255 & (length >> i));
+        }
+
+        System.arraycopy(source, offset, this.dest, this.destIndex, length);
+        this.destIndex += length;
+    }
+
+
 
     public void writeKeyShort(String value){
         if(value == null){
@@ -427,6 +502,18 @@ public class IonWriter {
         this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.KEY_SHORT << 4) | length));
 
         System.arraycopy(value, 0, this.dest, this.destIndex, length);
+        this.destIndex += length;
+    }
+
+    public void writeKeyShort(byte[] value, int offset, int length){
+        if(value == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.KEY_SHORT << 4));
+            return ;
+        }
+
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.KEY_SHORT << 4) | length));
+
+        System.arraycopy(value, offset, this.dest, this.destIndex, length);
         this.destIndex += length;
     }
 

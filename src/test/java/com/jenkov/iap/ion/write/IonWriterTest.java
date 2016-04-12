@@ -76,8 +76,18 @@ public class IonWriterTest {
         assertEquals('l', 255 & dest[index++]);
         assertEquals('o', 255 & dest[index++]);
 
+        writer.writeKey("hello".getBytes("UTF-8"), 1, 3);
+        assertEquals(29, writer.destIndex);
+        assertEquals((IonFieldTypes.KEY << 4)| 1, 255 & dest[index++]);
+        assertEquals(3, 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+
+
+
         writer.writeKeyShort("hello");
-        assertEquals(30, writer.destIndex);
+        assertEquals(35, writer.destIndex);
         assertEquals((IonFieldTypes.KEY_SHORT << 4)| 5, 255 & dest[index++]);
         assertEquals('h', 255 & dest[index++]);
         assertEquals('e', 255 & dest[index++]);
@@ -86,13 +96,21 @@ public class IonWriterTest {
         assertEquals('o', 255 & dest[index++]);
 
         writer.writeKeyShort("hello".getBytes("UTF-8"));
-        assertEquals(36, writer.destIndex);
+        assertEquals(41, writer.destIndex);
         assertEquals((IonFieldTypes.KEY_SHORT << 4)| 5, 255 & dest[index++]);
         assertEquals('h', 255 & dest[index++]);
         assertEquals('e', 255 & dest[index++]);
         assertEquals('l', 255 & dest[index++]);
         assertEquals('l', 255 & dest[index++]);
         assertEquals('o', 255 & dest[index++]);
+
+        writer.writeKeyShort("hello".getBytes("UTF-8"), 1, 3);
+        assertEquals(45, writer.destIndex);
+        assertEquals((IonFieldTypes.KEY_SHORT << 4)| 3, 255 & dest[index++]);
+        assertEquals('e', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+        assertEquals('l', 255 & dest[index++]);
+
     }
 
 
@@ -776,8 +794,9 @@ public class IonWriterTest {
         bytesWritten = IonWriter.writeFloat32Obj(dest, offset, null);
         assertEquals(1, bytesWritten);
         assertEquals(IonFieldTypes.FLOAT << 4, dest[offset++]);
-
     }
+
+
 
 
     @Test
@@ -901,6 +920,7 @@ public class IonWriterTest {
     }
 
 
+    @Test
     public void testStaticWriteUtf8Short() throws UnsupportedEncodingException {
         byte[] dest = new byte[10 * 1024];
 
@@ -910,7 +930,7 @@ public class IonWriterTest {
         int bytesWritten = IonWriter.writeUtf8(dest, offset, value);
 
         assertEquals(12, bytesWritten);
-        assertEquals((IonFieldTypes.UTF_8_SHORT<<4) | 1, 255 & dest[offset++]);
+        assertEquals((IonFieldTypes.UTF_8_SHORT<<4) | 11, 255 & dest[offset++]);
         assertEquals('H', 255 & dest[offset++]);
         assertEquals('e', 255 & dest[offset++]);
         assertEquals('l', 255 & dest[offset++]);
@@ -943,7 +963,7 @@ public class IonWriterTest {
         bytesWritten = IonWriter.writeUtf8(dest, offset, value2);
 
         assertEquals(12, bytesWritten);
-        assertEquals((IonFieldTypes.UTF_8_SHORT<<4) | 1, 255 & dest[offset++]);
+        assertEquals((IonFieldTypes.UTF_8_SHORT<<4) | 11, 255 & dest[offset++]);
         assertEquals('H', 255 & dest[offset++]);
         assertEquals('e', 255 & dest[offset++]);
         assertEquals('l', 255 & dest[offset++]);
