@@ -468,6 +468,24 @@ public class IonWriter {
         this.destIndex += length;
     }
 
+    public void writeKey(Key key){
+        if(key.source == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.KEY << 4));
+            return ;
+        }
+
+        int lengthLength   = IonUtil.lengthOfInt64Value(key.length);
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.KEY << 4) | lengthLength));
+
+        for(int i=(lengthLength-1)*8; i >= 0; i-=8){
+            this.dest[this.destIndex++] = (byte) (255 & (key.length >> i));
+        }
+
+        System.arraycopy(key.source, key.offset, this.dest, this.destIndex, key.length);
+        this.destIndex += key.length;
+
+    }
+
 
 
     public void writeKeyShort(String value){
@@ -516,6 +534,40 @@ public class IonWriter {
         System.arraycopy(value, offset, this.dest, this.destIndex, length);
         this.destIndex += length;
     }
+
+    public void writeKeyShort(Key key){
+        if(key.source == null){
+            this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.KEY_SHORT << 4));
+            return ;
+        }
+
+        this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.KEY_SHORT << 4) | key.length));
+
+        System.arraycopy(key.source, key.offset, this.dest, this.destIndex, key.length);
+        this.destIndex += key.length;
+    }
+
+    public void writeKeyOrKeyShort(byte[] value, int offset, int length){
+        if(length < 16){
+            writeKeyShort(value, offset, length);
+        } else {
+            writeKey(value, offset, length);
+        }
+
+    }
+
+    public void writeKeyOrKeyShort(Key key){
+        if(key.length < 16){
+            writeKeyShort(key);
+        } else {
+            writeKey(key);
+        }
+
+    }
+
+
+
+
 
     public void writeDirect(byte[] ionFieldBytes){
         System.arraycopy(ionFieldBytes, 0, this.dest, this.destIndex, ionFieldBytes.length );
