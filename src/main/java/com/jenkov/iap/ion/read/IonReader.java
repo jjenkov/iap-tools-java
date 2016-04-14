@@ -54,15 +54,19 @@ public class IonReader {
 
 
 
-    public IonReader next() {
-        this.index = this.nextIndex;
-        return this;
-    }
 
     public boolean hasNext() {
         return this.nextIndex < this.scopeEndIndex;
     }
 
+    public IonReader next() {
+        this.index = this.nextIndex;
+        return this;
+    }
+
+    public IonReader nextParse() {
+        return this.next().parse();
+    }
 
     public IonReader parse() {
         int leadByte = 255 & this.source[index++];
