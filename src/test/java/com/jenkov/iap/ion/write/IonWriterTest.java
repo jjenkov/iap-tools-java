@@ -319,27 +319,27 @@ public class IonWriterTest {
 
         writer.writeBoolean(true);
         assertEquals(7, writer.destIndex);
-        assertEquals((IonFieldTypes.TINY << 4) | 1, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.BOOLEAN << 4) | 1, 255 & dest[index++]);
 
         writer.writeBoolean(false);
         assertEquals(8, writer.destIndex);
-        assertEquals((IonFieldTypes.TINY << 4) | 2, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.BOOLEAN << 4) | 2, 255 & dest[index++]);
 
         writer.writeBoolean(false);
         assertEquals(9, writer.destIndex);
-        assertEquals((IonFieldTypes.TINY << 4) | 2, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.BOOLEAN << 4) | 2, 255 & dest[index++]);
 
         writer.writeBooleanObj(null);
         assertEquals(10, writer.destIndex);
-        assertEquals((IonFieldTypes.TINY << 4) | 0, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.BOOLEAN << 4) | 0, 255 & dest[index++]);
 
         writer.writeBooleanObj(new Boolean(true));
         assertEquals(11, writer.destIndex);
-        assertEquals((IonFieldTypes.TINY << 4) | 1, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.BOOLEAN << 4) | 1, 255 & dest[index++]);
 
         writer.writeBooleanObj(new Boolean(false));
         assertEquals(12, writer.destIndex);
-        assertEquals((IonFieldTypes.TINY << 4) | 2, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.BOOLEAN << 4) | 2, 255 & dest[index++]);
 
         writer.writeInt64(123);
         assertEquals(14, writer.destIndex);
@@ -675,13 +675,13 @@ public class IonWriterTest {
         int bytesWritten = IonWriter.writeBoolean(dest, offset, false);
 
         assertEquals(1, bytesWritten);
-        assertEquals( (IonFieldTypes.TINY <<4) | 2 , dest[offset]);
+        assertEquals( (IonFieldTypes.BOOLEAN <<4) | 2 , dest[offset]);
 
         offset = 20;
         bytesWritten = IonWriter.writeBoolean(dest, offset, true);
 
         assertEquals(1, bytesWritten);
-        assertEquals( (IonFieldTypes.TINY <<4) | 1, dest[offset]);
+        assertEquals( (IonFieldTypes.BOOLEAN <<4) | 1, dest[offset]);
     }
 
 
@@ -693,19 +693,19 @@ public class IonWriterTest {
         int bytesWritten = IonWriter.writeBooleanObj(dest, offset, false);
 
         assertEquals(1, bytesWritten);
-        assertEquals( (IonFieldTypes.TINY <<4) | 2, dest[offset]);
+        assertEquals( (IonFieldTypes.BOOLEAN <<4) | 2, dest[offset]);
 
         offset = 20;
         bytesWritten = IonWriter.writeBooleanObj(dest, offset, true);
 
         assertEquals(1, bytesWritten);
-        assertEquals( (IonFieldTypes.TINY <<4) | 1, dest[offset]);
+        assertEquals( (IonFieldTypes.BOOLEAN <<4) | 1, dest[offset]);
 
         offset = 30;
         bytesWritten = IonWriter.writeBooleanObj(dest, offset, null);
 
         assertEquals(1, bytesWritten);
-        assertEquals( (IonFieldTypes.TINY <<4) | 0, dest[offset]);
+        assertEquals( (IonFieldTypes.BOOLEAN <<4) | 0, dest[offset]);
     }
 
 

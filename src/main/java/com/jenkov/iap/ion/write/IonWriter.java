@@ -135,21 +135,21 @@ public class IonWriter {
 
     public void writeBoolean(boolean value){
         if(value){
-            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 1));
+            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 1));
         } else {
-            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 2));
+            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 2));
         }
     }
 
     public void writeBooleanObj(Boolean value){
         if(value == null){
-            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 0));
+            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 0));
             return;
         }
         if(value){
-            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 1));
+            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 1));
         } else {
-            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 2));
+            this.dest[this.destIndex++] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 2));
         }
     }
 
@@ -687,22 +687,22 @@ public class IonWriter {
 
     public static int writeBoolean(byte[] dest, int destOffset, boolean value){
         if(value){
-            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 1));
+            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 1));
         } else {
-            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 2));
+            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 2));
         }
         return 1;
     }
 
     public static int writeBooleanObj(byte[] dest, int destOffset, Boolean value){
         if(value == null){
-            dest[destOffset++] = (byte) (255 & (IonFieldTypes.TINY << 4));
+            dest[destOffset++] = (byte) (255 & (IonFieldTypes.BOOLEAN << 4));
             return 1;
         }
         if(value){
-            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 1));
+            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 1));
         } else {
-            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 2));
+            dest[destOffset++] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 2));
         }
         return 1;
 

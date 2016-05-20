@@ -48,7 +48,7 @@ public class IonObjectWriterTest {
         assertEquals('d', 255 & dest[index++]);   //value of char 5 field
         assertEquals('0', 255 & dest[index++]);  //value of char 6 field
 
-        assertEquals((IonFieldTypes.TINY << 4) | 1, 255 & dest[index++]);  //lead byte of boolean field
+        assertEquals((IonFieldTypes.BOOLEAN << 4) | 1, 255 & dest[index++]);  //lead byte of boolean field
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 6, 255 & dest[index++]);   //lead byte of key field
         assertEquals('f', 255 & dest[index++]);   //value of char 1 field
@@ -638,7 +638,7 @@ public class IonObjectWriterTest {
         assertEquals('f', 255 & dest[index++]);
         assertEquals('0', 255 & dest[index++]);
 
-        assertEquals((IonFieldTypes.TINY << 4) | 1, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.BOOLEAN << 4) | 1, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 2, 255 & dest[index++]);
         assertEquals('f', 255 & dest[index++]);

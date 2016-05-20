@@ -34,9 +34,9 @@ public class IonFieldWriterBoolean implements IIonFieldWriter {
             boolean value = (Boolean) field.get(sourceObject);
 
             if(value){
-                destination[destinationOffset] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 1));
+                destination[destinationOffset] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 1));
             } else {
-                destination[destinationOffset] = (byte) (255 & ((IonFieldTypes.TINY << 4) | 2));
+                destination[destinationOffset] = (byte) (255 & ((IonFieldTypes.BOOLEAN << 4) | 2));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();

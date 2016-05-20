@@ -185,7 +185,7 @@ public class IapMessageWriterTest {
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 1, 255 & dest[index++]);
         assertEquals(IapMessageHeaders.IS_LAST_IN_SEQUENCE_KEY_FIELD_VALUE, 255 & dest[index++]);
 
-        assertEquals((IonFieldTypes.TINY << 4) | 1, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.BOOLEAN << 4) | 1, 255 & dest[index++]);
 
 
         bytesWritten = IapMessageWriter.writeIsLastInSequence(dest, 0, false);
@@ -196,7 +196,7 @@ public class IapMessageWriterTest {
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 1, 255 & dest[index++]);
         assertEquals(IapMessageHeaders.IS_LAST_IN_SEQUENCE_KEY_FIELD_VALUE, 255 & dest[index++]);
 
-        assertEquals((IonFieldTypes.TINY << 4) | 2, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.BOOLEAN << 4) | 2, 255 & dest[index++]);
     }
 
     @Test
@@ -307,7 +307,7 @@ public class IapMessageWriterTest {
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 1, 255 & dest[index++]);
         assertEquals(IapMessageHeaders.IS_LAST_IN_SEQUENCE_KEY_FIELD_VALUE, 255 & dest[index++]);
 
-        assertEquals((IonFieldTypes.TINY << 4) | 1, 255 & dest[index++]);
+        assertEquals((IonFieldTypes.BOOLEAN << 4) | 1, 255 & dest[index++]);
 
         assertEquals((IonFieldTypes.KEY_SHORT << 4) | 1, 255 & dest[index++]);
         assertEquals(IapMessageHeaders.SEMANTIC_PROTOCOL_ID_KEY_FIELD_VALUE, 255 & dest[index++]);

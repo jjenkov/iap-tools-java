@@ -20,7 +20,7 @@ public class IonFieldReaderNop implements IIonFieldReader {
         //todo skip correct amount of bytes - depending on field type. Not all field types have explicit length bytes.
 
         switch(fieldType){
-            case IonFieldTypes.TINY: {
+            case IonFieldTypes.BOOLEAN: {
                 return 1;
             }
             case IonFieldTypes.UTF_8_SHORT: ;

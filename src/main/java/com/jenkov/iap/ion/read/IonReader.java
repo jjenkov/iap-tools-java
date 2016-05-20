@@ -76,7 +76,7 @@ public class IonReader {
         this.fieldLengthLength = leadByte & 15;
 
         switch(this.fieldType){
-            case IonFieldTypes.TINY: {
+            case IonFieldTypes.BOOLEAN: {
                 this.fieldLength = 0;
                 this.nextIndex += 1;
                 break;
