@@ -574,6 +574,8 @@ public class IonWriter {
         this.destIndex += ionFieldBytes.length;
     }
 
+
+    /*
     public void writeComplexTypeIdShort(byte[] value){
         if(value == null){
             this.dest[this.destIndex++] = (byte) (255 & (IonFieldTypes.COMPLEX_TYPE_ID_SHORT << 4));
@@ -587,6 +589,7 @@ public class IonWriter {
         this.destIndex += length;
     }
 
+*/
 
     /*
     Extended field types
@@ -931,6 +934,7 @@ public class IonWriter {
         return 10;  // 1 + length (9)
     }
 
+    /*
     public static int writeComplexTypeIdShort(byte[] dest, int destOffset, byte[] value){
         if(value == null){
             dest[destOffset++] = (byte) (255 & (IonFieldTypes.COMPLEX_TYPE_ID_SHORT << 4));
@@ -944,6 +948,7 @@ public class IonWriter {
 
         return 1 + length;
     }
+    */
 
     public static int writeKey(byte[] dest, int destOffset, String value){
         if(value == null){

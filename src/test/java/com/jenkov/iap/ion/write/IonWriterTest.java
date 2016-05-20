@@ -39,12 +39,16 @@ public class IonWriterTest {
         IonWriter writer = new IonWriter();
         writer.setDestination(dest, index);
 
+        /*
+
         writer.writeComplexTypeIdShort(new byte[]{1,2,3});
         assertEquals(14, writer.destIndex);
         assertEquals((IonFieldTypes.COMPLEX_TYPE_ID_SHORT << 4) | 3, 255 & dest[index++]);
         assertEquals(1, 255 & dest[index++]);
         assertEquals(2, 255 & dest[index++]);
         assertEquals(3, 255 & dest[index++]);
+
+        */
     }
 
 
@@ -1070,6 +1074,8 @@ public class IonWriterTest {
         byte[] typeId = new byte[] {1,2,3};
 
         int offset = 10;
+
+        /*
         int bytesWritten = IonWriter.writeComplexTypeIdShort(dest, offset, typeId);
 
         assertEquals(4, bytesWritten);
@@ -1077,6 +1083,7 @@ public class IonWriterTest {
         assertEquals( 1, 255 & dest[offset++]);
         assertEquals( 2, 255 & dest[offset++]);
         assertEquals( 3, 255 & dest[offset++]);
+        */
 
     }
 

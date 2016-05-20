@@ -25,7 +25,7 @@ public class IonFieldReaderNop implements IIonFieldReader {
             }
             case IonFieldTypes.UTF_8_SHORT: ;
             case IonFieldTypes.UTC_DATE_TIME: ;
-            case IonFieldTypes.COMPLEX_TYPE_ID_SHORT: ;
+            //case IonFieldTypes.COMPLEX_TYPE_ID_SHORT: ;
             case IonFieldTypes.KEY_SHORT: ;
             case IonFieldTypes.INT_POS: ;
             case IonFieldTypes.INT_NEG: ;

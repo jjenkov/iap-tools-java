@@ -15,16 +15,22 @@ public class IonFieldTypes {
 
     public static final int UTF_8_SHORT     =  6;
     public static final int UTC_DATE_TIME   =  7;
-    public static final int COPY            =  8;   //a relative reference to a field located earlier in same ION structure.
 
-    public static final int OBJECT          =  9;
-    public static final int TABLE           = 10;
-    public static final int ARRAY           = 11;
-    public static final int COMPLEX_TYPE_ID_SHORT = 12;   //the type of an object - reserved for special IAP object types - none so far.
+    public static final int ARRAY           = 10;
+    public static final int TABLE           = 11;
+    public static final int OBJECT          = 12;
     public static final int KEY             = 13;   //a sequence of bytes identifying a key or a property fieldName - often UTF-8 encoded field names.
     public static final int KEY_SHORT       = 14;   //a sequence of bytes identifying a key or a property fieldName - often UTF-8 encoded field names - 15 bytes or less.
 
     public static final int EXTENDED = 15;   //a sequence of bytes identifying a key or a property fieldName - often UTF-8 encoded field names - 15 bytes or less.
+
+
+    /*
+        Temporarily moved types
+
+     */
+    //public static final int COMPLEX_TYPE_ID_SHORT = 12;   //the type of an object - reserved for special IAP object types - none so far.
+    // public static final int COPY            =  8;   //a relative reference to a field located earlier in same ION structure.
 
 
     /*

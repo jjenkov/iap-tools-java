@@ -248,6 +248,7 @@ public class IonReaderTest {
 
         int index = 0;
 
+        /*
         byte[] bytes = new byte[]{1,2,4 };
         index += IonWriter.writeComplexTypeIdShort(source, index, bytes);
 
@@ -270,7 +271,7 @@ public class IonReaderTest {
         assertEquals(1, dest[3]);
         assertEquals(2, dest[4]);
         assertEquals(4, dest[5]);
-
+        */
     }
 
 
