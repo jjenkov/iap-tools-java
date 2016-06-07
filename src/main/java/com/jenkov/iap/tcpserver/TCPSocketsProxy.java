@@ -26,6 +26,7 @@ public class TCPSocketsProxy {
     private long nextSocketId = 1;
 
 
+
     // **************************
     // Read oriented variables.
     // **************************
@@ -41,14 +42,17 @@ public class TCPSocketsProxy {
     private Object[]        readTempIAPMessages = new Object[64];
 
 
+
     // ***************************
     // Write oriented variables.
     // ***************************
     private Selector   writeSelector   = null;
     private ByteBuffer writeByteBuffer = null;
 
-    private Set<TCPSocket> emptyToNonEmptySockets = new HashSet<>();
-    private Set<TCPSocket> nonEmptyToEmptySockets = new HashSet<>();
+    //private Set<TCPSocket> emptyToNonEmptySockets = new HashSet<>();
+    //private List<TCPSocket> emptyToNonEmptySockets = new ArrayList<>();
+    //private Set<TCPSocket> nonEmptyToEmptySockets = new HashSet<>();
+    private List<TCPSocket> nonEmptyToEmptySockets = new ArrayList<>();
 
     private MemoryAllocator writeMemoryAllocator = new MemoryAllocator(new byte[36 * 1024 * 1024], new long[10240],
             (allocator) -> new TCPMessage(allocator));
@@ -65,8 +69,8 @@ public class TCPSocketsProxy {
 
         this.writeSelector        = Selector.open();
         this.writeByteBuffer      = ByteBuffer.allocate(1024 * 1024);
-
     }
+
 
 
     public void checkForNewInboundSockets() throws IOException {
@@ -174,7 +178,7 @@ public class TCPSocketsProxy {
      *  Write methods below
      */
 
-
+    /*
     public void writeToSockets(Object[] outMessages, int messageCount) throws IOException {
 
         // Take all new messages from outboundMessageQueue
@@ -190,6 +194,7 @@ public class TCPSocketsProxy {
         // Select from the Selector.
         selectAndWrite();
     }
+    */
 
 
     public void writeToSockets() throws IOException {
@@ -220,7 +225,7 @@ public class TCPSocketsProxy {
 
                 if(socket.isEmpty()){
                     this.nonEmptyToEmptySockets.add(socket);
-                    this.emptyToNonEmptySockets.remove(socket); //necessary?
+                    //this.emptyToNonEmptySockets.remove(socket); //necessary?
                 }
 
                 keyIterator.remove();
@@ -231,7 +236,7 @@ public class TCPSocketsProxy {
     }
 
 
-    private void registerNonEmptySockets() throws ClosedChannelException {
+    //private void registerNonEmptySockets() throws ClosedChannelException {
 
         /*
         if(this.emptyToNonEmptySockets.size() > 0){
@@ -239,14 +244,23 @@ public class TCPSocketsProxy {
         };
         */
 
+        /*
         for(TCPSocket tcpSocket : emptyToNonEmptySockets){
             tcpSocket.socketChannel.register(this.writeSelector, SelectionKey.OP_WRITE, tcpSocket);
         }
-        emptyToNonEmptySockets.clear();
-    }
+        */
+
+
+        //for(int i=0, n = this.emptyToNonEmptySockets.size(); i < n; i++ ){
+        //    TCPSocket tcpSocket = this.emptyToNonEmptySockets.get(i);
+        //    tcpSocket.socketChannel.register(this.writeSelector, SelectionKey.OP_WRITE, tcpSocket);
+        //}
+
+        //emptyToNonEmptySockets.clear();
+    //}
+
 
     private void cancelEmptySockets() {
-
         /*
         if(this.nonEmptyToEmptySockets.size() > 0){
             System.out.println("Canceling socket selector registrations: " + this.nonEmptyToEmptySockets.size());
@@ -256,6 +270,19 @@ public class TCPSocketsProxy {
         //todo could this be optimized if a List was used instead of a Set ?
         if(nonEmptyToEmptySockets.size() == 0) return;
 
+
+        for(int i=0, n=nonEmptyToEmptySockets.size(); i<n; i++){
+            TCPSocket tcpSocket = nonEmptyToEmptySockets.get(i);
+            if(tcpSocket.isEmpty()){
+                SelectionKey key = tcpSocket.socketChannel.keyFor(this.writeSelector);
+                if(key != null){
+                    key.cancel();  //todo how can key be null?
+                }
+                tcpSocket.isRegisteredWithWriteSelector = false;
+            }
+        }
+
+        /*
         for(TCPSocket socket : nonEmptyToEmptySockets){
             SelectionKey key = socket.socketChannel.keyFor(this.writeSelector);
             if(key != null){
@@ -263,17 +290,21 @@ public class TCPSocketsProxy {
             }
             socket.isRegisteredWithWriteSelector = false;
         }
+        */
         nonEmptyToEmptySockets.clear();
     }
 
 
     /**
      * Batch version of takeNewOutboundMessages
+     *
+     * todo remove this method - replace with lookup of TCP socket + enqueue() call instead.
      */
-    private void takeNewOutboundMessagesBatch(Object[] tempMessages, int messageCount) throws IOException {
+    /*
+    private void takeNewOutboundMessagesBatch(Object[] outMessages, int messageCount) throws IOException {
         for(int i=0; i<messageCount; i++){
 
-            TCPMessage outMessage =  (TCPMessage) tempMessages[i];
+            TCPMessage outMessage =  (TCPMessage) outMessages[i];
 
             TCPSocket socket = this.socketMap.get(outMessage.socketId);
 
@@ -289,12 +320,15 @@ public class TCPSocketsProxy {
             //outMessage.free(); //todo wrong time to free the message!
         }
     }
+    */
 
     public TCPMessage getWriteMemoryBlock() {
         return (TCPMessage) this.writeMemoryAllocator.getMemoryBlock();
     }
 
-
+    public TCPSocket getTCPSocket(long socketId) {
+        return this.socketMap.get(socketId);
+    }
 
     public void enqueue(TCPSocket tcpSocket, TCPMessage message) throws IOException {
         if(tcpSocket.isEmpty()){
@@ -305,7 +339,7 @@ public class TCPSocketsProxy {
             if(bytesWrittenDirect == message.writeIndex - message.startIndex){ //if full message written
                 message.free();
             } else {  //else queue remainder of message.
-                this.nonEmptyToEmptySockets.remove(tcpSocket);
+                //this.nonEmptyToEmptySockets.remove(tcpSocket);  //necessary? Cancel loop checks if TCPSocket is empty before canceling.
 
                 if(!tcpSocket.isRegisteredWithWriteSelector){
                     tcpSocket.socketChannel.register(this.writeSelector, SelectionKey.OP_WRITE, tcpSocket);
