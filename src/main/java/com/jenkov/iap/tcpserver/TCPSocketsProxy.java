@@ -1,6 +1,7 @@
 package com.jenkov.iap.tcpserver;
 
 import com.jenkov.iap.mem.MemoryAllocator;
+import com.jenkov.iap.mem.MemoryBlock;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -39,8 +40,6 @@ public class TCPSocketsProxy {
     private MemoryAllocator readMemoryAllocator = new MemoryAllocator(new byte[36 * 1024 * 1024], new long[10240],
             (allocator) -> new TCPMessage(allocator));
 
-    private Object[]        readTempIAPMessages = new Object[64];
-
 
 
     // ***************************
@@ -54,6 +53,11 @@ public class TCPSocketsProxy {
     private MemoryAllocator writeMemoryAllocator = new MemoryAllocator(new byte[36 * 1024 * 1024], new long[10240],
             (allocator) -> new TCPMessage(allocator));
 
+
+    // ***************************
+    // TCP Socket close oriented variables.
+    // ***************************
+    private List<TCPSocket> socketsToBeClosed = new ArrayList<>();
 
 
 
@@ -91,18 +95,20 @@ public class TCPSocketsProxy {
             tcpSocket.socketChannel = newSocket;
             tcpSocket.messageReader = this.messageReaderFactory.createMessageReader();
             tcpSocket.messageReader.init(this.readMemoryAllocator);
-            tcpSocket.proxy         = this;
 
             this.socketMap.put(tcpSocket.socketId, tcpSocket);
 
             SelectionKey key = newSocket.register(readSelector, SelectionKey.OP_READ);
             key.attach(tcpSocket);
+
+            tcpSocket.readSelectorSelectionKey = key;
+            tcpSocket.isRegisteredWithReadSelector = true;
         }
 
         this.newSocketsTemp.clear();
     }
 
-    public int read(Object[] msgDest) throws IOException{
+    public int read(MemoryBlock[] msgDest) throws IOException{
         int selected = 0;
 
         selected = this.readSelector.selectNow();
@@ -117,22 +123,17 @@ public class TCPSocketsProxy {
                 if(selectionKey.channel().isOpen()){
                     try{
                         TCPSocket tcpSocket = (TCPSocket) selectionKey.attachment();
-                        //todo check if TCPSocket has too many messages queued up internally. If yes, don't read - until some of them have been sent.
-                        //     check inbound messages - also outbound messages?
+                        //todo Add some kind of flow control so that one TCPSocket cannot flood the system with messages.
 
-                        //todo fix reading exception when connection closed - end of stream reached. Does this error occur anymore?
-                        //receivedMessageCount += tcpSocket.readMessages(this.readBuffer, msgDest, receivedMessageCount);
-                        receivedMessageCount = tcpSocket.readMessages(this.readBuffer, msgDest, receivedMessageCount);
+                        receivedMessageCount += tcpSocket.readMessages(this.readBuffer, msgDest, receivedMessageCount);
 
-                        if(tcpSocket.endOfStreamReached){
-                            selectionKey.attach(null);
 
-                            //todo clear all waiting messages in both message reader and message writer. In fact, call dispose() on them (not implemented yet).
-                            //tcpSocket.closeAndFree();
-                            tcpSocket.messageReader = null;
-                            tcpSocket.socketChannel = null;  //todo check if it should be closed? or if it is already closed?
+                        if(tcpSocket.endOfStreamReached || tcpSocket.state != 0){
+                            tcpSocket.readSelectorSelectionKey.cancel();
+                            tcpSocket.isRegisteredWithReadSelector = false;
 
-                            selectionKey.cancel();
+                            this.socketsToBeClosed.add(tcpSocket);
+
                         }
 
 
@@ -237,15 +238,12 @@ public class TCPSocketsProxy {
 
     public void enqueue(TCPSocket tcpSocket, TCPMessage message) throws IOException {
         if(tcpSocket.isEmpty()){
-
-            //attempt direct write instead of first queueing up the message.
+            //attempt to write message immediately instead of first queueing up the message.
             int bytesWrittenDirect = tcpSocket.writeDirect(this.writeByteBuffer, message);
 
             if(bytesWrittenDirect == message.writeIndex - message.startIndex){ //if full message written
                 message.free();
             } else {  //else queue remainder of message.
-                //this.nonEmptyToEmptySockets.remove(tcpSocket);  //necessary? Cancel loop checks if TCPSocket is empty before canceling.
-
                 if(!tcpSocket.isRegisteredWithWriteSelector){
                     tcpSocket.socketChannel.register(this.writeSelector, SelectionKey.OP_WRITE, tcpSocket);
                     tcpSocket.isRegisteredWithWriteSelector = true;
@@ -257,6 +255,24 @@ public class TCPSocketsProxy {
         } else {
             tcpSocket.enqueue(message);
         }
+
+    }
+
+
+
+    public void cleanupSockets() {
+        for(int i=0, n=this.socketsToBeClosed.size(); i < n; i++){
+            TCPSocket tcpSocket = this.socketsToBeClosed.get(i);
+
+            //System.out.println("Closing TCPSocket");
+            try {
+                tcpSocket.closeAndFree();
+            } catch (IOException e) {
+                System.out.println("Error closing TCPSocket:");
+                e.printStackTrace();
+            }
+        }
+        this.socketsToBeClosed.clear();
 
     }
 

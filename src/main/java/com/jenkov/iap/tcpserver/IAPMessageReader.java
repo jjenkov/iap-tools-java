@@ -1,5 +1,6 @@
 package com.jenkov.iap.tcpserver;
 
+import com.jenkov.iap.ion.IonFieldTypes;
 import com.jenkov.iap.mem.MemoryAllocator;
 import com.jenkov.iap.mem.MemoryBlock;
 
@@ -10,13 +11,22 @@ import java.nio.ByteBuffer;
  * Created by jjenkov on 27-10-2015.
  */
 public class IAPMessageReader implements IMessageReader {
+    public static final int INVALID_IAP_MESSAGE_NOT_ION_OBJECT  = -1;
+    public static final int INVALID_IAP_MESSAGE_TOO_BIG_MESSAGE = -2;
+
+    // 65535 = max. length expressible in a UDP packet. 8 is the UDP header length. 160 is maximum IP header length (normal is 20).
+    private static final int MAX_MESSAGE_SIZE = 65535 - 8 - 160;
+
     private static final int STATUS_NOTHING_READ   = 0;
     private static final int STATUS_LEAD_BYTE_READ = 1;
     private static final int STATUS_LENGTH_READ    = 2;
 
     private MemoryAllocator readMemoryAllocator = null;
 
-    private int status = STATUS_NOTHING_READ;
+
+    private int validityState = 0;
+
+    private int readStatus = STATUS_NOTHING_READ;
 
     private int fieldType    = 0;
     private int lengthLength = 0;
@@ -34,21 +44,29 @@ public class IAPMessageReader implements IMessageReader {
         this.readMemoryAllocator = readMemoryAllocator;
     }
 
+    @Override
+    public int state() {
+        return this.validityState;
+    }
 
     @Override
-    public int read(TCPSocket socket, ByteBuffer byteBuffer, Object[] dest, int destOffset) throws IOException {
+    public int read(ByteBuffer byteBuffer, MemoryBlock[] dest, int destOffset) throws IOException {
+        int startDestOffset = destOffset;
         while(byteBuffer.hasRemaining()){
-            switch(this.status){
+            switch(this.readStatus){
                 case STATUS_NOTHING_READ:  {
                     this.currentMemoryBlock = this.readMemoryAllocator.getMemoryBlock(); //allocate new Message object
 
                     int leadByte = 255 & byteBuffer.get();
                     fieldType    = leadByte >> 4;
 
-                    //todo validate field type is ION Object - or reject message - drop connection?
+                    if(fieldType != IonFieldTypes.OBJECT){
+                        this.validityState = INVALID_IAP_MESSAGE_NOT_ION_OBJECT;
+                        return destOffset - startDestOffset; //return how many valid messages were read.
+                    }
 
                     lengthLength = leadByte & 15;
-                    status       = STATUS_LEAD_BYTE_READ;
+                    readStatus = STATUS_LEAD_BYTE_READ;
 
                     if(!byteBuffer.hasRemaining()) {
                         break;
@@ -58,7 +76,7 @@ public class IAPMessageReader implements IMessageReader {
                 case STATUS_LEAD_BYTE_READ: {
                     int lengthBytesMissing = lengthLength - lengthBytesRead;
                     int bytesRemainingInBuffer = byteBuffer.remaining();
-                    int  lengthBytesToRead = Math.min(lengthBytesMissing, bytesRemainingInBuffer);
+                    int lengthBytesToRead = Math.min(lengthBytesMissing, bytesRemainingInBuffer);
 
                     for(int i=0; i < lengthBytesToRead; i++){
                         this.length <<= 8;
@@ -68,10 +86,12 @@ public class IAPMessageReader implements IMessageReader {
                     this.lengthBytesRead += lengthBytesToRead;
 
                     if(this.lengthBytesRead == this.lengthLength){
-                        this.status = STATUS_LENGTH_READ;
+                        this.readStatus = STATUS_LENGTH_READ;
 
-                        //todo validate that length of message is not larger than max allowed message length
-                        //     if it is, close the connection.
+                        if(this.length > MAX_MESSAGE_SIZE){
+                            this.validityState = INVALID_IAP_MESSAGE_TOO_BIG_MESSAGE;
+                            return destOffset - startDestOffset; //return how many valid messages were read.
+                        }
 
                         this.currentMemoryBlock.reserve(1 + this.lengthBytesRead + this.length);  //reserve space for the message.
 
@@ -93,8 +113,8 @@ public class IAPMessageReader implements IMessageReader {
 
                     if(this.valueBytesRead == this.length){
                         dest[destOffset++] = this.currentMemoryBlock;
-                        this.status = STATUS_NOTHING_READ;
-                        this.currentMemoryBlock = null; //todo not necessary really - but just for clarity.
+                        this.readStatus = STATUS_NOTHING_READ;
+                        this.currentMemoryBlock = null; //necessary, to avoid a MemoryBlock being freed twice (when read and processed, and in dispose() method of this class).
                         this.length = 0;
                         this.valueBytesRead = 0;
                         this.lengthBytesRead = 0;
@@ -102,11 +122,13 @@ public class IAPMessageReader implements IMessageReader {
                 }
             }
         }
-        return destOffset; //return next free slot in dest array
+        return destOffset - startDestOffset; //return next free slot in dest array
     }
 
     @Override
     public void dispose() {
-        this.currentMemoryBlock.free();
+        if(this.currentMemoryBlock != null){
+            this.currentMemoryBlock.free();
+        }
     }
 }

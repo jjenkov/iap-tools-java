@@ -1,5 +1,7 @@
 package com.jenkov.iap.tcpserver;
 
+import com.jenkov.iap.mem.MemoryBlock;
+
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -21,8 +23,8 @@ public class TCPServerExample {
 
         TCPSocketsProxy tcpSocketsProxy = new TCPSocketsProxy(newSocketQueue, new IAPMessageReaderFactory());
 
-        Object[] inboundMessages  = new Object[1024];
-        Object[] outboundMessages = new Object[1024];
+        MemoryBlock[] inboundMessages  = new MemoryBlock[1024];
+        MemoryBlock[] outboundMessages = new MemoryBlock[1024];
 
         System.out.println("IAP TCP Server started on port " + tcpPort);
 
@@ -31,16 +33,23 @@ public class TCPServerExample {
             int messageCount = 0;
             try {
                 tcpSocketsProxy.checkForNewInboundSockets();
-                messageCount = tcpSocketsProxy.read(inboundMessages);
 
-                for(int i=0; i < messageCount; i++){
-                    TCPMessage messageIn = (TCPMessage) inboundMessages[i];
+                //main loop - repeat more often than checking for new sockets and closing sockets.
+                for(int i=0; i< 100; i++ ){
+                    messageCount = tcpSocketsProxy.read(inboundMessages);
 
-                    //echo incoming message back to the same socket is was received from
-                    tcpSocketsProxy.enqueue(messageIn.tcpSocket, messageIn);
+                    for(int j=0; j < messageCount; j++){
+                        TCPMessage messageIn = (TCPMessage) inboundMessages[j];
+
+                        //echo incoming message back to the same socket is was received from
+                        tcpSocketsProxy.enqueue(messageIn.tcpSocket, messageIn);
+                    }
+
+                    tcpSocketsProxy.writeToSockets();// Write whatever is enqueued in TCPSockets.
                 }
 
-                tcpSocketsProxy.writeToSockets();// Write whatever is enqueued in TCPSockets.
+                tcpSocketsProxy.cleanupSockets();// Close whatever sockets are in an invalid state, or which have
+                                                 // reached end-of-stream (closed by client).
 
             } catch(IOException e){
                 e.printStackTrace();
