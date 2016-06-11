@@ -15,7 +15,7 @@ public interface IMessageReader {
 
     public int read(TCPSocket socket, ByteBuffer byteBuffer, Object[] dest, int destOffset) throws IOException;
 
-
+    public void dispose();
 
     //public List<Message> getMessages();
 

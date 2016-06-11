@@ -5,15 +5,10 @@ package com.jenkov.iap.tcpserver;
  */
 public class TCPSocketPool {
 
-    private TCPMessage[] pooledMessages = null;
-    private int pooledMessageCount = 0;
-
-
     private TCPSocket[] pooledSockets = null;
     private int pooledSocketCount = 0;
 
-    public TCPSocketPool(int maxPooledMessages, int maxPooledSockets) {
-        this.pooledMessages = new TCPMessage[maxPooledMessages];
+    public TCPSocketPool(int maxPooledSockets) {
         this.pooledSockets  = new TCPSocket [maxPooledSockets];
     }
 

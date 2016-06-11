@@ -12,12 +12,12 @@ import java.nio.channels.SocketChannel;
  */
 public class TCPSocket {
 
-    private TCPSocketPool tcpSocketPool = null;
+    private TCPSocketPool   tcpSocketPool = null;
 
-    public TCPSocketsProxy proxy = null;
+    public TCPSocketsProxy  proxy = null;
 
-    public SocketChannel  socketChannel = null;
-    public long socketId = 0;
+    public SocketChannel    socketChannel = null;
+    public long             socketId = 0;
 
     public IMessageReader   messageReader = null;
 
@@ -37,11 +37,36 @@ public class TCPSocket {
         this.tcpSocketPool = tcpSocketPool;
     }
 
-    public int read(ByteBuffer byteBuffer) throws IOException {
+
+    public int readMessages(ByteBuffer tempBuffer, Object[] messageDestination, int messageDestinationOffset) throws IOException {
+        tempBuffer.clear();
+
+        int totalBytesRead = read(tempBuffer);
+
+        int nextFreeIndexInMessageDestination = 0;
+        if(totalBytesRead > 0){
+            tempBuffer.flip();
+
+            nextFreeIndexInMessageDestination = this.messageReader.read(this, tempBuffer, messageDestination, messageDestinationOffset);
+
+            for(int i=messageDestinationOffset; i < nextFreeIndexInMessageDestination; i++){
+                TCPMessage tcpMessage = (TCPMessage) messageDestination[i];
+                tcpMessage.socketId    = this.socketId;
+                tcpMessage.tcpSocket   = this;
+
+                //todo if more than this.tempMessages.length messages are received, this will result in an IndexOutOfBoundsException.
+                messageDestination[messageDestinationOffset++] = tcpMessage;
+            }
+        }
+
+        return nextFreeIndexInMessageDestination;
+    }
+
+    public int read(ByteBuffer destinationBuffer) throws IOException {
         int bytesRead = 0;
 
         try{
-            bytesRead = this.socketChannel.read(byteBuffer);
+            bytesRead = doRead(destinationBuffer);
         } catch(IOException e){
             this.endOfStreamReached = true;
             return -1;
@@ -51,7 +76,7 @@ public class TCPSocket {
 
         while(bytesRead > 0){
             try{
-                bytesRead = this.socketChannel.read(byteBuffer);
+                bytesRead = doRead(destinationBuffer);
             } catch(IOException e){
                 this.endOfStreamReached = true;
                 return -1;
@@ -64,6 +89,21 @@ public class TCPSocket {
         }
 
         return totalBytesRead;
+    }
+
+
+    /**
+     * A method which can be overwritten in mock classes - to NOT read from a socketChannel, but from e.g. a
+     * predefined byte array.
+     *
+     * @param destinationBuffer
+     * @return
+     * @throws IOException
+     */
+    protected int doRead(ByteBuffer destinationBuffer) throws IOException {
+        int bytesRead;
+        bytesRead = this.socketChannel.read(destinationBuffer);
+        return bytesRead;
     }
 
     public void enqueue(MemoryBlock memoryBlock) {
@@ -150,10 +190,29 @@ public class TCPSocket {
     }
 
 
+    /**
+     * Closes the TCPSocket + underlying SocketChannel, and frees up all queued inbound and outbound
+     * messages.
+     *
+     * todo maybe split into three methods: close() + free() + closeAndFree()
+     */
+    public void closeAndFree() throws IOException {
+        this.messageReader.dispose();
+        //todo free the messageReader back to the message reader factory? Or Reset it instead of nulling it ?
+        this.messageReader = null;
+
+        while(this.writeQueue.available() > 0){
+            TCPMessage queuedOutboundMessage = (TCPMessage) writeQueue.take();
+            queuedOutboundMessage.free();
+        }
+
+        this.socketChannel.close();
+        this.socketChannel = null;
+    }
+
+
     public void dispose() {
         //todo call dispose on message reader and message writer before nulling references.
-        this.messageReader = null;
-        this.socketChannel = null;
     }
 
 }

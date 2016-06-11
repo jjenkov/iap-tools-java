@@ -44,6 +44,9 @@ public class IAPMessageReader implements IMessageReader {
 
                     int leadByte = 255 & byteBuffer.get();
                     fieldType    = leadByte >> 4;
+
+                    //todo validate field type is ION Object - or reject message - drop connection?
+
                     lengthLength = leadByte & 15;
                     status       = STATUS_LEAD_BYTE_READ;
 
@@ -66,6 +69,9 @@ public class IAPMessageReader implements IMessageReader {
 
                     if(this.lengthBytesRead == this.lengthLength){
                         this.status = STATUS_LENGTH_READ;
+
+                        //todo validate that length of message is not larger than max allowed message length
+                        //     if it is, close the connection.
 
                         this.currentMemoryBlock.reserve(1 + this.lengthBytesRead + this.length);  //reserve space for the message.
 
@@ -97,5 +103,10 @@ public class IAPMessageReader implements IMessageReader {
             }
         }
         return destOffset; //return next free slot in dest array
+    }
+
+    @Override
+    public void dispose() {
+        this.currentMemoryBlock.free();
     }
 }

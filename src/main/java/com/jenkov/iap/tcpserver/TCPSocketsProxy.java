@@ -35,7 +35,7 @@ public class TCPSocketsProxy {
     private Selector        readSelector = null;
     private ByteBuffer      readBuffer   = null;
 
-    private TCPSocketPool   tcpObjectPool       = new TCPSocketPool(16 * 1024, 1024);
+    private TCPSocketPool   tcpObjectPool       = new TCPSocketPool(1024);
     private MemoryAllocator readMemoryAllocator = new MemoryAllocator(new byte[36 * 1024 * 1024], new long[10240],
             (allocator) -> new TCPMessage(allocator));
 
@@ -49,9 +49,6 @@ public class TCPSocketsProxy {
     private Selector   writeSelector   = null;
     private ByteBuffer writeByteBuffer = null;
 
-    //private Set<TCPSocket> emptyToNonEmptySockets = new HashSet<>();
-    //private List<TCPSocket> emptyToNonEmptySockets = new ArrayList<>();
-    //private Set<TCPSocket> nonEmptyToEmptySockets = new HashSet<>();
     private List<TCPSocket> nonEmptyToEmptySockets = new ArrayList<>();
 
     private MemoryAllocator writeMemoryAllocator = new MemoryAllocator(new byte[36 * 1024 * 1024], new long[10240],
@@ -88,15 +85,13 @@ public class TCPSocketsProxy {
 
             newSocket.configureBlocking(false);
 
-            //todo pool some of these objects - TCPSocket, TCPMessageWriter etc.
+            //todo pool some of these objects - IAPMessageReader etc.
             TCPSocket tcpSocket     = this.tcpObjectPool.getTCPSocket();
             tcpSocket.socketId      = this.nextSocketId++;
             tcpSocket.socketChannel = newSocket;
             tcpSocket.messageReader = this.messageReaderFactory.createMessageReader();
             tcpSocket.messageReader.init(this.readMemoryAllocator);
             tcpSocket.proxy         = this;
-
-            //tcpSocket.messageWriter = new TCPMessageWriter(); //todo get from TypeAllocator ?
 
             this.socketMap.put(tcpSocket.socketId, tcpSocket);
 
@@ -122,33 +117,19 @@ public class TCPSocketsProxy {
                 if(selectionKey.channel().isOpen()){
                     try{
                         TCPSocket tcpSocket = (TCPSocket) selectionKey.attachment();
+                        //todo check if TCPSocket has too many messages queued up internally. If yes, don't read - until some of them have been sent.
+                        //     check inbound messages - also outbound messages?
 
                         //todo fix reading exception when connection closed - end of stream reached. Does this error occur anymore?
-                        this.readBuffer.clear();
-                        int totalBytesRead = tcpSocket.read(this.readBuffer);
-
-                        if(totalBytesRead > 0){
-                            this.readBuffer.flip();
-
-                            int messageCount = tcpSocket.messageReader.read(tcpSocket, this.readBuffer, this.readTempIAPMessages, 0);
-
-                            for(int i=0; i<messageCount; i++){
-                                TCPMessage tcpMessage = (TCPMessage) this.readTempIAPMessages[i];
-                                tcpMessage.socketId    = tcpSocket.socketId;
-                                tcpMessage.tcpSocket   = tcpSocket;
-
-                                //todo if more than this.tempMessages.length messages are received, this will result in an IndexOutOfBoundsException.
-                                msgDest                 [receivedMessageCount] = tcpMessage;
-                                receivedMessageCount++;
-                            }
-                        }
+                        //receivedMessageCount += tcpSocket.readMessages(this.readBuffer, msgDest, receivedMessageCount);
+                        receivedMessageCount = tcpSocket.readMessages(this.readBuffer, msgDest, receivedMessageCount);
 
                         if(tcpSocket.endOfStreamReached){
                             selectionKey.attach(null);
 
                             //todo clear all waiting messages in both message reader and message writer. In fact, call dispose() on them (not implemented yet).
+                            //tcpSocket.closeAndFree();
                             tcpSocket.messageReader = null;
-                            //tcpSocket.messageWriter = null;
                             tcpSocket.socketChannel = null;  //todo check if it should be closed? or if it is already closed?
 
                             selectionKey.cancel();
@@ -177,24 +158,6 @@ public class TCPSocketsProxy {
     /*
      *  Write methods below
      */
-
-    /*
-    public void writeToSockets(Object[] outMessages, int messageCount) throws IOException {
-
-        // Take all new messages from outboundMessageQueue
-        //takeNewOutboundMessages();
-        takeNewOutboundMessagesBatch(outMessages, messageCount);
-
-        // Cancel all sockets which have no more data to write.
-        cancelEmptySockets();
-
-        // Register all sockets that *have* data and which are not yet registered.
-        registerNonEmptySockets();
-
-        // Select from the Selector.
-        selectAndWrite();
-    }
-    */
 
 
     public void writeToSockets() throws IOException {
@@ -236,29 +199,6 @@ public class TCPSocketsProxy {
     }
 
 
-    //private void registerNonEmptySockets() throws ClosedChannelException {
-
-        /*
-        if(this.emptyToNonEmptySockets.size() > 0){
-            System.out.println("Registering non-empty sockets: " + this.emptyToNonEmptySockets.size());
-        };
-        */
-
-        /*
-        for(TCPSocket tcpSocket : emptyToNonEmptySockets){
-            tcpSocket.socketChannel.register(this.writeSelector, SelectionKey.OP_WRITE, tcpSocket);
-        }
-        */
-
-
-        //for(int i=0, n = this.emptyToNonEmptySockets.size(); i < n; i++ ){
-        //    TCPSocket tcpSocket = this.emptyToNonEmptySockets.get(i);
-        //    tcpSocket.socketChannel.register(this.writeSelector, SelectionKey.OP_WRITE, tcpSocket);
-        //}
-
-        //emptyToNonEmptySockets.clear();
-    //}
-
 
     private void cancelEmptySockets() {
         /*
@@ -282,45 +222,10 @@ public class TCPSocketsProxy {
             }
         }
 
-        /*
-        for(TCPSocket socket : nonEmptyToEmptySockets){
-            SelectionKey key = socket.socketChannel.keyFor(this.writeSelector);
-            if(key != null){
-                key.cancel();  //todo how can key be null?
-            }
-            socket.isRegisteredWithWriteSelector = false;
-        }
-        */
         nonEmptyToEmptySockets.clear();
     }
 
 
-    /**
-     * Batch version of takeNewOutboundMessages
-     *
-     * todo remove this method - replace with lookup of TCP socket + enqueue() call instead.
-     */
-    /*
-    private void takeNewOutboundMessagesBatch(Object[] outMessages, int messageCount) throws IOException {
-        for(int i=0; i<messageCount; i++){
-
-            TCPMessage outMessage =  (TCPMessage) outMessages[i];
-
-            TCPSocket socket = this.socketMap.get(outMessage.socketId);
-
-            if(socket != null){
-                if(socket.isEmpty()){
-                    socket.enqueue(outMessage);
-                    nonEmptyToEmptySockets.remove(socket);
-                    emptyToNonEmptySockets.add(socket);    //not necessary if removed from nonEmptyToEmptySockets in prev. statement.
-                } else{
-                    socket.enqueue(outMessage);
-                }
-            }
-            //outMessage.free(); //todo wrong time to free the message!
-        }
-    }
-    */
 
     public TCPMessage getWriteMemoryBlock() {
         return (TCPMessage) this.writeMemoryAllocator.getMemoryBlock();
