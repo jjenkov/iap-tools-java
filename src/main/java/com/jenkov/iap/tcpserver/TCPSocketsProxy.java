@@ -259,6 +259,9 @@ public class TCPSocketsProxy {
     }
 
 
+    public List<TCPSocket> getSocketsToBeClosed() {
+        return socketsToBeClosed;
+    }
 
     public void cleanupSockets() {
         for(int i=0, n=this.socketsToBeClosed.size(); i < n; i++){
