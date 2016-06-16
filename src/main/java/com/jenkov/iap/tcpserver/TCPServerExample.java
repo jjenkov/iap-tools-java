@@ -41,6 +41,8 @@ public class TCPServerExample {
                     for(int j=0; j < messageCount; j++){
                         TCPMessage messageIn = (TCPMessage) inboundMessages[j];
 
+                        System.out.println("Message received");
+
                         //echo incoming message back to the same socket is was received from
                         tcpSocketsProxy.enqueue(messageIn.tcpSocket, messageIn);
                     }
