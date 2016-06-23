@@ -485,6 +485,7 @@ public class IonReaderTest {
         reader.setSource(source, 0, index);
         assertTrue(reader.hasNext());
 
+        reader.next();
         reader.parse();
         assertEquals(IonFieldTypes.OBJECT, reader.fieldType);
         assertTrue(reader.hasNext());
@@ -501,6 +502,7 @@ public class IonReaderTest {
 
         // Second check that parsing into the objects also works
         reader.setSource(source, 0, index);
+        reader.next();
         reader.parse();
 
         assertEquals(IonFieldTypes.OBJECT, reader.fieldType);
