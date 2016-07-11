@@ -28,9 +28,7 @@ public class LogFileWriter {
     }
 
 
-
     public void writeRecord(byte[] source, int sourceOffset, int sourceLength) {
-
         this.calendar.setTimeInMillis(System.currentTimeMillis());
 
         this.ionWriter.writeUtc(this.calendar, 9); // time stamp including milliseconds
@@ -44,4 +42,8 @@ public class LogFileWriter {
         this.ionWriter.setDestination(this.buffer, 0);
     }
 
+    public void writeRaw(byte[] source, int sourceOffset, int sourceLength) throws IOException {
+        this.fileWriter.write(source, sourceOffset, sourceLength);
+        this.fileWriter.flush();
+    }
 }
